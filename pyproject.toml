@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scholar-search-kit"
+version = "0.1.0"
+description = "Tutorial scholarly literature search toolkit for the harness project"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+scholar-search = "scholar_search.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/scholar_search"]

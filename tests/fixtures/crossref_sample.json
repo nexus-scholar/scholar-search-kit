@@ -1,0 +1,50 @@
+{
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+    "facets": {},
+    "total-results": 1,
+    "items": [
+      {
+        "indexed": {
+          "date-parts": [[2021, 5, 17]],
+          "date-time": "2021-05-17T06:17:15Z",
+          "timestamp": 1621232235372
+        },
+        "publisher": "Association for Computing Machinery (ACM)",
+        "issue": "11",
+        "published-print": {
+          "date-parts": [[1950, 11]]
+        },
+        "DOI": "10.1145/380750.380762",
+        "type": "journal-article",
+        "created": {
+          "date-parts": [[2001, 8, 14]],
+          "date-time": "2001-08-14T21:40:48Z",
+          "timestamp": 997825248000
+        },
+        "page": "1-5",
+        "source": "Crossref",
+        "title": [
+          "Computing machinery and intelligence"
+        ],
+        "author": [
+          {
+            "given": "A. M.",
+            "family": "Turing",
+            "sequence": "first",
+            "affiliation": []
+          }
+        ],
+        "container-title": [
+          "Mind"
+        ],
+        "language": "en",
+        "issued": {
+          "date-parts": [[1950, 11]]
+        }
+      }
+    ]
+  }
+}

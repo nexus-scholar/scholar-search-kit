@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "count": 1,
+    "db_response_time_ms": 25,
+    "page": 1,
+    "per_page": 25,
+    "groups_count": null
+  },
+  "results": [
+    {
+      "id": "https://openalex.org/W2741809807",
+      "doi": "https://doi.org/10.1038/nature23461",
+      "title": "Mastering the game of Go without human knowledge",
+      "publication_year": 2017,
+      "authorships": [
+        {
+          "author": {
+            "id": "https://openalex.org/A2127263300",
+            "display_name": "David Silver",
+            "orcid": null
+          }
+        },
+        {
+          "author": {
+            "id": "https://openalex.org/A2131976694",
+            "display_name": "Julian Schrittwieser",
+            "orcid": "https://orcid.org/0000-0002-8611-659X"
+          }
+        }
+      ],
+      "primary_location": {
+        "source": {
+          "display_name": "Nature",
+          "id": "https://openalex.org/S137773608"
+        },
+        "landing_page_url": "https://doi.org/10.1038/nature23461"
+      },
+      "abstract_inverted_index": {
+        "A": [0],
+        "long-standing": [1],
+        "goal": [2],
+        "of": [3, 10, 24],
+        "artificial": [4],
+        "intelligence": [5],
+        "is": [6],
+        "an": [7],
+        "algorithm": [8],
+        "that": [9, 21],
+        "learns": [11],
+        "tabula": [12],
+        "rasa": [13],
+        "which": [14],
+        "achieves": [15],
+        "superhuman": [16],
+        "proficiency": [17],
+        "in": [18],
+        "challenging": [19],
+        "domains": [20],
+        "are": [22],
+        "representative": [23],
+        "human": [25],
+        "intellect.": [26]
+      }
+    }
+  ]
+}

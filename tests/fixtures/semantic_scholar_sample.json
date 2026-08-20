@@ -1,0 +1,38 @@
+{
+  "total": 1,
+  "token": "eyJvZmZzZXQiOjEsImV4cCI6MTcxOTg3MjAwMH0=",
+  "data": [
+    {
+      "paperId": "649def34f8be52c8b66281af98ae884c09aef38b",
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "url": "https://www.semanticscholar.org/paper/649def34f8be52c8b66281af98ae884c09aef38b",
+      "year": 2018,
+      "venue": "NAACL",
+      "abstract": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models, BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications.",
+      "authors": [
+        {
+          "authorId": "1741101",
+          "name": "J. Devlin"
+        },
+        {
+          "authorId": "2262347",
+          "name": "Ming-Wei Chang"
+        },
+        {
+          "authorId": "145331707",
+          "name": "Kenton Lee"
+        },
+        {
+          "authorId": "2104958",
+          "name": "Kristina Toutanova"
+        }
+      ],
+      "externalIds": {
+        "ArXiv": "1810.04805",
+        "DOI": "10.18653/v1/N19-1423",
+        "CorpusId": 52967399
+      },
+      "citationCount": 42103
+    }
+  ]
+}
