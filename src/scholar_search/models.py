@@ -1,4 +1,4 @@
-"""Normalized models for the tutorial SLR workflow."""
+"""Normalized models for the SLR and scholarly search workflow."""
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -10,14 +10,33 @@ class ExternalIds:
     doi: str | None = None
     arxiv_id: str | None = None
     pubmed_id: str | None = None
+    openalex_id: str | None = None
+    s2_id: str | None = None
 
     def __post_init__(self) -> None:
         if self.doi:
             value = self.doi.strip().lower()
-            for prefix in ("https://doi.org/", "http://doi.org/", "doi:"):
+            for prefix in (
+                "https://doi.org/",
+                "http://doi.org/",
+                "https://dx.doi.org/",
+                "http://dx.doi.org/",
+                "doi:",
+            ):
                 if value.startswith(prefix):
                     value = value[len(prefix):]
-            self.doi = value
+            value = value.strip()
+            self.doi = value if value else None
+        else:
+            self.doi = None
+
+        if self.arxiv_id:
+            val = self.arxiv_id.strip()
+            for prefix in ("arxiv:", "arXiv:"):
+                if val.startswith(prefix):
+                    val = val[len(prefix):]
+            val = val.strip()
+            self.arxiv_id = val if val else None
 
 
 @dataclass
@@ -42,6 +61,14 @@ class Document:
     authors: list[Author] = field(default_factory=list)
     venue: str | None = None
     url: str | None = None
+    
+    # Snowballing & Enhanced Metadata
+    citations_count: int | None = None
+    references_count: int | None = None
+    citation_intents: list[str] = field(default_factory=list)  # e.g. "methodology" from S2
+    mesh_terms: list[str] = field(default_factory=list)  # Medical Subject Headings from PubMed
+    tldr: str | None = None  # AI Summary from Semantic Scholar
+    
     query_id: str | None = None
     retrieved_at: datetime | None = None
     cluster_id: int | None = None

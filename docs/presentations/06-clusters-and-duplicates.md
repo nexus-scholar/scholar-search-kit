@@ -1,25 +1,25 @@
-# Episode 6: Clusters & Duplicate Aggregation
+# Episode 6: Clusters & Non-Destructive Merging (`DocumentCluster`)
 
-**Objective:** Design a model to safely merge duplicate papers across multiple providers without losing data provenance.
+**Objective:** Implement non-destructive clustering of duplicate records to preserve full scientific evidence trails.
 
-## 🎬 Presentation Script
+## Presentation Script
 
 | Slide | Title | Talking Points | Action |
 | :--- | :--- | :--- | :--- |
-| 1 | **Title Slide** | We have documents and we have queries. Now we need to handle duplicates. | *Show Title Slide.* |
-| 2 | **Episode Goal** | Deduplication is usually done by throwing away data. We won't do that. We will aggregate it. | *Highlight the goal block.* |
-| 3 | **Non-Destructive Merging** | By grouping documents into a Cluster, we retain the fact that both OpenAlex and arXiv found the paper. | *Point to the diagram.* |
-| 4 | **The `DocumentCluster` Model** | The cluster holds the bag of documents and computes metrics across them. | *Explain the fields.* |
-| 5 | **Implementation: Confidence Metrics** | Merging isn't always exact. We need to store *how* confident we are so the researcher can audit it later. | *Discuss `match_confidence`.* |
-| 6 | **Verification** | Let's test the canonical document selection logic. | *Transition to Terminal.* |
+| 1 | **Title Slide** | What happens when the same paper is returned by OpenAlex, PubMed, and Crossref? | *Show Title Slide.* |
+| 2 | **Episode Goal** | Naive deduplication drops records permanently. We group duplicates non-destructively into clusters. | *Highlight goal.* |
+| 3 | **The `DocumentCluster`** | A cluster holds a canonical `representative` (with merged metadata) and the complete list of `members`. | *Show cluster diagram.* |
+| 4 | **Confidence Metrics** | Identifiers (DOI, PMID, arXiv) yield confidence `1.0`; title fuzzy matching yields `0.95`. | *Explain confidence metric.* |
+| 5 | **Implementation** | We define `DocumentCluster` with derived properties `size` and `confidence`. | *Transition to code.* |
+| 6 | **Verification** | We run our clustering unit tests. | *Transition to Terminal.* |
 
-## 💻 Terminal & Code Walkthrough
+## Terminal & Code Walkthrough
 
 1. **Show `models.py`**:
    - Open `src/scholar_search/models.py`.
-   - Walk through the `DocumentCluster` dataclass.
-2. **Discuss Canonical Selection**:
-   - Explain how we might choose the "best" document (e.g., the one with an abstract over one without).
+   - Walk through `DocumentCluster`, highlighting `representative` vs `members`.
+2. **Show Confidence Scoring**:
+   - Explain how `confidence` dynamically inspects member identifier presence.
 3. **Run the Tests**:
-   - In the terminal, run: `pytest -k "test_cluster"`
-   - Show how the canonical property selects the richer document.
+   - Run: `pytest tests/test_models.py -k "test_document_cluster"`
+   - Confirm test passes.

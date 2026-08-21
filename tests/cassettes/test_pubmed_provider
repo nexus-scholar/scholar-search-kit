@@ -1,0 +1,891 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - scholar-search-kit/0.1.0 (mailto:student@university.edu)
+    method: GET
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=%22machine%5Bti%5D+learning%22+AND+2023&retmode=json&retmax=5
+  response:
+    body:
+      string: '{"header":{"type":"esearch","version":"0.3"},"esearchresult":{"count":"13397","retmax":"5","retstart":"0","idlist":["42623360","42621884","42621461","42620805","42619801"],"translationset":[],"querytranslation":"\"machine\"[Title]
+        AND (\"learning\"[MeSH Terms] OR \"learning\"[All Fields] OR \"learn\"[All
+        Fields] OR \"learned\"[All Fields] OR \"learning s\"[All Fields] OR \"learnings\"[All
+        Fields] OR \"learns\"[All Fields]) AND \"2023\"[All Fields]","warninglist":{"phrasesignored":[],"quotedphrasesnotfound":["\"machine[ti]
+        learning\""],"outputmessages":[]}}}
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - X-RateLimit-Limit,X-RateLimit-Remaining
+      Alt-Svc:
+      - clear
+      Cache-Control:
+      - private
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 20 Aug 2026 23:17:08 GMT
+      Ncbi-Phid:
+      - 1D334A9FCE8C2305000078C69876FF60.1.1.m_1
+      Ncbi-Sid:
+      - 8A812EA6582AAD9B_CD52SID
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - Finatra
+      Set-Cookie:
+      - ncbi_sid=8A812EA6582AAD9B_CD52SID; domain=.nih.gov; path=/; expires=Fri, 20
+        Aug 2027 23:17:09 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Via:
+      - 1.1 google
+      X-Ratelimit-Limit:
+      - '3'
+      X-Ratelimit-Remaining:
+      - '2'
+      X-Ua-Compatible:
+      - IE=Edge
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Cookie:
+      - ncbi_sid=8A812EA6582AAD9B_CD52SID
+      User-Agent:
+      - scholar-search-kit/0.1.0 (mailto:student@university.edu)
+    method: GET
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=42623360%2C42621884%2C42621461%2C42620805%2C42619801&retmode=xml
+  response:
+    body:
+      string: "<?xml version=\"1.0\" ?>\n<!DOCTYPE PubmedArticleSet PUBLIC \"-//NLM//DTD
+        PubMedArticle, 1st January 2025//EN\" \"https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_250101.dtd\">\n<PubmedArticleSet>\n<PubmedArticle><MedlineCitation
+        Status=\"MEDLINE\" Owner=\"NLM\" IndexingMethod=\"Automated\"><PMID Version=\"1\">42623360</PMID><DateCompleted><Year>2026</Year><Month>08</Month><Day>20</Day></DateCompleted><DateRevised><Year>2026</Year><Month>08</Month><Day>20</Day></DateRevised><Article
+        PubModel=\"Electronic-eCollection\"><Journal><ISSN IssnType=\"Electronic\">1932-6203</ISSN><JournalIssue
+        CitedMedium=\"Internet\"><Volume>21</Volume><Issue>8</Issue><PubDate><Year>2026</Year></PubDate></JournalIssue><Title>PloS
+        one</Title><ISOAbbreviation>PLoS One</ISOAbbreviation></Journal><ArticleTitle>MambaGCN-SMI:
+        Protocol state machine inference framework based on Mamba and GCN.</ArticleTitle><Pagination><StartPage>e0354921</StartPage><MedlinePgn>e0354921</MedlinePgn></Pagination><ELocationID
+        EIdType=\"doi\" ValidYN=\"Y\">10.1371/journal.pone.0354921</ELocationID><Abstract><AbstractText>To
+        address the limitations of existing non-interactive protocol state machine
+        inference methods in feature representation capability, inter-stage information
+        fusion, and adaptive simplification strategies, this paper proposes the MambaGCN-SMI
+        inference framework. The method employs a dual-level Mamba encoder to extract
+        deep semantic features from protocol interactions, constructs an initial directed
+        state graph based on clustering and state transition conditional entropy,
+        and utilizes a Graph Convolutional Network to learn node embeddings, enabling
+        data-driven adaptive state merging and simplification. Experiments on a multi-protocol
+        dataset encompassing TCP, HTTP, SMTP, Modbus, and DNP3 demonstrate that the
+        framework outperforms mainstream methods in both state machine structure recovery
+        and behavioral prediction. It achieves an average prediction accuracy of 95.7%
+        and a behavior coverage of 97.5%. For structural recovery, the node and edge
+        F1-scores reach 0.939 and 0.915, respectively. Ablation studies confirm that
+        both the Mamba encoder and the Graph Convolutional Network module contribute
+        significantly to the performance improvement. By integrating selective state
+        space modeling with graph structure learning, this research achieves high-precision,
+        adaptive inference of private protocol state machines, offering an effective
+        deep learning solution for protocol reverse engineering analysis.</AbstractText><CopyrightInformation>Copyright:
+        &#xa9; 2026 Ren et al. This is an open access article distributed under the
+        terms of the Creative Commons Attribution License, which permits unrestricted
+        use, distribution, and reproduction in any medium, provided the original author
+        and source are credited.</CopyrightInformation></Abstract><AuthorList CompleteYN=\"Y\"><Author
+        ValidYN=\"Y\"><LastName>Ren</LastName><ForeName>Junkang</ForeName><Initials>J</Initials><Identifier
+        Source=\"ORCID\">0009-0001-1615-4667</Identifier><AffiliationInfo><Affiliation>Department
+        of Information System Engineering, PLA Information Engineering University,
+        Zhengzhou, Henan, China.</Affiliation></AffiliationInfo></Author><Author ValidYN=\"Y\"><LastName>Li</LastName><ForeName>Qing</ForeName><Initials>Q</Initials><AffiliationInfo><Affiliation>Department
+        of Information System Engineering, PLA Information Engineering University,
+        Zhengzhou, Henan, China.</Affiliation></AffiliationInfo></Author><Author ValidYN=\"Y\"><LastName>Chu</LastName><ForeName>Ruijuan</ForeName><Initials>R</Initials><AffiliationInfo><Affiliation>Department
+        of Information System Engineering, PLA Information Engineering University,
+        Zhengzhou, Henan, China.</Affiliation></AffiliationInfo></Author><Author ValidYN=\"Y\"><LastName>Chen</LastName><ForeName>Yifan</ForeName><Initials>Y</Initials><Identifier
+        Source=\"ORCID\">0009-0009-1104-2023</Identifier><AffiliationInfo><Affiliation>Department
+        of Information System Engineering, PLA Information Engineering University,
+        Zhengzhou, Henan, China.</Affiliation></AffiliationInfo></Author></AuthorList><Language>eng</Language><PublicationTypeList><PublicationType
+        UI=\"D016428\">Journal Article</PublicationType></PublicationTypeList><ArticleDate
+        DateType=\"Electronic\"><Year>2026</Year><Month>08</Month><Day>20</Day></ArticleDate></Article><MedlineJournalInfo><Country>United
+        States</Country><MedlineTA>PLoS One</MedlineTA><NlmUniqueID>101285081</NlmUniqueID><ISSNLinking>1932-6203</ISSNLinking></MedlineJournalInfo><CitationSubset>IM</CitationSubset><MeshHeadingList><MeshHeading><DescriptorName
+        UI=\"D000098422\" MajorTopicYN=\"N\">Graph Neural Networks</DescriptorName></MeshHeading><MeshHeading><DescriptorName
+        UI=\"D000465\" MajorTopicYN=\"N\">Algorithms</DescriptorName></MeshHeading><MeshHeading><DescriptorName
+        UI=\"D000069550\" MajorTopicYN=\"Y\">Machine Learning</DescriptorName></MeshHeading></MeshHeadingList><CoiStatement>The
+        authors have declared that no competing interests exist.</CoiStatement></MedlineCitation><PubmedData><History><PubMedPubDate
+        PubStatus=\"medline\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>17</Hour><Minute>36</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"pubmed\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>17</Hour><Minute>35</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"received\"><Year>2026</Year><Month>1</Month><Day>12</Day></PubMedPubDate><PubMedPubDate
+        PubStatus=\"accepted\"><Year>2026</Year><Month>7</Month><Day>14</Day></PubMedPubDate><PubMedPubDate
+        PubStatus=\"entrez\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>13</Hour><Minute>33</Minute></PubMedPubDate></History><PublicationStatus>epublish</PublicationStatus><ArticleIdList><ArticleId
+        IdType=\"pubmed\">42623360</ArticleId><ArticleId IdType=\"doi\">10.1371/journal.pone.0354921</ArticleId><ArticleId
+        IdType=\"pii\">PONE-D-26-01647</ArticleId></ArticleIdList></PubmedData></PubmedArticle><PubmedArticle><MedlineCitation
+        Status=\"PubMed-not-MEDLINE\" Owner=\"NLM\"><PMID Version=\"1\">42621884</PMID><DateCompleted><Year>2026</Year><Month>08</Month><Day>20</Day></DateCompleted><DateRevised><Year>2026</Year><Month>08</Month><Day>20</Day></DateRevised><Article
+        PubModel=\"Electronic-eCollection\"><Journal><ISSN IssnType=\"Print\">1642-395X</ISSN><JournalIssue
+        CitedMedium=\"Print\"><Volume>43</Volume><Issue>3</Issue><PubDate><Year>2026</Year></PubDate></JournalIssue><Title>Postepy
+        dermatologii i alergologii</Title><ISOAbbreviation>Postepy Dermatol Alergol</ISOAbbreviation></Journal><ArticleTitle>Prediction
+        of early responses to dupilumab treatment in patients with moderate-to-severe
+        atopic dermatitis by a machine learning model integrating clinical characteristics
+        and serum biomarkers.</ArticleTitle><Pagination><StartPage>280</StartPage><EndPage>287</EndPage><MedlinePgn>280-287</MedlinePgn></Pagination><ELocationID
+        EIdType=\"doi\" ValidYN=\"Y\">10.5114/ada.2026.162843</ELocationID><Abstract><AbstractText
+        Label=\"AIM\" NlmCategory=\"UNASSIGNED\">The aim of the study was to evaluate
+        the predictive value of baseline serum periostin and other T helper cell type
+        2 (Th2)-related biomarkers for early response to dupilumab in patients with
+        moderate-to-severe atopic dermatitis (AD), and to develop a machine learning
+        model integrating clinical and laboratory features.</AbstractText><AbstractText
+        Label=\"MATERIAL AND METHODS\" NlmCategory=\"UNASSIGNED\">A single-centre
+        prospective cohort of 200 adults with moderate-to-severe AD treated with dupilumab
+        (2020-2023) was used for model development, with an independent prospective
+        cohort of 60 patients (2024) for external validation. Baseline clinical characteristics
+        and serum biomarkers, including periostin, eosinophil count, total immunoglobulin
+        E (IgE), and lactate dehydrogenase (LDH), were collected. Multivariate logistic
+        regression and three machine learning models were constructed and evaluated
+        using receiver operating characteristic analysis, calibration, decision curve
+        analysis, and SHapley Additive exPlanations.</AbstractText><AbstractText Label=\"RESULTS\"
+        NlmCategory=\"UNASSIGNED\">In the modelling cohort, 62.5% of patients achieved
+        EASI-75 at 16 weeks. Responders had significantly lower baseline periostin,
+        eosinophil count, and IgE levels than non-responders (all <i>p</i> &lt; 0.05).
+        LASSO identified 10 key predictors, with periostin showing the strongest contribution.
+        In multivariate logistic regression, periostin was the strongest independent
+        predictor (OR = 0.34, <i>p</i> &lt; 0.001) and improved discrimination. Among
+        machine learning models, XGBoost performed best (AUC = 0.83). SHAP analysis
+        confirmed periostin as the most influential feature. In external validation,
+        the XGBoost model maintained good performance (AUC = 0.81; sensitivity = 0.917)
+        with favourable calibration and clinical net benefit.</AbstractText><AbstractText
+        Label=\"CONCLUSIONS\" NlmCategory=\"UNASSIGNED\">Baseline serum periostin
+        is a robust and independent biomarker for predicting early response to dupilumab
+        in moderate-to-severe AD. A machine learning model integrating periostin with
+        clinical and Th2-related biomarkers enables accurate and interpretable pre-treatment
+        patient stratification.</AbstractText><CopyrightInformation>Copyright: &#xa9;
+        2026 Termedia Sp. z o. o.</CopyrightInformation></Abstract><AuthorList CompleteYN=\"Y\"><Author
+        ValidYN=\"Y\"><LastName>Huang</LastName><ForeName>Hong</ForeName><Initials>H</Initials><AffiliationInfo><Affiliation>First
+        Affiliated Hospital of Kunming Medical University, Kunming, China.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\"><LastName>Xu</LastName><ForeName>Mengdi</ForeName><Initials>M</Initials><AffiliationInfo><Affiliation>First
+        Affiliated Hospital of Kunming Medical University, Kunming, China.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\"><LastName>Zhao</LastName><ForeName>Weijia</ForeName><Initials>W</Initials><AffiliationInfo><Affiliation>First
+        Affiliated Hospital of Kunming Medical University, Kunming, China.</Affiliation></AffiliationInfo></Author></AuthorList><Language>eng</Language><PublicationTypeList><PublicationType
+        UI=\"D016428\">Journal Article</PublicationType></PublicationTypeList><ArticleDate
+        DateType=\"Electronic\"><Year>2026</Year><Month>06</Month><Day>23</Day></ArticleDate></Article><MedlineJournalInfo><Country>Poland</Country><MedlineTA>Postepy
+        Dermatol Alergol</MedlineTA><NlmUniqueID>101168357</NlmUniqueID><ISSNLinking>1642-395X</ISSNLinking></MedlineJournalInfo><KeywordList
+        Owner=\"NOTNLM\"><Keyword MajorTopicYN=\"N\">atopic dermatitis</Keyword><Keyword
+        MajorTopicYN=\"N\">baseline</Keyword><Keyword MajorTopicYN=\"N\">dupilumab</Keyword><Keyword
+        MajorTopicYN=\"N\">machine learning</Keyword><Keyword MajorTopicYN=\"N\">periostin</Keyword></KeywordList><CoiStatement>The
+        authors declare no conflict of interest.</CoiStatement></MedlineCitation><PubmedData><History><PubMedPubDate
+        PubStatus=\"received\"><Year>2025</Year><Month>12</Month><Day>23</Day></PubMedPubDate><PubMedPubDate
+        PubStatus=\"accepted\"><Year>2026</Year><Month>2</Month><Day>3</Day></PubMedPubDate><PubMedPubDate
+        PubStatus=\"medline\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>11</Hour><Minute>42</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"pubmed\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>11</Hour><Minute>41</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"entrez\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>9</Hour><Minute>22</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"pmc-release\"><Year>2026</Year><Month>6</Month><Day>23</Day></PubMedPubDate></History><PublicationStatus>epublish</PublicationStatus><ArticleIdList><ArticleId
+        IdType=\"pubmed\">42621884</ArticleId><ArticleId IdType=\"pmc\">PMC13487879</ArticleId><ArticleId
+        IdType=\"doi\">10.5114/ada.2026.162843</ArticleId><ArticleId IdType=\"pii\">58245</ArticleId></ArticleIdList><ReferenceList><Reference><Citation>Gatmaitan
+        JG, Lee JH. Challenges and future trends in atopic dermatitis. Int J Mol Sci
+        2023; 24: 11380.</Citation><ArticleIdList><ArticleId IdType=\"pmc\">PMC10380015</ArticleId><ArticleId
+        IdType=\"pubmed\">37511138</ArticleId></ArticleIdList></Reference><Reference><Citation>Royeck
+        S. Biologics in the treatment of atopic dermatitis: approved active substances
+        and monoclonal antibodies in advanced clinical trials. Allergo J Int 2025;
+        34: 159&#x2013;66.</Citation></Reference><Reference><Citation>Chu CY, Chan
+        Y, Wananukul S, et al. Quality of life and burden of moderate-to-severe atopic
+        dermatitis in adult patients within the Asia-Pacific region: a cross-sectional
+        survey. Dermatol Ther (Heidelb) 2024; 14: 2479&#x2013;93.</Citation><ArticleIdList><ArticleId
+        IdType=\"pmc\">PMC11393233</ArticleId><ArticleId IdType=\"pubmed\">39103673</ArticleId></ArticleIdList></Reference><Reference><Citation>Beck
+        LA, Bissonnette R, Deleuran M, et al. Dupilumab in adults with moderate to
+        severe atopic dermatitis: a 5-year open-label extension study. JAMA Dermatol
+        2024; 160: 805&#x2013;12.</Citation><ArticleIdList><ArticleId IdType=\"pmc\">PMC11238067</ArticleId><ArticleId
+        IdType=\"pubmed\">38985486</ArticleId></ArticleIdList></Reference><Reference><Citation>Londo&#x144;o
+        J, Perez L, Moreno S, et al. Effectiveness and safety of dupilumab in adults
+        with moderate and severe atopic dermatitis: real-life experience. World Allergy
+        Organ J 2023; 16: 100763.</Citation><ArticleIdList><ArticleId IdType=\"pmc\">PMC10113899</ArticleId><ArticleId
+        IdType=\"pubmed\">37091550</ArticleId></ArticleIdList></Reference><Reference><Citation>Orayj
+        K, Samuel VP, Saleem S, et al. Immunoassay-based biomarkers in atopic dermatitis.
+        Clin Chim Acta 2026; 579: 120634.</Citation><ArticleIdList><ArticleId IdType=\"pubmed\">41067486</ArticleId></ArticleIdList></Reference><Reference><Citation>Bieber
+        T. The paradigm shift in drug development for atopic dermatitis: addressing
+        the variables of the equation leading to disease modification. Ann Allergy
+        Asthma Immunol 2025; 134: 144&#x2013;50.</Citation><ArticleIdList><ArticleId
+        IdType=\"pubmed\">39383939</ArticleId></ArticleIdList></Reference><Reference><Citation>Ravindran
+        S, Kaleem Ullah M, Karnik M, et al. Unsupervised phenotyping of asthma: integrating
+        serum periostin with clinical and inflammatory profiles. Diagnostics 2025;
+        15: 3028.</Citation><ArticleIdList><ArticleId IdType=\"pmc\">PMC12691264</ArticleId><ArticleId
+        IdType=\"pubmed\">41374409</ArticleId></ArticleIdList></Reference><Reference><Citation>Nakahara
+        T, Izuhara K, Onozuka D, et al. Exploring biomarkers to predict clinical improvement
+        of atopic dermatitis in patients treated with dupilumab (B-PAD study). Clin
+        Exp Allergy 2023; 53: 233&#x2013;8.</Citation><ArticleIdList><ArticleId IdType=\"pubmed\">36524532</ArticleId></ArticleIdList></Reference><Reference><Citation>Collins
+        GS, Reitsma JB, Altman DG, et al. Transparent reporting of a multivariable
+        prediction model for individual prognosis or diagnosis (TRIPOD): the TRIPOD
+        statement. BMJ 2015; 350: g7594.</Citation><ArticleIdList><ArticleId IdType=\"pubmed\">25569120</ArticleId></ArticleIdList></Reference><Reference><Citation>Hanifin
+        JM, Rajka G. Diagnostic features of atopic dermatitis. Acta Derm Venereol
+        1980; 92: 44&#x2013;7.</Citation></Reference><Reference><Citation>Wollenberg
+        A, Christen-Z&#xe4;ch S, Taieb A, et al. ETFAD/EADV eczema task force 2020
+        position paper on diagnosis and treatment of atopic dermatitis in adults and
+        children. J Eur Acad Dermatol Venereol 2020; 34: 2717&#x2013;44.</Citation><ArticleIdList><ArticleId
+        IdType=\"pubmed\">33205485</ArticleId></ArticleIdList></Reference><Reference><Citation>Simpson
+        EL, Bieber T, Guttman-Yassky E, et al. Two phase 3 trials of dupilumab versus
+        placebo in atopic dermatitis. N Engl J Med 2016; 375: 2335&#x2013;48.</Citation><ArticleIdList><ArticleId
+        IdType=\"pubmed\">27690741</ArticleId></ArticleIdList></Reference><Reference><Citation>Schmitt
+        J, Langan S, Deckert S, et al. Assessment of clinical signs of atopic dermatitis:
+        a systematic review and recommendation. J Allergy Clin Immunol 2013; 132:
+        1337&#x2013;47.</Citation><ArticleIdList><ArticleId IdType=\"pubmed\">24035157</ArticleId></ArticleIdList></Reference><Reference><Citation>Nunomura
+        S, Uta D, Kitajima I, et al. Periostin activates distinct modules of inflammation
+        and itching downstream of the type 2 inflammation pathway. Cell Rep 2023;
+        42: 111933.</Citation><ArticleIdList><ArticleId IdType=\"pmc\">PMC11486451</ArticleId><ArticleId
+        IdType=\"pubmed\">36610396</ArticleId></ArticleIdList></Reference><Reference><Citation>Tran
+        NQV, Kobayashi Y, Nakamura Y, et al. Transcriptomic evidence for T cell-fibroblast-keratinocyte
+        axis via IL-13-periostin-integrin in atopic dermatitis. Allergy 2024; 79:
+        3521&#x2013;5.</Citation><ArticleIdList><ArticleId IdType=\"pmc\">PMC11657014</ArticleId><ArticleId
+        IdType=\"pubmed\">39418111</ArticleId></ArticleIdList></Reference><Reference><Citation>Maintz
+        L, Welchowski T, Herrmann N, et al. IL-13, periostin and dipeptidyl-peptidase-4
+        reveal endotype-phenotype associations in atopic dermatitis. Allergy 2023;
+        78: e15647.</Citation><ArticleIdList><ArticleId IdType=\"pubmed\">36647778</ArticleId></ArticleIdList></Reference><Reference><Citation>Starrenburg
+        ME, Bel Imam M, Lopez JF, et al. Dupilumab treatment decreases MBC2s, correlating
+        with reduced IgE levels in pediatric atopic dermatitis. J Allergy Clin Immunol
+        2024; 154: 1333&#x2013;8.e4.</Citation><ArticleIdList><ArticleId IdType=\"pubmed\">39038586</ArticleId></ArticleIdList></Reference><Reference><Citation>Dekkers
+        C, van der Wal MM, van den Noort L, et al. IgE levels in patients with atopic
+        dermatitis steadily decrease during treatment with dupilumab regardless of
+        dose interval. Clin Exp Allergy 2023; 53: 1222&#x2013;5.</Citation><ArticleIdList><ArticleId
+        IdType=\"pubmed\">37700483</ArticleId></ArticleIdList></Reference><Reference><Citation>Baldo
+        DC, Romaldini JG, Pizzichini MMM, et al. Periostin as an important biomarker
+        of inflammatory phenotype T2 in Brazilian asthma patients. J Bras Pneumol
+        2023; 49: e20220040.</Citation><ArticleIdList><ArticleId IdType=\"pmc\">PMC9970379</ArticleId><ArticleId
+        IdType=\"pubmed\">36753209</ArticleId></ArticleIdList></Reference><Reference><Citation>Hamilton
+        JD, Harel S, Swanson BN, et al. Dupilumab suppresses type 2 inflammatory biomarkers
+        across multiple atopic, allergic diseases. Clin Exp Allergy 2021; 51: 915&#x2013;31.</Citation><ArticleIdList><ArticleId
+        IdType=\"pmc\">PMC8362102</ArticleId><ArticleId IdType=\"pubmed\">34037993</ArticleId></ArticleIdList></Reference><Reference><Citation>Hijnen
+        D, Olydam J. Prediction of response to dupilumab treatment. Br J Dermatol
+        2023; 188: e41.</Citation><ArticleIdList><ArticleId IdType=\"pubmed\">37167296</ArticleId></ArticleIdList></Reference><Reference><Citation>Chiricozzi
+        A, Levi A, Palladino C, et al. Enabling precision medicine with biomarkers
+        of response to treatment in atopic dermatitis: where are we now? Front Med
+        (Lausanne) 2025; 12: 1574697.</Citation><ArticleIdList><ArticleId IdType=\"pmc\">PMC12018228</ArticleId><ArticleId
+        IdType=\"pubmed\">40276736</ArticleId></ArticleIdList></Reference></ReferenceList></PubmedData></PubmedArticle><PubmedArticle><MedlineCitation
+        Status=\"PubMed-not-MEDLINE\" Owner=\"NLM\"><PMID Version=\"1\">42621461</PMID><DateCompleted><Year>2026</Year><Month>08</Month><Day>20</Day></DateCompleted><DateRevised><Year>2026</Year><Month>08</Month><Day>20</Day></DateRevised><Article
+        PubModel=\"Electronic-eCollection\"><Journal><ISSN IssnType=\"Print\">2090-2840</ISSN><JournalIssue
+        CitedMedium=\"Print\"><Volume>2026</Volume><PubDate><Year>2026</Year></PubDate></JournalIssue><Title>Emergency
+        medicine international</Title><ISOAbbreviation>Emerg Med Int</ISOAbbreviation></Journal><ArticleTitle>Machine
+        Learning Models for Identifying Factors Associated With Workplace Violence
+        Among Emergency Nurses: A Comparative Study.</ArticleTitle><Pagination><StartPage>9275645</StartPage><MedlinePgn>9275645</MedlinePgn></Pagination><ELocationID
+        EIdType=\"pii\" ValidYN=\"Y\">9275645</ELocationID><ELocationID EIdType=\"doi\"
+        ValidYN=\"Y\">10.1155/emmi/9275645</ELocationID><Abstract><AbstractText Label=\"OBJECTIVE\"
+        NlmCategory=\"UNASSIGNED\">To develop and compare three machine learning models
+        for identifying factors associated with workplace violence (WPV) among emergency
+        department nurses.</AbstractText><AbstractText Label=\"METHODS\" NlmCategory=\"UNASSIGNED\">A
+        total of 1540 emergency department nurses from various regions of China were
+        examined between December 2023 and January 2024. Data were collected using
+        scales measuring WPV, work-family conflict, occupational stress, occupational
+        burnout, nursing practice environment, and self-rated sleep quality. Three
+        analytical models (logistic regression, decision tree, and random forest)
+        were developed and compared to classify nurses with and without WPV experiences
+        among emergency department nurses. Model performance was evaluated using sensitivity,
+        specificity, PPV, NPV, F1-score, balanced accuracy, and area under the receiver
+        operating characteristic curve (AUC).</AbstractText><AbstractText Label=\"RESULTS\"
+        NlmCategory=\"UNASSIGNED\">Among the 1540 nurses, 1309 individuals (85.0%)
+        had experienced WPV in the past year. All three models indicated that work-family
+        conflict, occupational burnout, and occupational stress were significantly
+        associated with WPV experiences among emergency department nurses (<i>p</i>
+        &lt; 0.05). In the random forest and decision tree models, sleep disorders
+        and the nursing practice environment were also identified as significant associated
+        factors. The accuracy of the logistic regression, decision tree, and random
+        forest models was 0.829, 0.851, and 0.859; the specificity was 0.667, 0.605,
+        and 0.593; the sensitivity was 0.864, 0.903, and 0.916; and the F1 score was
+        0.893, 0.909, and 0.915, respectively, with AUC values of 0.832 (95% CI: 0.781-0.883),
+        0.768 (95% CI: 0.711-0.826), and 0.834 (95% CI: 0.783-0.885).</AbstractText><AbstractText
+        Label=\"CONCLUSIONS\" NlmCategory=\"UNASSIGNED\">Work-family conflict, burnout,
+        occupational stress, the nursing practice environment, and sleep disorders
+        were consistently associated with WPV experiences among emergency department
+        nurses. Random forest achieved the highest sensitivity, F1-score, and overall
+        accuracy, whereas logistic regression showed the highest specificity and balanced
+        accuracy. Logistic regression and random forest demonstrated similar discrimination.</AbstractText><CopyrightInformation>Copyright
+        &#xa9; 2026 Lin Lan et al. Emergency Medicine International published by John
+        Wiley &amp; Sons Ltd.</CopyrightInformation></Abstract><AuthorList CompleteYN=\"Y\"><Author
+        ValidYN=\"Y\"><LastName>Lan</LastName><ForeName>Lin</ForeName><Initials>L</Initials><Identifier
+        Source=\"ORCID\">0000-0002-4236-5548</Identifier><AffiliationInfo><Affiliation>Emergency
+        Department of West China Hospital, Sichuan University/West China School of
+        Nursing, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo><AffiliationInfo><Affiliation>Institute
+        of Disaster Medicine, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\"><LastName>Dai</LastName><ForeName>Min</ForeName><Initials>M</Initials><Identifier
+        Source=\"ORCID\">0000-0003-1631-0778</Identifier><AffiliationInfo><Affiliation>Emergency
+        Department of West China Hospital, Sichuan University/West China School of
+        Nursing, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo><AffiliationInfo><Affiliation>Institute
+        of Disaster Medicine, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\"><LastName>Chen</LastName><ForeName>Yilong</ForeName><Initials>Y</Initials><Identifier
+        Source=\"ORCID\">0000-0002-5127-2247</Identifier><AffiliationInfo><Affiliation>West
+        China Biomedical Big Data Center, West China Hospital, Sichuan University,
+        Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo><AffiliationInfo><Affiliation>Med-X
+        Center for Informatics, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\"><LastName>Zhang</LastName><ForeName>Hao</ForeName><Initials>H</Initials><Identifier
+        Source=\"ORCID\">0000-0001-7213-8947</Identifier><AffiliationInfo><Affiliation>Emergency
+        Department of West China Hospital, Sichuan University/West China School of
+        Nursing, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo><AffiliationInfo><Affiliation>Institute
+        of Disaster Medicine, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\"><LastName>Zhong</LastName><ForeName>Luying</ForeName><Initials>L</Initials><Identifier
+        Source=\"ORCID\">0009-0007-6058-8968</Identifier><AffiliationInfo><Affiliation>Emergency
+        Department of West China Hospital, Sichuan University/West China School of
+        Nursing, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo><AffiliationInfo><Affiliation>Institute
+        of Disaster Medicine, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\"><LastName>Tang</LastName><ForeName>Shan</ForeName><Initials>S</Initials><Identifier
+        Source=\"ORCID\">0000-0002-3083-8598</Identifier><AffiliationInfo><Affiliation>Nursing
+        Department, First Hospital of Shanxi Medical University, Taiyuan 030001, Shanxi,
+        China, sxmu.edu.cn.</Affiliation></AffiliationInfo></Author><Author ValidYN=\"Y\"><LastName>Chen</LastName><ForeName>Xiaoli</ForeName><Initials>X</Initials><Identifier
+        Source=\"ORCID\">0000-0002-8299-8390</Identifier><AffiliationInfo><Affiliation>Emergency
+        Department of West China Hospital, Sichuan University/West China School of
+        Nursing, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo><AffiliationInfo><Affiliation>Institute
+        of Disaster Medicine, Sichuan University, Chengdu 610041, China, scu.edu.cn.</Affiliation></AffiliationInfo></Author></AuthorList><Language>eng</Language><PublicationTypeList><PublicationType
+        UI=\"D016428\">Journal Article</PublicationType></PublicationTypeList><ArticleDate
+        DateType=\"Electronic\"><Year>2026</Year><Month>08</Month><Day>19</Day></ArticleDate></Article><MedlineJournalInfo><Country>United
+        States</Country><MedlineTA>Emerg Med Int</MedlineTA><NlmUniqueID>101567070</NlmUniqueID><ISSNLinking>2090-2840</ISSNLinking></MedlineJournalInfo><KeywordList
+        Owner=\"NOTNLM\"><Keyword MajorTopicYN=\"N\">associated factors</Keyword><Keyword
+        MajorTopicYN=\"N\">classification model</Keyword><Keyword MajorTopicYN=\"N\">emergency
+        nurses</Keyword><Keyword MajorTopicYN=\"N\">machine learning</Keyword><Keyword
+        MajorTopicYN=\"N\">workplace violence</Keyword></KeywordList><CoiStatement>The
+        authors declare no conflicts of interest.</CoiStatement></MedlineCitation><PubmedData><History><PubMedPubDate
+        PubStatus=\"received\"><Year>2026</Year><Month>5</Month><Day>27</Day></PubMedPubDate><PubMedPubDate
+        PubStatus=\"revised\"><Year>2026</Year><Month>7</Month><Day>16</Day></PubMedPubDate><PubMedPubDate
+        PubStatus=\"accepted\"><Year>2026</Year><Month>7</Month><Day>30</Day></PubMedPubDate><PubMedPubDate
+        PubStatus=\"medline\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>11</Hour><Minute>42</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"pubmed\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>11</Hour><Minute>41</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"entrez\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>8</Hour><Minute>57</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"pmc-release\"><Year>2026</Year><Month>8</Month><Day>19</Day></PubMedPubDate></History><PublicationStatus>epublish</PublicationStatus><ArticleIdList><ArticleId
+        IdType=\"pubmed\">42621461</ArticleId><ArticleId IdType=\"pmc\">PMC13487808</ArticleId><ArticleId
+        IdType=\"doi\">10.1155/emmi/9275645</ArticleId><ArticleId IdType=\"pii\">EMMI9275645</ArticleId></ArticleIdList><ReferenceList><Reference><Citation>\nMa
+        P. F. and \nThomas J., Workplace Violence in Healthcare, 2025, https://pubmed.ncbi.nlm.nih.gov/37276305/.</Citation><ArticleIdList><ArticleId
+        IdType=\"pubmed\">37276305</ArticleId></ArticleIdList></Reference><Reference><Citation>Hou
+        Y., Corbally M., and Timmins F., Violence Against Nurses by Patients and Visitors
+        in the Emergency Department: A Concept Analysis, Journal of Nursing Management.
+        (2022) 30, no. 6, 1688&#x2013;1699, 10.1111/jonm.13721.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1111/jonm.13721</ArticleId><ArticleId IdType=\"pmc\">PMC9795924</ArticleId><ArticleId
+        IdType=\"pubmed\">35700325</ArticleId></ArticleIdList></Reference><Reference><Citation>Boles
+        J. M., Maccarone D., Brown B. et al., Nurse, Provider, and Emergency Department
+        Technician: Perceptions and Experiences of Violence and Aggression in the
+        Emergency Department, Journal of Emergency Nursing. (2023) 49, no. 3, 431&#x2013;440,
+        10.1016/j.jen.2022.07.008.</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1016/j.jen.2022.07.008</ArticleId><ArticleId
+        IdType=\"pubmed\">36180265</ArticleId></ArticleIdList></Reference><Reference><Citation>&#xd6;zta&#x15f;
+        &#x130;., Yava A., and Koyuncu A., Exposure of Emergency Nurses to Workplace
+        Violence and Their Coping Strategies: A Cross-Sectional Design, Journal of
+        Emergency Nursing. (2023) 49, no. 3, 441&#x2013;449, 10.1016/j.jen.2022.09.002.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.jen.2022.09.002</ArticleId><ArticleId IdType=\"pubmed\">36307253</ArticleId></ArticleIdList></Reference><Reference><Citation>Li
+        N., Zhang L., Xiao G., Chen J., and Lu Q., The Relationship Between Workplace
+        Violence, Job Satisfaction and Turnover Intention in Emergency Nurses, International
+        Emergency Nursing. (2019) 45, 50&#x2013;55, 10.1016/j.ienj.2019.02.001.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.ienj.2019.02.001</ArticleId><ArticleId IdType=\"pubmed\">30797732</ArticleId></ArticleIdList></Reference><Reference><Citation>Liu
+        J., Zheng J., Liu K. et al., Workplace Violence Against Nurses, Job Satisfaction,
+        Burnout, and Patient Safety in Chinese Hospitals, Nursing Outlook. (2019)
+        67, no. 5, 558&#x2013;566, 10.1016/j.outlook.2019.04.006.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.outlook.2019.04.006</ArticleId><ArticleId IdType=\"pubmed\">31202444</ArticleId></ArticleIdList></Reference><Reference><Citation>Ajuwa
+        M. P., Veyrier C. A., Cousin Cabrolier L. et al., Workplace Violence Against
+        Female Healthcare Workers: A Systematic Review and Meta-Analysis, BMJ Open.
+        (2024) 14, no. 8, 10.1136/bmjopen-2023-079396.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1136/bmjopen-2023-079396</ArticleId><ArticleId IdType=\"pmc\">PMC11369783</ArticleId><ArticleId
+        IdType=\"pubmed\">39209501</ArticleId></ArticleIdList></Reference><Reference><Citation>Kumari
+        A., Sarkar S., Ranjan P. et al., Interventions for Workplace Violence Against
+        Health-Care Professionals: A Systematic Review, Work. (2022) 73, no. 2, 415&#x2013;427,
+        10.3233/WOR-210046.</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.3233/WOR-210046</ArticleId><ArticleId
+        IdType=\"pubmed\">35431213</ArticleId></ArticleIdList></Reference><Reference><Citation>Jia
+        H., Fang H., Chen R. et al., Workplace Violence Against Healthcare Professionals
+        in a Multiethnic Area: A Cross-Sectional Study in Southwest China, BMJ Open.
+        (2020) 10, no. 9, 10.1136/bmjopen-2020-037464.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1136/bmjopen-2020-037464</ArticleId><ArticleId IdType=\"pmc\">PMC7482505</ArticleId><ArticleId
+        IdType=\"pubmed\">32907902</ArticleId></ArticleIdList></Reference><Reference><Citation>Kumari
+        A., Kaur T., Ranjan P., Chopra S., Sarkar S., and Baitha U., Workplace Violence
+        Against Doctors: Characteristics, Risk Factors, and Mitigation Strategies,
+        Journal of Postgraduate Medicine. (2020) 66, no. 3, 149&#x2013;154, 10.4103/jpgm.JPGM_96_20.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.4103/jpgm.JPGM_96_20</ArticleId><ArticleId IdType=\"pmc\">PMC7542052</ArticleId><ArticleId
+        IdType=\"pubmed\">32675451</ArticleId></ArticleIdList></Reference><Reference><Citation>Al-Qadi
+        M. M., Workplace Violence in Nursing: A Concept Analysis, Journal of Occupational
+        Health. (2021) 63, no. 1, 10.1002/1348-9585.12226.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1002/1348-9585.12226</ArticleId><ArticleId IdType=\"pmc\">PMC8103077</ArticleId><ArticleId
+        IdType=\"pubmed\">33960074</ArticleId></ArticleIdList></Reference><Reference><Citation>Choi
+        R. Y., Coyner A. S., Kalpathy-Cramer J., Chiang M. F., and Campbell J. P.,
+        Introduction to Machine Learning, Neural Networks, and Deep Learning, Translational
+        Vision Science &amp; Technology. (2020) 9, no. 2, 10.1167/tvst.9.2.14.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1167/tvst.9.2.14</ArticleId><ArticleId IdType=\"pmc\">PMC7347027</ArticleId><ArticleId
+        IdType=\"pubmed\">32704420</ArticleId></ArticleIdList></Reference><Reference><Citation>Havaei
+        F., Adhami N., Tang X. et al., Workplace Predictors of Violence Against Nurses
+        Using Machine Learning Techniques: A Cross-Sectional Study Utilizing the National
+        Standard of Psychological Workplace Health and Safety, Healthcare. (2023)
+        11, no. 7, 10.3390/healthcare11071008.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.3390/healthcare11071008</ArticleId><ArticleId IdType=\"pmc\">PMC10094471</ArticleId><ArticleId
+        IdType=\"pubmed\">37046935</ArticleId></ArticleIdList></Reference><Reference><Citation>Luo
+        L., Wu Y., Li S., Li F., Wang X., and Wei X., Identifying the Most Critical
+        Predictors of Workplace Violence Experienced by Junior Nurses: An Interpretable
+        Machine Learning Perspective, Journal of Nursing Management. (2025) 2025,
+        no. 1, 10.1155/jonm/5578698.</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1155/jonm/5578698</ArticleId><ArticleId
+        IdType=\"pmc\">PMC11981708</ArticleId><ArticleId IdType=\"pubmed\">40223873</ArticleId></ArticleIdList></Reference><Reference><Citation>Karalis
+        G., Decision Trees and Applications, Advances in Experimental Medicine and
+        Biology. (2020) 1194, 239&#x2013;242, 10.1007/978-3-030-32622-7_21.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1007/978-3-030-32622-7_21</ArticleId><ArticleId IdType=\"pubmed\">32468539</ArticleId></ArticleIdList></Reference><Reference><Citation>Hu
+        J. and Szymczak S., A Review on Longitudinal Data Analysis With Random Forest,
+        Briefings in Bioinformatics. (2023) 24, no. 2, 10.1093/bib/bbad002.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1093/bib/bbad002</ArticleId><ArticleId IdType=\"pmc\">PMC10025446</ArticleId><ArticleId
+        IdType=\"pubmed\">36653905</ArticleId></ArticleIdList></Reference><Reference><Citation>Yuan
+        G. P., Jiang Q., Sun K. et al., Research Progress on Post-Traumatic Stress
+        Disorder and Post-Traumatic Growth Among Emergency Department Nurses Exposed
+        to Workplace Violence, Nursing and Rehabilitation. (2025) 24, no. 7, 87&#x2013;90.</Citation></Reference><Reference><Citation>Hesketh
+        K. L., Duncan S. M., Estabrooks C. A. et al., Workplace Violence in Alberta
+        and British Columbia Hospitals, Health Policy. (2003) 63, no. 3, 311&#x2013;321,
+        10.1016/s0168-8510(02)00142-2.</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1016/s0168-8510(02)00142-2</ArticleId><ArticleId
+        IdType=\"pubmed\">12595130</ArticleId></ArticleIdList></Reference><Reference><Citation>Zhang
+        Y. Q., Revision and Application of the Simplified Work-Family Behavior Role
+        Conflict Scale, 2023, Guizhou Normal University, 10.7666/d.D03086648.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.7666/d.D03086648</ArticleId></ArticleIdList></Reference><Reference><Citation>Clark
+        M. A., Early R. J., Baltes B. B., and Krenn D., Work-Family Behavioral Role
+        Conflict: Scale Development and Validation, Journal of Business and Psychology.
+        (2019) 34, no. 1, 39&#x2013;53.</Citation></Reference><Reference><Citation>Niedhammer
+        I., Tek M. L., Starke D., and Siegrist J., Effort-Reward Imbalance Model and
+        Self-Reported Health: Cross-Sectional and Prospective Findings From the GAZEL
+        Cohort, Social Science &amp; Medicine. (2004) 58, no. 8, 1531&#x2013;1541,
+        10.1016/S0277-9536(03)00346-0.</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1016/S0277-9536(03)00346-0</ArticleId><ArticleId
+        IdType=\"pubmed\">14759696</ArticleId></ArticleIdList></Reference><Reference><Citation>Maslach
+        C. and Leiter M. P., Understanding the Burnout Experience: Recent Research
+        and Its Implications for Psychiatry, World Psychiatry. (2016) 15, no. 2, 103&#x2013;111,
+        10.1002/wps.20311.</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1002/wps.20311</ArticleId><ArticleId
+        IdType=\"pmc\">PMC4911781</ArticleId><ArticleId IdType=\"pubmed\">27265691</ArticleId></ArticleIdList></Reference><Reference><Citation>Zhu
+        W., Lou X. P., and Wang Z. M., Evaluation of the Reliability and Validity
+        of the Maslash Burnout Inventory-General Survey in Nursing Staff, Chinese
+        Journal of Behavioral Medical Science. (2007) 16, no. 9, 849&#x2013;851, 10.3760/cma.j.issn.1674-6554.2007.09.031.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.3760/cma.j.issn.1674-6554.2007.09.031</ArticleId></ArticleIdList></Reference><Reference><Citation>Ye
+        Z. H., Practice of Hospital Nursing Work Environment Construction, Chinese
+        Nursing Management. (2013) 13, no. 2, p1&#x2013;p3, 10.3969/j.issn.1672-1756.2013.02.001.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.3969/j.issn.1672-1756.2013.02.001</ArticleId></ArticleIdList></Reference><Reference><Citation>Fabbri
+        M., Beracci A., Martoni M., Meneo D., Tonetti L., and Natale V., Measuring
+        Subjective Sleep Quality: A Review, International Journal of Environmental
+        Research and Public Health. (2021) 18, no. 3, 10.3390/ijerph18031082.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.3390/ijerph18031082</ArticleId><ArticleId IdType=\"pmc\">PMC7908437</ArticleId><ArticleId
+        IdType=\"pubmed\">33530453</ArticleId></ArticleIdList></Reference><Reference><Citation>Zuo
+        F., Su J., Li Y. et al., Development and Validation of a Machine Learning-Based
+        Model for Predicting Intraoperative Blood Loss During Burn Surgery, Surgery.
+        (August 2025) 184, 10.1016/j.surg.2025.109445.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.surg.2025.109445</ArticleId><ArticleId IdType=\"pubmed\">40446607</ArticleId></ArticleIdList></Reference><Reference><Citation>Peng
+        Y., Zhang C., and Zhou B., A Cross-Sectional Study Comparing Machine Learning
+        and Logistic Regression Techniques for Predicting Osteoporosis in a Group
+        at High Risk of Cardiovascular Disease Among Old Adults, BMC Geriatrics. (March
+        2025) 25, no. 1, 10.1186/s12877-025-05840-w.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1186/s12877-025-05840-w</ArticleId><ArticleId IdType=\"pmc\">PMC11954202</ArticleId><ArticleId
+        IdType=\"pubmed\">40158079</ArticleId></ArticleIdList></Reference><Reference><Citation>Cesare
+        M., Nurchis M. C., Damiani G., and Cocchieri A., Ranking Nursing Diagnoses
+        by Predictive Relevance for Intensive Care Unit Transfer Risk in Adult and
+        Pediatric Patients: A Machine Learning Approach With Random Forest, Healthcare.
+        (2025) 13, no. 11, 10.3390/healthcare13111339.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.3390/healthcare13111339</ArticleId><ArticleId IdType=\"pmc\">PMC12154488</ArticleId><ArticleId
+        IdType=\"pubmed\">40508953</ArticleId></ArticleIdList></Reference><Reference><Citation>Cesare
+        M., Di Nitto M., Iovino P. et al., Prevalence and Determinants of Workplace
+        Violence Against Nurses in the Italian Home Care Settings: A Cross-Sectional
+        Multicentre Study, Journal of Clinical Nursing. (2026) 35, no. 5, 2288&#x2013;2298,
+        10.1111/jocn.70007.</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1111/jocn.70007</ArticleId><ArticleId
+        IdType=\"pmc\">PMC13068183</ArticleId><ArticleId IdType=\"pubmed\">40596785</ArticleId></ArticleIdList></Reference><Reference><Citation>Lee
+        H., Yun H., Choi M., and Kim H., Predicting Workplace Violence in the Emergency
+        Department Based on Electronic Health Record Data, Journal of Emergency Nursing.
+        (2023) 49, no. 3, 415&#x2013;424, 10.1016/j.jen.2023.01.010.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.jen.2023.01.010</ArticleId><ArticleId IdType=\"pubmed\">36925384</ArticleId></ArticleIdList></Reference><Reference><Citation>Bildik
+        B., Atis S. E., Cekmen B., and Dorter M., Do We Feel Safe and Confident About
+        Workplace Violence in the Emergency Departments?, American Journal of Emergency
+        Medicine. (2022) 59, 9&#x2013;14, 10.1016/j.ajem.2022.06.040.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.ajem.2022.06.040</ArticleId><ArticleId IdType=\"pubmed\">35772226</ArticleId></ArticleIdList></Reference><Reference><Citation>Tsukamoto
+        S. A. S., Galdino M. J. Q., Barreto M. F. C., and Martins J. T., Burnout Syndrome
+        and Workplace Violence Among Nursing Staff: A Cross-Sectional Study, Sao Paulo
+        Medical Journal. (2022) 140, no. 1, 101&#x2013;107, 10.1590/1516-3180.2021.0068.R1.31052021.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1590/1516-3180.2021.0068.R1.31052021</ArticleId><ArticleId
+        IdType=\"pmc\">PMC9623842</ArticleId><ArticleId IdType=\"pubmed\">34932780</ArticleId></ArticleIdList></Reference><Reference><Citation>Zhang
+        H., Zhou J., Zhong L., Zhu L., and Chen X., Relationship Between Workplace
+        Violence and Occupational Health in Emergency Nurses: The Mediating Role of
+        Dyssomnia, Nursing in Critical Care. (2025) 30, no. 2, 10.1111/nicc.70008.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1111/nicc.70008</ArticleId><ArticleId IdType=\"pubmed\">40075212</ArticleId></ArticleIdList></Reference><Reference><Citation>Tutan
+        A. and K&#xf6;kalan &#xd6;., The Mediation Role of Work-Family Conflict in
+        the Effect of Workplace Violence on Job Satisfaction and Intention to Leave:
+        A Study on Health Care Workers in Turkey, Frontiers in Psychology. (2024)
+        15, 10.3389/fpsyg.2024.1322503.</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.3389/fpsyg.2024.1322503</ArticleId><ArticleId
+        IdType=\"pmc\">PMC11033917</ArticleId><ArticleId IdType=\"pubmed\">38650903</ArticleId></ArticleIdList></Reference><Reference><Citation>Diao
+        D., Chen X., Zhong L., Zhang H., and Zhang J., Sex Differences in Burnout
+        and Work-Family Conflict Among Chinese Emergency Nurses: A Cross-Sectional
+        Study, Frontiers in Public Health. (2024) 12, 10.3389/fpubh.2024.1492662.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.3389/fpubh.2024.1492662</ArticleId><ArticleId IdType=\"pmc\">PMC11659251</ArticleId><ArticleId
+        IdType=\"pubmed\">39712298</ArticleId></ArticleIdList></Reference><Reference><Citation>Lan
+        L., Chen X., Zhang H., Zhong L., and Ye L., Characterizing Potential Subtypes
+        and Influencing Factors of Burnout in Emergency Department Nurses by Latent
+        Profile Analysis, Frontiers in Public Health. (2025) 13, 10.3389/fpubh.2025.1654398.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.3389/fpubh.2025.1654398</ArticleId><ArticleId IdType=\"pmc\">PMC12507872</ArticleId><ArticleId
+        IdType=\"pubmed\">41080872</ArticleId></ArticleIdList></Reference><Reference><Citation>Amiri
+        S., Mahmood N., Mustafa H., Javaid S. F., and Khan M. A., Occupational Risk
+        Factors for Burnout Syndrome Among Healthcare Professionals: A Global Systematic
+        Review and Meta-Analysis, International Journal of Environmental Research
+        and Public Health. (2024) 21, no. 12, 10.3390/ijerph21121583.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.3390/ijerph21121583</ArticleId><ArticleId IdType=\"pmc\">PMC11675210</ArticleId><ArticleId
+        IdType=\"pubmed\">39767426</ArticleId></ArticleIdList></Reference><Reference><Citation>Somani
+        R., Muntaner C., Hillan E., Velonis A. J., and Smith P., A Systematic Review:
+        Effectiveness of Interventions to De-Escalate Workplace Violence Against Nurses
+        in Healthcare Settings, Safety and Health at Work. (2021) 12, no. 3, 289&#x2013;295,
+        10.1016/j.shaw.2021.04.004.</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1016/j.shaw.2021.04.004</ArticleId><ArticleId
+        IdType=\"pmc\">PMC8430427</ArticleId><ArticleId IdType=\"pubmed\">34527388</ArticleId></ArticleIdList></Reference><Reference><Citation>Lake
+        E. T., Sanders J., Duan R., Riman K. A., Schoenauer K. M., and Chen Y., A
+        Meta-Analysis of the Associations Between the Nurse Work Environment in Hospitals
+        and 4 Sets of Outcomes, Medical Care. (2019) 57, no. 5, 353&#x2013;361, 10.1097/MLR.0000000000001109.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1097/MLR.0000000000001109</ArticleId><ArticleId IdType=\"pmc\">PMC6615025</ArticleId><ArticleId
+        IdType=\"pubmed\">30908381</ArticleId></ArticleIdList></Reference><Reference><Citation>Qiu
+        D., Yu Y., Li R. Q., Li Y. L., and Xiao S. Y., Prevalence of Sleep Disturbances
+        in Chinese Healthcare Professionals: A Systematic Review and Meta-Analysis,
+        Sleep Medicine. (2020) 67, 258&#x2013;266, 10.1016/j.sleep.2019.01.047.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.sleep.2019.01.047</ArticleId><ArticleId IdType=\"pubmed\">31040078</ArticleId></ArticleIdList></Reference><Reference><Citation>Wang
+        Q. Q., Overview of Logistic Regression Model Analysis and Application, Zhonghua
+        Yufang Yixue Zazhi. (2019) 53, no. 9, 955&#x2013;960, 10.3760/cma.j.issn.0253-9624.2019.09.018.</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.3760/cma.j.issn.0253-9624.2019.09.018</ArticleId><ArticleId
+        IdType=\"pubmed\">31474082</ArticleId></ArticleIdList></Reference></ReferenceList></PubmedData></PubmedArticle><PubmedArticle><MedlineCitation
+        Status=\"PubMed-not-MEDLINE\" Owner=\"NLM\"><PMID Version=\"1\">42620805</PMID><DateCompleted><Year>2026</Year><Month>08</Month><Day>20</Day></DateCompleted><DateRevised><Year>2026</Year><Month>08</Month><Day>20</Day></DateRevised><Article
+        PubModel=\"Electronic-eCollection\"><Journal><ISSN IssnType=\"Print\">2296-858X</ISSN><JournalIssue
+        CitedMedium=\"Print\"><Volume>13</Volume><PubDate><Year>2026</Year></PubDate></JournalIssue><Title>Frontiers
+        in medicine</Title><ISOAbbreviation>Front Med (Lausanne)</ISOAbbreviation></Journal><ArticleTitle>Predictive
+        modeling for mortality risk in elderly patients with pulmonary embolism using
+        machine learning algorithms.</ArticleTitle><Pagination><StartPage>1879237</StartPage><MedlinePgn>1879237</MedlinePgn></Pagination><ELocationID
+        EIdType=\"pii\" ValidYN=\"Y\">1879237</ELocationID><ELocationID EIdType=\"doi\"
+        ValidYN=\"Y\">10.3389/fmed.2026.1879237</ELocationID><Abstract><AbstractText
+        Label=\"BACKGROUND\" NlmCategory=\"UNASSIGNED\">Pulmonary Embolism (PE) is
+        a condition that results in significant mortality and morbidity, particularly
+        among the elderly. The aim of our study is to utilize machine learning (ML)
+        algorithms specifically tailored for this population, thereby enhancing the
+        accuracy of risk assessment.</AbstractText><AbstractText Label=\"METHODS\"
+        NlmCategory=\"UNASSIGNED\">Elderly patients with PE who were included between
+        January 1, 2013, and December 31, 2023, were divided into two groups: training
+        and validation sets. A total of five ML models, including decision tree, random
+        forest (RF), extreme gradient boosting, support vector machine, and k-nearest
+        neighbors, were developed to predict in-hospital mortality in these patients.
+        The model demonstrating the best diagnostic performance was selected. Ultimately,
+        the ML models were internally validated to assess their diagnostic performance
+        using receiver operating characteristic analysis.</AbstractText><AbstractText
+        Label=\"RESULTS\" NlmCategory=\"UNASSIGNED\">The analysis included 250 patients,
+        with 174 assigned to the training set and 76 to the validation set. The ML
+        models were developed using nine clinical features: age, lactate levels, blood
+        urea nitrogen, arterial oxygen partial pressure, red blood cell count, diastolic
+        blood pressure, vasopressor use, acute kidney injury, and the requirement
+        for continuous renal replacement therapy. Of the five evaluated ML models,
+        the RF model demonstrated the best performance, attaining the highest area
+        under the curve values of 0.950 for the training set and 0.835 for the validation
+        set.</AbstractText><AbstractText Label=\"CONCLUSION\" NlmCategory=\"UNASSIGNED\">ML-based
+        models exhibit strong predictive capabilities for identifying elderly patients
+        with PE who are at risk of hospital mortality. These algorithms can aid physicians
+        in the early detection of high-risk patients, facilitating timely and appropriate
+        preventive interventions. Future prospective studies comparing ML models with
+        established PE-specific risk stratification tools are warranted.</AbstractText><CopyrightInformation>Copyright
+        &#xa9; 2026 Chu, Ji, Tan, Wang, Zhu and Dai.</CopyrightInformation></Abstract><AuthorList
+        CompleteYN=\"Y\"><Author ValidYN=\"Y\" EqualContrib=\"Y\"><LastName>Chu</LastName><ForeName>Tao</ForeName><Initials>T</Initials><AffiliationInfo><Affiliation>Department
+        of Emergency Medicine, Northern Jiangsu People's Hospital Affiliated to Yangzhou
+        University, Yangzhou, China.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\" EqualContrib=\"Y\"><LastName>Ji</LastName><ForeName>Ling</ForeName><Initials>L</Initials><AffiliationInfo><Affiliation>Department
+        of Emergency Medicine, Northern Jiangsu People's Hospital Affiliated to Yangzhou
+        University, Yangzhou, China.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\" EqualContrib=\"Y\"><LastName>Tan</LastName><ForeName>Dingyu</ForeName><Initials>D</Initials><AffiliationInfo><Affiliation>Department
+        of Emergency Medicine, Northern Jiangsu People's Hospital Affiliated to Yangzhou
+        University, Yangzhou, China.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\"><LastName>Wang</LastName><ForeName>Huihui</ForeName><Initials>H</Initials><AffiliationInfo><Affiliation>Department
+        of Emergency Medicine, Northern Jiangsu People's Hospital Affiliated to Yangzhou
+        University, Yangzhou, China.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\"><LastName>Zhu</LastName><ForeName>Qingcheng</ForeName><Initials>Q</Initials><AffiliationInfo><Affiliation>Department
+        of Emergency Medicine, Northern Jiangsu People's Hospital Affiliated to Yangzhou
+        University, Yangzhou, China.</Affiliation></AffiliationInfo></Author><Author
+        ValidYN=\"Y\"><LastName>Dai</LastName><ForeName>Dan</ForeName><Initials>D</Initials><AffiliationInfo><Affiliation>Department
+        of Emergency Medicine, Northern Jiangsu People's Hospital Affiliated to Yangzhou
+        University, Yangzhou, China.</Affiliation></AffiliationInfo></Author></AuthorList><Language>eng</Language><PublicationTypeList><PublicationType
+        UI=\"D016428\">Journal Article</PublicationType></PublicationTypeList><ArticleDate
+        DateType=\"Electronic\"><Year>2026</Year><Month>08</Month><Day>05</Day></ArticleDate></Article><MedlineJournalInfo><Country>Switzerland</Country><MedlineTA>Front
+        Med (Lausanne)</MedlineTA><NlmUniqueID>101648047</NlmUniqueID><ISSNLinking>2296-858X</ISSNLinking></MedlineJournalInfo><KeywordList
+        Owner=\"NOTNLM\"><Keyword MajorTopicYN=\"N\">deep learning model</Keyword><Keyword
+        MajorTopicYN=\"N\">elderly patients</Keyword><Keyword MajorTopicYN=\"N\">mortality</Keyword><Keyword
+        MajorTopicYN=\"N\">pulmonary embolism</Keyword><Keyword MajorTopicYN=\"N\">risk
+        stratification</Keyword></KeywordList><CoiStatement>The author(s) declared
+        that this work was conducted in the absence of any commercial or financial
+        relationships that could be construed as a potential conflict of interest.</CoiStatement></MedlineCitation><PubmedData><History><PubMedPubDate
+        PubStatus=\"received\"><Year>2026</Year><Month>5</Month><Day>12</Day></PubMedPubDate><PubMedPubDate
+        PubStatus=\"revised\"><Year>2026</Year><Month>7</Month><Day>3</Day></PubMedPubDate><PubMedPubDate
+        PubStatus=\"accepted\"><Year>2026</Year><Month>7</Month><Day>9</Day></PubMedPubDate><PubMedPubDate
+        PubStatus=\"medline\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>11</Hour><Minute>42</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"pubmed\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>11</Hour><Minute>41</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"entrez\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>7</Hour><Minute>55</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"pmc-release\"><Year>2026</Year><Month>8</Month><Day>5</Day></PubMedPubDate></History><PublicationStatus>epublish</PublicationStatus><ArticleIdList><ArticleId
+        IdType=\"pubmed\">42620805</ArticleId><ArticleId IdType=\"pmc\">PMC13485903</ArticleId><ArticleId
+        IdType=\"doi\">10.3389/fmed.2026.1879237</ArticleId></ArticleIdList><ReferenceList><Reference><Citation>Machanahalli
+        Balakrishna A, Reddi V, Belford PM, Alvarez M, Jaber WA, Zhao DX, et al..
+        Intermediate-risk pulmonary embolism: a review of contemporary diagnosis,
+        risk stratification and management.\n<i>Medicina</i>. (2022) 58:1186. 10.3390/medicina58091186\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.3390/medicina58091186</ArticleId><ArticleId IdType=\"pmc\">PMC9504600</ArticleId><ArticleId
+        IdType=\"pubmed\">36143863</ArticleId></ArticleIdList></Reference><Reference><Citation>Jenab
+        Y, Hosseini K, Esmaeili Z, Tofighi S, Ariannejad H, Sotoudeh H. Prediction
+        of in-hospital adverse clinical outcomes in patients with pulmonary thromboembolism,
+        machine learning based models.\n<i>Front Cardiovasc Med</i>. (2023) 10:1087702.
+        10.3389/fcvm.2023.1087702\n\n</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.3389/fcvm.2023.1087702</ArticleId><ArticleId
+        IdType=\"pmc\">PMC10043172</ArticleId><ArticleId IdType=\"pubmed\">36998977</ArticleId></ArticleIdList></Reference><Reference><Citation>J&#xf8;rgensen
+        CT, Tavoly M, Pettersen HH, F&#xf8;rsund E, Roaldsnes C, Olsen MK, et al..
+        The venous thrombosis registry in &#xd8;stfold hospital (TROLL registry) -
+        design and cohort description.\n<i>Res Pract Thromb Haemost</i>. (2022) 6:10.1002/rth2.12770.
+        10.1002/rth2.12770\n\n</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1002/rth2.12770</ArticleId><ArticleId
+        IdType=\"pmc\">PMC9351429</ArticleId><ArticleId IdType=\"pubmed\">35949883</ArticleId></ArticleIdList></Reference><Reference><Citation>Ajmera
+        P, Kharat A, Seth J, Rathi S, Pant R, Gawali M, et al.. A deep learning approach
+        for automated diagnosis of pulmonary embolism on computed tomographic pulmonary
+        angiography.\n<i>BMC Med Imaging</i>. (2022) 22:195. 10.1186/s12880-022-00916-0\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1186/s12880-022-00916-0</ArticleId><ArticleId IdType=\"pmc\">PMC9651891</ArticleId><ArticleId
+        IdType=\"pubmed\">36368975</ArticleId></ArticleIdList></Reference><Reference><Citation>Iwuji
+        K, Almekdash H, Nugent KM, Islam E, Hyde B, Kopel J, et al.. Age-adjusted
+        d-dimer in the prediction of pulmonary embolism: systematic review and meta-analysis.\n<i>J
+        Prim Care Community Health</i>. (2021) 12:21501327211054996. 10.1177/21501327211054996\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1177/21501327211054996</ArticleId><ArticleId IdType=\"pmc\">PMC8640977</ArticleId><ArticleId
+        IdType=\"pubmed\">34814782</ArticleId></ArticleIdList></Reference><Reference><Citation>Pauley
+        E, Orgel R, Rossi JS, Strassle PD. Age-stratified national trends in pulmonary
+        embolism admissions.\n<i>Chest</i>. (2019) 156:733&#x2013;42. 10.1016/j.chest.2019.05.021\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.chest.2019.05.021</ArticleId><ArticleId IdType=\"pubmed\">31233745</ArticleId></ArticleIdList></Reference><Reference><Citation>Natanzon
+        SS, Fardman A, Chernomordik F, Mazin I, Herscovici R, Goitein O, et al.. PESI
+        score for predicting clinical outcomes in PE patients with right ventricular
+        involvement.\n<i>Heart Vessels</i>. (2022) 37:489&#x2013;95. 10.1007/s00380-021-01924-w\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1007/s00380-021-01924-w</ArticleId><ArticleId IdType=\"pubmed\">34420078</ArticleId></ArticleIdList></Reference><Reference><Citation>Zwierzina
+        D, Limacher A, M&#xe9;an M, Righini M, Jaeger K, Beer HJ, et al.. Prospective
+        comparison of clinical prognostic scores in elder patients with a pulmonary
+        embolism.\n<i>J Thromb Haemost</i>. (2012) 10:2270&#x2013;6. 10.1111/j.1538-7836.2012.04929.x\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1111/j.1538-7836.2012.04929.x</ArticleId><ArticleId IdType=\"pubmed\">22985129</ArticleId></ArticleIdList></Reference><Reference><Citation>Schwalbe
+        N, Wahl B. Artificial intelligence and the future of global health.\n<i>Lancet</i>.
+        (2020) 395:1579&#x2013;86. 10.1016/S0140-6736(20)30226-9\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/S0140-6736(20)30226-9</ArticleId><ArticleId IdType=\"pmc\">PMC7255280</ArticleId><ArticleId
+        IdType=\"pubmed\">32416782</ArticleId></ArticleIdList></Reference><Reference><Citation>Sadegh-Zadeh
+        SA, Sakha H, Movahedi S, Fasihi Harandi A, Ghaffari S, Javanshir E, et al..
+        Advancing prognostic precision in pulmonary embolism: a clinical and laboratory-based
+        artificial intelligence approach for enhanced early mortality risk stratification.\n<i>Comput
+        Biol Med</i>. (2023) 167:107696. 10.1016/j.compbiomed.2023.107696\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.compbiomed.2023.107696</ArticleId><ArticleId IdType=\"pubmed\">37979394</ArticleId></ArticleIdList></Reference><Reference><Citation>Ong
+        WJD, How CH, Chong WHK, Khan FA, Ngiam KY, Kansal A. Outcome prediction for
+        adult mechanically ventilated patients using machine learning models and comparison
+        with conventional statistical methods: a single-centre retrospective study.\n<i>Intell
+        Based Med.</i> (2024) 10:100165. 10.1016/j.ibmed.2024.100165</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.ibmed.2024.100165</ArticleId></ArticleIdList></Reference><Reference><Citation>Zhou
+        S, Lu Z, Liu Y, Wang M, Zhou W, Cui X, et al.. Interpretable machine learning
+        model for early prediction of 28-day mortality in ICU patients with sepsis-induced
+        coagulopathy: development and validation.\n<i>Eur J Med Res</i>. (2024) 29:14.
+        10.1186/s40001-023-01593-7\n\n</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1186/s40001-023-01593-7</ArticleId><ArticleId
+        IdType=\"pmc\">PMC10763177</ArticleId><ArticleId IdType=\"pubmed\">38172962</ArticleId></ArticleIdList></Reference><Reference><Citation>Wang
+        G, Xu J, Lin X, Lai W, Lv L, Peng S, et al.. Machine learning-based models
+        for predicting mortality and acute kidney injury in critical pulmonary embolism.\n<i>BMC
+        Cardiovasc Disord</i>. (2023) 23:385. 10.1186/s12872-023-03363-z\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1186/s12872-023-03363-z</ArticleId><ArticleId IdType=\"pmc\">PMC10399014</ArticleId><ArticleId
+        IdType=\"pubmed\">37533004</ArticleId></ArticleIdList></Reference><Reference><Citation>Konstantinides
+        SV, Meyer G, Becattini C, Bueno H, Geersing GJ, Harjola VP, et al.. 2019 ESC
+        guidelines for the diagnosis and management of acute pulmonary embolism developed
+        in collaboration with the European respiratory society (ERS).\n<i>Eur Heart
+        J</i>. (2020) 41:543&#x2013;603. 10.1093/eurheartj/ehz405\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1093/eurheartj/ehz405</ArticleId><ArticleId IdType=\"pubmed\">31504429</ArticleId></ArticleIdList></Reference><Reference><Citation>Spirk
+        D, Husmann M, Hayoz D, Baldi T, Frauchiger B, Engelberger R, et al.. Predictors
+        of in-hospital mortality in elderly patients with acute venous thrombo-embolism:
+        the SWIss venous thromboembolism registry (SWIVTER).\n<i>Eur Heart J</i>.
+        (2012) 33:921&#x2013;6. 10.1093/eurheartj/ehr392\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1093/eurheartj/ehr392</ArticleId><ArticleId IdType=\"pmc\">PMC3345553</ArticleId><ArticleId
+        IdType=\"pubmed\">22036872</ArticleId></ArticleIdList></Reference><Reference><Citation>Dunn
+        AS. ACP journal club. The simplified pulmonary embolism severity index and
+        high-sensitivity troponin t predicted prognosis in PE.\n<i>Ann Intern Med</i>.
+        (2012) 156:JC4&#x2013;12. 10.7326/0003-4819-156-8-201204170-02012\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.7326/0003-4819-156-8-201204170-02012</ArticleId><ArticleId
+        IdType=\"pubmed\">22508752</ArticleId></ArticleIdList></Reference><Reference><Citation>de
+        Wit K, D&#x2019;Arsigny CL. Risk stratification of acute pulmonary embolism.\n<i>J
+        Thromb Haemost</i>. (2023) 21:3016&#x2013;23. 10.1016/j.jtha.2023.05.003\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.jtha.2023.05.003</ArticleId><ArticleId IdType=\"pubmed\">37187357</ArticleId></ArticleIdList></Reference><Reference><Citation>Weekes
+        AJ, Raper JD, Esener D, Davison J, Boyd JS, Kelly C, et al.. Comparing predictive
+        performance of pulmonary embolism risk stratification tools for acute clinical
+        deterioration.\n<i>J Am Coll Emerg Physicians Open</i>. (2023) 4:e12983. 10.1002/emp2.12983\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1002/emp2.12983</ArticleId><ArticleId IdType=\"pmc\">PMC10214857</ArticleId><ArticleId
+        IdType=\"pubmed\">37251351</ArticleId></ArticleIdList></Reference><Reference><Citation>Sun
+        H, Kang M, Zhang H, Jia J, Wang Q. Machine learning for predicting mortality
+        in intensive care unit patients: a prognostic performance systematic review
+        and meta-analysis.\n<i>Nurs Crit Care</i>. (2025) 30:e70206. 10.1111/nicc.70206\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1111/nicc.70206</ArticleId><ArticleId IdType=\"pubmed\">41074688</ArticleId></ArticleIdList></Reference><Reference><Citation>Deng
+        Y, Li S, Li J, Tao X, Li Y, You C, et al.. Enhancing mortality prediction
+        in intensive care units: improving APACHE II, SOFA, and SAPS II scoring systems
+        using long short-term memory.\n<i>Intern Emerg Med</i>. (2025) 20:2541&#x2013;50.
+        10.1007/s11739-025-03896-5\n\n</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1007/s11739-025-03896-5</ArticleId><ArticleId
+        IdType=\"pubmed\">40325281</ArticleId></ArticleIdList></Reference><Reference><Citation>Yuan
+        J, Xiong J, Yang J, Dong Q, Wang Y, Cheng Y, et al.. Machine learning-based
+        28-day mortality prediction model for elderly neurocritically Ill patients.\n<i>Comput
+        Methods Programs Biomed</i>. (2025) 260:108589. 10.1016/j.cmpb.2025.108589\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.cmpb.2025.108589</ArticleId><ArticleId IdType=\"pubmed\">39799642</ArticleId></ArticleIdList></Reference><Reference><Citation>Speiser
+        JL. A random forest method with feature selection for developing medical prediction
+        models with clustered and longitudinal data.\n<i>J Biomed Inform</i>. (2021)
+        117:103763. 10.1016/j.jbi.2021.103763\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.jbi.2021.103763</ArticleId><ArticleId IdType=\"pmc\">PMC8131242</ArticleId><ArticleId
+        IdType=\"pubmed\">33781921</ArticleId></ArticleIdList></Reference><Reference><Citation>Yang
+        L, Wu H, Jin X, Zheng P, Hu S, Xu X, et al.. Study of cardiovascular disease
+        prediction model based on random forest in eastern China.\n<i>Sci Rep</i>.
+        (2020) 10:5245. 10.1038/s41598-020-62133-5\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1038/s41598-020-62133-5</ArticleId><ArticleId IdType=\"pmc\">PMC7090086</ArticleId><ArticleId
+        IdType=\"pubmed\">32251324</ArticleId></ArticleIdList></Reference><Reference><Citation>Emir
+        B, Masters ET, Mardekian J, Clair A, Kuhn M, Silverman SL. Identification
+        of a potential fibromyalgia diagnosis using random forest modeling applied
+        to electronic medical records.\n<i>J Pain Res</i>. (2015) 8:277&#x2013;88.
+        \n</Citation><ArticleIdList><ArticleId IdType=\"pmc\">PMC4467741</ArticleId><ArticleId
+        IdType=\"pubmed\">26089700</ArticleId></ArticleIdList></Reference><Reference><Citation>Yoo
+        HH, Nunes-Nogueira VS, Fortes Villas Boas PJ. Anticoagulant treatment for
+        subsegmental pulmonary embolism.\n<i>Cochrane Database Syst Rev</i>. (2020)
+        2:CD010222. 10.1002/14651858.CD010222.pub4\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1002/14651858.CD010222.pub4</ArticleId><ArticleId IdType=\"pmc\">PMC7004894</ArticleId><ArticleId
+        IdType=\"pubmed\">32030721</ArticleId></ArticleIdList></Reference><Reference><Citation>Coelho
+        J, Divernet-Queriaud M, Roy PM, Penaloza A, Le Gal G, Trinh-Duc A. Comparison
+        of the wells score and the revised Geneva score as a tool to predict pulmonary
+        embolism in outpatients over age 65.\n<i>Thromb Res</i>. (2020) 196:120&#x2013;6.
+        10.1016/j.thromres.2020.07.026\n\n</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1016/j.thromres.2020.07.026</ArticleId><ArticleId
+        IdType=\"pubmed\">32862033</ArticleId></ArticleIdList></Reference><Reference><Citation>Chan
+        TF, Ngian VJJ, Hsu K, Frankel A, Ong BS. Pulmonary embolism: clinical presentation
+        and diagnosis in the oldest old.\n<i>Intern Med J</i>. (2020) 50:627&#x2013;31.
+        10.1111/imj.14824\n\n</Citation><ArticleIdList><ArticleId IdType=\"doi\">10.1111/imj.14824</ArticleId><ArticleId
+        IdType=\"pubmed\">32431035</ArticleId></ArticleIdList></Reference><Reference><Citation>Zhu
+        Q, Lu M, Ling B, Tan D, Wang H. Construction and validation of a nomogram
+        for predicting survival in elderly patients with severe acute pancreatitis:
+        a retrospective study from a tertiary center.\n<i>BMC Gastroenterol</i>. (2024)
+        24:219. 10.1186/s12876-024-03308-6\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1186/s12876-024-03308-6</ArticleId><ArticleId IdType=\"pmc\">PMC11229287</ArticleId><ArticleId
+        IdType=\"pubmed\">38977953</ArticleId></ArticleIdList></Reference><Reference><Citation>Ebner
+        M, Pagel CF, Sentler C, Harjola VP, Bueno H, Lerchbaumer MH, et al.. Venous
+        lactate improves the prediction of in-hospital adverse outcomes in normotensive
+        pulmonary embolism.\n<i>Eur J Intern Med</i>. (2021) 86:25&#x2013;31. 10.1016/j.ejim.2021.01.021\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1016/j.ejim.2021.01.021</ArticleId><ArticleId IdType=\"pubmed\">33558162</ArticleId></ArticleIdList></Reference><Reference><Citation>van
+        Diepen S, Katz JN, Albert NM, Henry TD, Jacobs AK, Kapur NK, et al.. Contemporary
+        management of cardiogenic shock: a scientific statement from the American
+        heart association.\n<i>Circulation</i>. (2017) 136:e232&#x2013;68. 10.1161/CIR.0000000000000525\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1161/CIR.0000000000000525</ArticleId><ArticleId IdType=\"pubmed\">28923988</ArticleId></ArticleIdList></Reference><Reference><Citation>Hammons
+        L, Filopei J, Steiger D, Bondarsky E. A narrative review of red blood cell
+        distribution width as a marker for pulmonary embolism.\n<i>J Thromb Thrombolysis</i>.
+        (2019) 48:638&#x2013;47. 10.1007/s11239-019-01906-w\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1007/s11239-019-01906-w</ArticleId><ArticleId IdType=\"pubmed\">31228037</ArticleId></ArticleIdList></Reference><Reference><Citation>Yu
+        FT, Armstrong JK, Tripette J, Meiselman HJ, Cloutier G. A local increase in
+        red blood cell aggregation can trigger deep vein thrombosis: evidence based
+        on quantitative cellular ultrasound imaging.\n<i>J Thromb Haemost</i>. (2011)
+        9:481&#x2013;8. 10.1111/j.1538-7836.2010.04164.x\n\n</Citation><ArticleIdList><ArticleId
+        IdType=\"doi\">10.1111/j.1538-7836.2010.04164.x</ArticleId><ArticleId IdType=\"pmc\">PMC3050084</ArticleId><ArticleId
+        IdType=\"pubmed\">21143377</ArticleId></ArticleIdList></Reference></ReferenceList></PubmedData></PubmedArticle><PubmedArticle><MedlineCitation
+        Status=\"PubMed-not-MEDLINE\" Owner=\"NLM\"><PMID Version=\"1\">42619801</PMID><DateCompleted><Year>2026</Year><Month>08</Month><Day>20</Day></DateCompleted><DateRevised><Year>2026</Year><Month>08</Month><Day>20</Day></DateRevised><Article
+        PubModel=\"Electronic\"><Journal><JournalIssue CitedMedium=\"Internet\"><PubDate><Year>2026</Year><Month>Jul</Month><Day>27</Day></PubDate></JournalIssue><Title>medRxiv
+        : the preprint server for health sciences</Title><ISOAbbreviation>medRxiv</ISOAbbreviation></Journal><ArticleTitle>Patient-Level
+        Risk Characterization of Drug-Associated Hidradenitis Suppurativa Using Machine
+        Learning.</ArticleTitle><ELocationID EIdType=\"pii\" ValidYN=\"Y\">2026.05.04.26352179</ELocationID><ELocationID
+        EIdType=\"doi\" ValidYN=\"Y\">10.64898/2026.05.04.26352179</ELocationID><Abstract><AbstractText
+        Label=\"IMPORTANCE\" NlmCategory=\"UNASSIGNED\">Hidradenitis suppurativa (HS)
+        has been reported with several medications, but the spectrum of implicated
+        drug classes and patient-level risk factors remains poorly characterized.</AbstractText><AbstractText
+        Label=\"OBJECTIVE\" NlmCategory=\"UNASSIGNED\">To characterize drug-associated
+        HS pharmacovigilance signals across drug classes, distinguish new-onset from
+        worsened disease, and evaluate whether machine learning (ML) approaches identify
+        reproducible patient-level predictors.</AbstractText><AbstractText Label=\"DESIGN\"
+        NlmCategory=\"UNASSIGNED\">Disproportionality and ML of spontaneous adverse
+        event reports submitted from 2004 through 2023.</AbstractText><AbstractText
+        Label=\"SETTING\" NlmCategory=\"UNASSIGNED\">The US Food and Drug Administration
+        Adverse Event Reporting System.</AbstractText><AbstractText Label=\"PARTICIPANTS\"
+        NlmCategory=\"UNASSIGNED\">Reports containing a preferred term for hidradenitis,
+        stratified by whether HS was a listed indication (worsened) or an adverse
+        event only (new-onset). A parallel cohort comprised all tumor necrosis factor
+        inhibitor (TNFi)-exposed reports.</AbstractText><AbstractText Label=\"EXPOSURES\"
+        NlmCategory=\"UNASSIGNED\">Primary suspect and concomitant medications.</AbstractText><AbstractText
+        Label=\"MAIN OUTCOMES AND MEASURES\" NlmCategory=\"UNASSIGNED\">Disproportionate
+        reporting quantified by the reporting odds ratio; agent- and indication-specific
+        hidradenitis suppurativa reporting rates; and discrimination, calibration,
+        feature concordance, and risk enrichment of supervised machine-learning models
+        estimating the probability of HS.</AbstractText><AbstractText Label=\"RESULTS\"
+        NlmCategory=\"UNASSIGNED\">Among 5529 HS reports (3725 with and 1804 without
+        an indication), patients were predominantly female (3511 [63.5%]), with a
+        mean (SD) age of 41 (14) years. Among reports without a hidradenitis suppurativa
+        indication, significant signals included adalimumab (reporting odds ratio,
+        12.6; 95% CI, 11.3-14.0), infliximab (8.2; 6.7-9.9), secukinumab (6.6; 5.2-8.2),
+        and isotretinoin (6.2; 4.2-8.9). Among TNFi exposed reports, reporting rates
+        were highest for adalimumab (1.08 per 1000; OR, 2.75; 95% CI, 2.41-3.14) and
+        lowest for etanercept (0.11 per 1000; OR, 0.12; 95% CI, 0.09-0.15), and the
+        association was strongest in inflammatory bowel disease (OR 3.06; 2.20-4.25);
+        all reported associations were significant at P &lt; .001. Supervised ML models
+        demonstrated similar discrimination while identifying consistent patient-level
+        predictors of HS. Tree-based models showed greater enrichment of high-risk
+        reports than penalized regression.</AbstractText><AbstractText Label=\"CONCLUSIONS
+        AND RELEVANCE\" NlmCategory=\"UNASSIGNED\">HS reporting signals spanned biologic,
+        hormonal, retinoid, and immunomodulatory drug classes. Multiple supervised
+        ML approaches consistently identified TNFi agent (adalimumab), age, and a
+        history of arthropathy as associated with paradoxical HS, suggesting that
+        pharmacovigilance data contain reproducible information on heterogeneity of
+        HS reporting. These findings support indication-aware monitoring when initiating
+        these therapies, while recognizing that spontaneous reports reflect disproportionate
+        reporting rather than incidence or causality.</AbstractText><AbstractText
+        Label=\"KEY POINTS\" NlmCategory=\"CONCLUSIONS\"><b>Question:</b> Which medications
+        are associated with disproportionate reporting of hidradenitis suppurativa
+        (HS), and can routinely collected pharmacovigilance data identify patient-
+        and treatment-level characteristics associated with paradoxical HS?<b>Findings:</b>
+        In this disproportionality and machine-learning analysis of 5529 HS reports,
+        significant reporting signals spanned tumor necrosis factor inhibitors, interleukin-17
+        inhibitors, retinoids, hormonal agents, and antineoplastics and were strongest
+        for adalimumab and in inflammatory bowel disease. Calibrated risk models were
+        concordant, and the best-performing model (gradient-boosted trees) enriched
+        the highest-risk 1% approximately 16-fold for cases.<b>Meaning:</b> Findings
+        support indication-aware dermatologic monitoring when initiating implicated
+        therapies, but reflect disproportionate reporting rather than incidence or
+        causality.</AbstractText></Abstract><AuthorList CompleteYN=\"Y\"><Author ValidYN=\"Y\"><LastName>Maas</LastName><ForeName>Kyle</ForeName><Initials>K</Initials><Identifier
+        Source=\"ORCID\">0009-0003-7610-4869</Identifier></Author><Author ValidYN=\"Y\"><LastName>Brewer</LastName><ForeName>Claire</ForeName><Initials>C</Initials></Author><Author
+        ValidYN=\"Y\"><LastName>Chai</LastName><ForeName>Aaron</ForeName><Initials>A</Initials></Author><Author
+        ValidYN=\"Y\"><LastName>Park</LastName><ForeName>Dodie</ForeName><Initials>D</Initials></Author><Author
+        ValidYN=\"Y\"><LastName>Martin-Pozo</LastName><ForeName>Michelle</ForeName><Initials>M</Initials></Author><Author
+        ValidYN=\"Y\"><LastName>Phillips</LastName><ForeName>Elizabeth</ForeName><Initials>E</Initials></Author><Author
+        ValidYN=\"Y\"><LastName>Mukherjee</LastName><ForeName>Eric</ForeName><Initials>E</Initials><Identifier
+        Source=\"ORCID\">0000-0001-8715-1378</Identifier></Author></AuthorList><Language>eng</Language><PublicationTypeList><PublicationType
+        UI=\"D016428\">Journal Article</PublicationType><PublicationType UI=\"D000076942\">Preprint</PublicationType></PublicationTypeList><ArticleDate
+        DateType=\"Electronic\"><Year>2026</Year><Month>07</Month><Day>27</Day></ArticleDate></Article><MedlineJournalInfo><Country>United
+        States</Country><MedlineTA>medRxiv</MedlineTA><NlmUniqueID>101767986</NlmUniqueID></MedlineJournalInfo></MedlineCitation><PubmedData><History><PubMedPubDate
+        PubStatus=\"medline\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>11</Hour><Minute>42</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"pubmed\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>11</Hour><Minute>41</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"entrez\"><Year>2026</Year><Month>8</Month><Day>20</Day><Hour>5</Hour><Minute>51</Minute></PubMedPubDate><PubMedPubDate
+        PubStatus=\"pmc-release\"><Year>2026</Year><Month>8</Month><Day>18</Day></PubMedPubDate></History><PublicationStatus>epublish</PublicationStatus><ArticleIdList><ArticleId
+        IdType=\"pubmed\">42619801</ArticleId><ArticleId IdType=\"pmc\">PMC13484310</ArticleId><ArticleId
+        IdType=\"doi\">10.64898/2026.05.04.26352179</ArticleId><ArticleId IdType=\"pii\">2026.05.04.26352179</ArticleId></ArticleIdList></PubmedData></PubmedArticle></PubmedArticleSet>"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - X-RateLimit-Limit,X-RateLimit-Remaining
+      Alt-Svc:
+      - clear
+      Cache-Control:
+      - private
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - text/xml; charset=UTF-8
+      Date:
+      - Thu, 20 Aug 2026 23:17:09 GMT
+      Ncbi-Phid:
+      - 1D3401965C15A4E5000029C3BE418DE8.1.1.m_4
+      Ncbi-Sid:
+      - 8A812EA6582AAD9B_CD52SID
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - Finatra
+      Set-Cookie:
+      - ncbi_sid=8A812EA6582AAD9B_CD52SID; domain=.nih.gov; path=/; expires=Fri, 20
+        Aug 2027 23:17:09 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Via:
+      - 1.1 google
+      X-Ratelimit-Limit:
+      - '3'
+      X-Ratelimit-Remaining:
+      - '1'
+      X-Ua-Compatible:
+      - IE=Edge
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,23 +1,14 @@
-# Episode 21: GitHub Actions & CI/CD
+# Episode 21: Continuous Integration (GitHub Actions)
 
-**Objective:** Implement a GitHub Actions workflow to run the Pytest suite and Ruff linter automatically on every pull request.
+**Objective:** Implement automated multi-version CI testing across Python 3.11 and 3.12 with `uv`.
 
-## 🎬 Presentation Script
+## Presentation Script
 
 | Slide | Title | Talking Points | Action |
 | :--- | :--- | :--- | :--- |
-| 1 | **Title Slide** | We need a robot to guard our codebase. | *Show Title Slide.* |
-| 2 | **Episode Goal** | When strangers submit code, we need proof it works before merging it. Continuous Integration is that proof. | *Highlight the goal block.* |
-| 3 | **The CI Workflow** | Every `git push` triggers a fresh Ubuntu server. It installs the code, runs the tests, and reports back. | *Point to the diagram.* |
-| 4 | **Implementation: Testing Multiple Versions** | Does this code work on Python 3.10? What about 3.12? GitHub Matrix tests them all simultaneously. | *Explain the Matrix strategy.* |
-| 5 | **Verification** | Let's look at a live GitHub Action run. | *Transition to Terminal/Browser.* |
-
-## 💻 Terminal & Code Walkthrough
-
-1. **Show `ci.yml`**:
-   - Open `.github/workflows/ci.yml`.
-   - Walk through the `actions/checkout` and `actions/setup-python` steps.
-2. **Show the Test commands**:
-   - Highlight the lines where `pip install -e .[dev]` and `pytest` are invoked.
-3. **The Payoff**:
-   - Briefly switch to a browser (or mock it) to show a beautiful green checkmark on a Pull Request.
+| 1 | **Title Slide** | Automated scientific guarantees on every commit. | *Show Title Slide.* |
+| 2 | **Episode Goal** | Run 100% deterministic test suites on pull requests before code merges. | *Highlight goal.* |
+| 3 | **Workflow Configuration** | Setting up `.github/workflows/scholar-search-kit-ci.yml` using `astral-sh/setup-uv`. | *Show YAML workflow.* |
+| 4 | **Matrix Testing** | Testing across Python 3.11 and 3.12 on `ubuntu-latest`. | *Show matrix run.* |
+| 5 | **Status Badges** | Adding real CI status badges to the repository README. | *Show README header.* |
+| 6 | **Verification** | Show passing GitHub workflow runs. | *Transition to Browser.* |

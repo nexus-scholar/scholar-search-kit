@@ -1,25 +1,23 @@
 # Episode 10: Query Lexing & Translation
 
-**Objective:** Abstract upstream provider query syntaxes by implementing a unified Boolean query parser and translator subsystem.
+**Objective:** Tokenize complex search expressions with quotes, fields, and operators into provider query syntax.
 
-## 🎬 Presentation Script
+## Presentation Script
 
 | Slide | Title | Talking Points | Action |
 | :--- | :--- | :--- | :--- |
-| 1 | **Title Slide** | We are now building the brains of our querying engine: Lexing. | *Show Title Slide.* |
-| 2 | **Episode Goal** | If you force a researcher to write 5 different query strings for 5 different APIs, the tool is useless. We need one string to rule them all. | *Highlight the goal block.* |
-| 3 | **The Parsing Pipeline** | The pipeline is three steps: take raw text, break it into logical tokens, and then ask the Provider to translate those tokens. | *Point to the lexing diagram.* |
-| 4 | **Implementation: `QueryLexer`** | The Lexer scans the string and classifies chunks. Quotes are respected, boolean operators are separated. | *Explain `QueryToken` types.* |
-| 5 | **Implementation: Translators** | A Translator just loops over the Tokens and applies rules. "Dumb" APIs just get keywords. Smart APIs get full boolean trees. | *Explain Translator strategies.* |
-| 6 | **Verification** | Let's feed a complex string into our Lexer and see what it spits out. | *Transition to Terminal.* |
+| 1 | **Title Slide** | Translating human search intent into database-specific query languages. | *Show Title Slide.* |
+| 2 | **Episode Goal** | Support quoted phrases, Boolean operators (`AND`, `OR`, `NOT`), and field specifiers (`title:`, `author:`). | *Highlight goal.* |
+| 3 | **The `QueryParser`** | Lexes raw input strings into structured `QueryToken` streams. | *Show parser flowchart.* |
+| 4 | **Dialect Translation** | Maps tokens to S2 bulk syntax (`+`, `|`, `-`), OpenAlex filters, or arXiv prefix codes. | *Explain translator mapping.* |
+| 5 | **Implementation** | Walkthrough of `src/scholar_search/query_translator.py`. | *Transition to code.* |
+| 6 | **Verification** | Run our tokenization and translation unit tests. | *Transition to Terminal.* |
 
-## 💻 Terminal & Code Walkthrough
+## Terminal & Code Walkthrough
 
-1. **Show `lexer.py`**:
-   - Open `src/scholar_search/query/lexer.py`.
-   - Walk through the token emission logic and state tracking (inside vs outside quotes).
-2. **Show `translators.py`**:
-   - Demonstrate the `BooleanQueryTranslator`.
-3. **Run the Tests**:
-   - In the terminal, run: `pytest -k "test_lexer"`
-   - Show how parenthesis and operators are properly segregated.
+1. **Show `query_translator.py`**:
+   - Open `src/scholar_search/query_translator.py`.
+   - Walk through `QueryToken`, `QueryParser`, and `BooleanQueryTranslator`.
+2. **Run the Tests**:
+   - Run: `pytest tests/test_query_translator.py`
+   - Confirm all tests pass.

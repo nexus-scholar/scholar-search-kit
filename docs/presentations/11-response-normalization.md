@@ -1,24 +1,21 @@
 # Episode 11: Response Normalization Subsystem
 
-**Objective:** Build a defensive toolkit for extracting nested data and parsing chaotic API responses into the `Document` contract.
+**Objective:** Clean, parse, and standardize diverse academic payloads into uniform `Document` models.
 
-## 🎬 Presentation Script
+## Presentation Script
 
 | Slide | Title | Talking Points | Action |
 | :--- | :--- | :--- | :--- |
-| 1 | **Title Slide** | It's time to build the machinery that enforces our Document contract. | *Show Title Slide.* |
-| 2 | **Episode Goal** | Extracting data from third-party JSON is dangerous. If we do it carelessly, we get `KeyError`s. We need safe extraction tools. | *Highlight the goal block.* |
-| 3 | **The Normalization Philosophy** | We use defensive programming. We build isolated parsers for dates, authors, and IDs that never crash. | *Explain `FieldExtractor`.* |
-| 4 | **Implementation: `ResponseNormalizer` Protocol** | By defining a `Protocol`, we force every future API integration to provide a parser that yields our `Document`. | *Point to the diagram.* |
-| 5 | **Verification** | Let's test the date parser against some truly awful date strings. | *Transition to Terminal.* |
+| 1 | **Title Slide** | Transforming messy JSON and XML payloads into immaculate research records. | *Show Title Slide.* |
+| 2 | **Episode Goal** | Parse authors, dates, HTML-stripped abstracts, and identifiers without falsifying evidence. | *Highlight goal.* |
+| 3 | **Author Parsing** | Unpacks strings like `"Alan M. Turing"` into `given_name` and `family_name`. | *Show parsing examples.* |
+| 4 | **Date Normalization** | Converts ISO dates, Crossref `date-parts`, and XML dates into standard 4-digit years. | *Show date formats.* |
+| 5 | **Abstract Cleansing** | Inverted-index abstract reconstruction and XML tag stripping. | *Show before/after.* |
+| 6 | **Verification** | Run our author and normalization unit tests. | *Transition to Terminal.* |
 
-## 💻 Terminal & Code Walkthrough
+## Terminal & Code Walkthrough
 
-1. **Show `normalization.py`**:
-   - Open `src/scholar_search/utils/normalization.py`.
-   - Show how `FieldExtractor` uses `dict.get()` recursively.
-2. **Show `DateParser`**:
-   - Explain how it handles partial ISO strings (e.g., just "2019" vs "2019-10-01").
-3. **Run the Tests**:
-   - In the terminal, run: `pytest -k "test_normalization"`
-   - Prove that garbage data results in safe `None` values instead of runtime crashes.
+1. **Demonstrate Name & Date Parsing**:
+   - Walk through author splitting and date parsing utilities across providers.
+2. **Run Tests**:
+   - Run: `pytest tests/test_models.py -k "test_author"`

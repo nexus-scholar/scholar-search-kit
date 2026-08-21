@@ -4,5 +4,7 @@ __pycache__/
 .pytest_cache/
 .venv/
 docs/presentations/build/
+.cache/
+*.sqlite
 $AuxDir/
 $OutputDir/

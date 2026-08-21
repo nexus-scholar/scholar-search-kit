@@ -1,87 +1,43 @@
-# Lesson 8.1: The CLI as an Agent Tool & Manifests (`cli/`)
-
-**Status**: 🟢 **[🟢 Implemented v0.1.0]** (Baseline `deduplicate` in `cli.py`) / 🟡 **[🟡 Lesson Milestone Target]** (Full Subcommand Suite)
-
----
+# Lesson 8.1: Modern Typer CLI & Workflow Automation (`cli.py`)
 
 ## 1. Scientific Motivation & Context
+A scholarly search toolkit must be usable interactively by researchers in the terminal, non-interactively in automated batch pipelines, and programmatically by AI coding agents.
 
-A scholarly search toolkit must be usable interactively by researchers in the terminal, non-interactively in automated pipelines, and programmatically by AI agents. Every execution should write persistent, machine-readable run manifests (`metadata.json` / `SearchManifest`) and optionally systematic review flow counts (`prisma_counts.json`) to guarantee research reproducibility.
-
----
-
-## 2. Implementation Tiers
-
-### 🟢 Baseline Implementation (`v0.1.0`)
-
-* **Source Location**: `src/scholar_search/cli.py`
-* **Available Command**: `scholar-search deduplicate <titles...>`
-* **Behavior**: Reads titles from arguments, runs `Deduplicator().deduplicate()`, and prints summary string `documents=N unique=M`.
-
-### 🟡 Lesson Milestone Target
-
-* **`scholar-search search`**: Queries enabled providers with parameter overrides (`--year-min`, `--max-results`) and writes `SearchManifest`.
-* **`scholar-search deduplicate`**: Clusters records from search output files and generates deduplication statistics.
-* **`scholar-search export`**: Converts search/cluster artifacts to BibTeX, CSV, JSONL, or RIS.
-* **`scholar-search validate`**: Verifies query syntax and configuration files.
+Our modern **Typer** CLI provides rich formatting, progress spinners, multi-provider execution, and verification pipelines.
 
 ---
 
-## 3. Explicit Component Contract (Lesson Milestone Target)
+## 2. CLI Command Suite
 
-### 3.1 Search Execution Manifest (`metadata.json` / `SearchManifest`)
+```bash
+# 1. Multi-provider federated search
+scholar-search search "quantum computing" --providers openalex,crossref,arxiv --limit 20 --output results.json
 
-```json
-{
-  "run_id": "run_2026-08-19_143000",
-  "timestamp": "2026-08-19T14:30:00.000000Z",
-  "queries": [
-    {"id": "Q01", "text": "machine learning AND healthcare"}
-  ],
-  "providers": ["openalex", "crossref", "arxiv"],
-  "config": {"year_min": 2020, "year_max": 2024, "max_results": 500},
-  "results": {"openalex": 480, "crossref": 500, "arxiv": 210}
-}
-```
+# 2. Forward & backward citation snowballing
+scholar-search snowball W2741809807 --direction forward --limit 50 --output citing_papers.json
 
-### 3.2 PRISMA 2020 Flow Diagram Counts (`prisma_counts.json` - Optional Review Reporting)
+# 3. Import legacy files with verification and OpenAlex hydration
+scholar-search import legacy_citations.ris --verify --enrich --output verified.json
 
-```json
-{
-  "identification": {
-    "total_records": 1190,
-    "records_by_provider": {"openalex": 480, "crossref": 500, "arxiv": 210}
-  },
-  "screening": {
-    "records_after_deduplication": 890,
-    "duplicates_removed": 300
-  }
-}
+# 4. Standalone deduplication
+scholar-search dedup search_results.json --output deduped.json
+
+# 5. Format conversion
+scholar-search export search_results.json --output summary.csv --format csv
 ```
 
 ---
 
-## 4. Verification & Falsifying Tests
+## 3. Verification & Automated Tests
 
-### 🟢 Baseline Verification Test (Current Implementation)
+Run with `pytest tests/test_cli.py`:
 
 ```python
-from click.testing import CliRunner
-from scholar_search.cli import main
+from typer.testing import CliRunner
+from scholar_search.cli import app
 
-def test_cli_baseline_deduplicate_command():
+def test_cli_search():
     runner = CliRunner()
-    result = runner.invoke(main, ["deduplicate", "Paper A", "Paper A", "Paper B"])
+    result = runner.invoke(app, ["search", "deep learning", "--limit", "3", "--quiet"])
     assert result.exit_code == 0
-    assert "documents=3 unique=2" in result.output
-```
-
----
-
-## 5. AI Build Prompt
-
-```text
-Expand scholar_search/cli.py from the baseline v0.1.0 to the Lesson 8.1 subcommand suite target.
-Support search, deduplicate, export, and validate commands with machine-readable JSON metadata.json search manifests and optional PRISMA count exports.
-Add unit tests in tests/test_cli.py.
 ```

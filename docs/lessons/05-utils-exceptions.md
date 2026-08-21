@@ -1,86 +1,70 @@
 # Lesson 3.1: Exception Hierarchy for Resilient Search (`exceptions.py`)
 
 ## 1. Scientific Motivation & Context
-Scholarly search involves querying multiple external APIs over the public internet. External failures are diverse: HTTP 429 rate limit spikes, HTTP 401/403 credential errors, 502/504 gateway timeouts, malformed responses, or XML parsing errors. Without a typed exception hierarchy, calling code cannot distinguish transient errors (which should be retried) from permanent authentication or query errors (which must halt immediately).
+Scholarly literature search involves querying multiple external public APIs across the internet. External failures are diverse: HTTP 429 rate limit spikes, HTTP 401/403 credential errors, 502/504 gateway timeouts, malformed responses, or XML parsing errors. Without a typed exception hierarchy, calling code cannot distinguish transient errors (which should be retried) from permanent authentication or query errors (which must halt immediately).
 
-## 2. Reference Architecture Analysis
-* **Reference Source**: `strategy-pipeline/src/slr/utils/exceptions.py`
-* **Hierarchy Structure**:
-  * `SLRException`: Base class with `message`, `details: Dict`, and `timestamp: datetime`.
-  * `ProviderError`: Subclass with `provider: str`.
-  * `RateLimitError`: Subclass of `ProviderError` with optional `retry_after: Optional[int]`.
-  * `AuthenticationError`: Subclass of `ProviderError` with `status_code: Optional[int]`.
-  * `NetworkError`: Subclass of `ProviderError` for socket timeouts / connection errors.
-  * `DeduplicationError`, `ValidationError`, `ConfigurationError`, `ExportError`, `QueryError`.
+---
 
-## 3. Explicit Component Contract
+## 2. Component Contract & Implementation
 
-### Class Hierarchy
-```mermaid
-classDiagram
-    class SLRException {
-        +str message
-        +dict details
-        +datetime timestamp
-        +to_dict() dict
-    }
-    class ProviderError {
-        +str provider
-    }
-    class RateLimitError {
-        +Optional[int] retry_after
-    }
-    class AuthenticationError {
-        +Optional[int] status_code
-    }
-    class NetworkError {
-        +Optional[int] status_code
-    }
-    class DeduplicationError
-    class ValidationError {
-        +Optional[str] field
-    }
-    class ExportError {
-        +Optional[str] format
-    }
-    class QueryError {
-        +Optional[str] query
-    }
-
-    SLRException <|-- ProviderError
-    SLRException <|-- DeduplicationError
-    SLRException <|-- ValidationError
-    SLRException <|-- ExportError
-    SLRException <|-- QueryError
-    ProviderError <|-- RateLimitError
-    ProviderError <|-- AuthenticationError
-    ProviderError <|-- NetworkError
-```
-
-### Invariants
-1. **Serialization**: `SLRException.to_dict()` must return a JSON-serializable dictionary containing `type`, `message`, `details`, and ISO-formatted `timestamp`.
-2. **Provider Context**: All `ProviderError` exceptions must prefix their string message with `f"[{provider}] ..."`.
-
-## 4. Verification & Falsifying Tests
+* **Module**: `scholar_search.exceptions`
+* **Hierarchy**:
 
 ```python
-from scholar_search.utils.exceptions import RateLimitError, SLRException
+"""Custom exceptions for scholar-search-kit."""
 
-def test_rate_limit_error_context():
-    err = RateLimitError(provider="crossref", message="Too many requests", retry_after=60)
-    assert err.provider == "crossref"
-    assert err.retry_after == 60
-    assert "[crossref]" in str(err)
-    
-    d = err.to_dict()
-    assert d["type"] == "RateLimitError"
-    assert "timestamp" in d
+class ScholarSearchError(Exception):
+    """Base exception for all scholar-search errors."""
+    pass
+
+
+class ProviderError(ScholarSearchError):
+    """Raised when an external academic provider returns an error."""
+    def __init__(self, provider: str, message: str, status_code: int | None = None):
+        self.provider = provider
+        self.status_code = status_code
+        super().__init__(f"[{provider}] {message}" + (f" (HTTP {status_code})" if status_code else ""))
+
+
+class RateLimitExceededError(ProviderError):
+    """Raised when an API rate limit is exceeded (HTTP 429)."""
+    def __init__(self, provider: str, message: str = "Rate limit exceeded"):
+        super().__init__(provider=provider, message=message, status_code=429)
+
+
+class InvalidQueryError(ScholarSearchError):
+    """Raised when a search query cannot be parsed or translated."""
+    pass
+
+
+class VerificationError(ScholarSearchError):
+    """Raised when document verification or hydration fails."""
+    pass
 ```
 
-## 5. AI Build Prompt
+---
 
-```text
-Create scholar_search/utils/exceptions.py implementing the full SLR exception hierarchy according to Lesson 3.1.
-Include SLRException, ProviderError, RateLimitError, AuthenticationError, NetworkError, DeduplicationError, ValidationError, ExportError, and QueryError.
-Add unit tests in tests/test_exceptions.py.
+## 3. Invariants & Rules
+
+1. **Provider Context**: All `ProviderError` exceptions include `provider: str` and format as `f"[{provider}] {message}"`.
+2. **HTTP Status Encapsulation**: When an HTTP status code is present, it is recorded in `error.status_code`.
+3. **Structured Specialization**:
+   - `RateLimitExceededError` specifically models HTTP 429 rate limiting.
+   - `InvalidQueryError` captures query lexing/syntax failures.
+   - `VerificationError` captures failure during Crossref/OpenAlex verification or hydration.
+
+---
+
+## 4. Verification & Automated Tests
+
+```python
+from scholar_search.exceptions import ScholarSearchError, ProviderError, RateLimitExceededError
+
+def test_exception_formatting():
+    err = RateLimitExceededError(provider="crossref", message="Too many requests")
+    assert err.provider == "crossref"
+    assert err.status_code == 429
+    assert "[crossref]" in str(err)
+    assert issubclass(RateLimitExceededError, ProviderError)
+    assert issubclass(ProviderError, ScholarSearchError)
 ```

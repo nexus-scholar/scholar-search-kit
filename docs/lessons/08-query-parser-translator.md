@@ -1,40 +1,58 @@
 # Lesson 4.1: Query Lexing & Translation (`query_translator.py`)
 
 ## 1. Scientific Motivation & Context
-Researchers construct complex Boolean literature searches using parentheses, quotes, field specifiers, and operators (e.g. `title:"systematic review" AND (deep OR neural) NOT author:Smith`). Every database API implements different syntax rules:
+Researchers construct complex Boolean literature searches with quoted phrases, field specifiers, and operators (e.g. `title:"systematic review" AND (deep OR neural)`). Every database implements different syntax dialects:
 * arXiv uses field codes like `ti:`, `abs:`, `all:`.
-* Semantic Scholar bulk uses `+` (AND), `|` (OR), `-` (NOT).
-* OpenAlex uses `search=` for terms and comma-delimited `filter=` strings.
-* Crossref uses `query=` and `filter=`.
-A robust query subsystem must parse generic expressions into an Abstract Syntax Tree / token stream and translate them accurately to provider dialects without dropping scientific constraints silently.
+* Semantic Scholar uses bulk operators (`+`, `|`, `-`).
+* OpenAlex uses `search=` with filter strings.
+* Crossref uses `query.bibliographic` and `query.title`.
 
-## 2. Reference Architecture Analysis
-* **Reference Source**: `strategy-pipeline/src/slr/providers/query_translator.py`
-* **Components**:
-  * `QueryToken`: Holds `value`, `field: QueryField`, `is_phrase: bool`, `is_operator: bool`.
-  * `QueryParser`: Tokenizes strings into terms, phrases, fields (`title:`, `author:`, `year:`), operators (`AND`, `OR`, `NOT`), and parentheses.
-  * Translators: `BaseQueryTranslator`, `SimpleQueryTranslator`, `BooleanQueryTranslator`, `StructuredQueryTranslator`.
+Our query subsystem tokenizes generic search strings into structured tokens and translates them deterministically to target provider syntax without losing scientific constraints.
 
-## 3. Explicit Component Contract
+---
 
-### 3.1 `QueryParser`
-* **Tokenization Rules**:
-  1. Parentheses: `(` and `)` are extracted as individual operator tokens.
-  2. Field prefix: `(\w+):` sets the active `QueryField` for the immediate next token.
-  3. Quoted phrase: `"([^"]*)"` extracts exact inner phrase (`is_phrase=True`).
-  4. Boolean operators: `AND`, `OR`, `NOT` (case-insensitive).
-  5. Terms: Non-whitespace words.
-* **Validation (`validate`)**: Checks for balanced parentheses. Returns `False` if unbalanced.
+## 2. Component Contract & Implementation
 
-### 3.2 Translators
-* **`SimpleQueryTranslator`**: Returns `{"q": query.text, **filter_params}`.
-* **`BooleanQueryTranslator`**: Maps tokens to provider field codes and operator mappings.
-* **`StructuredQueryTranslator`**: Emits nested dictionary queries with `$and`, `$or`, `$not`.
-
-## 4. Verification & Falsifying Tests
+* **Module**: `scholar_search.query_translator`
+* **Components**: `QueryToken`, `QueryField`, `QueryParser`, `BooleanQueryTranslator`
 
 ```python
-from scholar_search.providers.query_translator import QueryParser, QueryField
+from enum import Enum
+from dataclasses import dataclass
+
+class QueryField(Enum):
+    ALL = "all"
+    TITLE = "title"
+    ABSTRACT = "abstract"
+    AUTHOR = "author"
+    VENUE = "venue"
+    YEAR = "year"
+
+@dataclass
+class QueryToken:
+    value: str
+    field: QueryField = QueryField.ALL
+    is_phrase: bool = False
+    is_operator: bool = False
+```
+
+---
+
+## 3. Tokenizer Invariants
+
+1. **Quoted Phrases**: Preserves multi-word strings within quotes as a single token with `is_phrase=True`.
+2. **Boolean Operators**: Normalizes `AND`, `OR`, `NOT` as operator tokens.
+3. **Field Prefixing**: Syntaxes like `title:"deep learning"` or `author:bengio` tag the token with the appropriate `QueryField`.
+4. **Parentheses**: Captures nesting parentheses for Boolean precedence.
+
+---
+
+## 4. Verification & Automated Tests
+
+Run with `pytest tests/test_query_translator.py`:
+
+```python
+from scholar_search.query_translator import QueryParser, QueryField, BooleanQueryTranslator
 
 def test_query_parser_tokens():
     parser = QueryParser()
@@ -43,28 +61,13 @@ def test_query_parser_tokens():
     assert tokens[0].field == QueryField.TITLE
     assert tokens[0].value == "deep learning"
     assert tokens[0].is_phrase is True
-    
     assert tokens[1].value == "AND"
     assert tokens[1].is_operator is True
-    
-    assert tokens[2].value == "("
-    assert tokens[3].value == "robotics"
-    assert tokens[4].value == "OR"
-    assert tokens[5].value == "vision"
-    assert tokens[6].value == ")"
-    
-    assert parser.validate(tokens) is True
 
-def test_unbalanced_parentheses():
+def test_boolean_translator():
+    translator = BooleanQueryTranslator()
     parser = QueryParser()
-    tokens = parser.parse('deep learning AND (robotics')
-    assert parser.validate(tokens) is False
-```
-
-## 5. AI Build Prompt
-
-```text
-Implement QueryParser, QueryToken, QueryField, and Translators in scholar_search/providers/query_translator.py following Lesson 4.1.
-Support phrase matching, field specifiers (title:, author:), operators (AND, OR, NOT), parentheses, and balanced syntax validation.
-Add unit tests in tests/test_query_translator.py.
+    tokens = parser.parse('machine learning AND robotics')
+    s2_query = translator.translate_to_s2(tokens)
+    assert s2_query == "machine learning + robotics"
 ```

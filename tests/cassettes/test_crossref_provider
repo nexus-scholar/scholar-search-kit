@@ -1,0 +1,112 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - scholar-search-kit/0.1.0 (mailto:student@university.edu)
+    method: GET
+    uri: https://api.crossref.org/works?query=%22machine+learning%22&rows=5
+  response:
+    body:
+      string: '{"status":"ok","message-type":"work-list","message-version":"1.0.0","message":{"facets":{},"total-results":2978108,"items":[{"indexed":{"date-parts":[[2026,4,30]],"date-time":"2026-04-30T05:48:45Z","timestamp":1777528125213,"version":"3.51.4"},"reference-count":0,"publisher":"Oxford
+        University Press","isbn-type":[{"value":"9780198828044","type":"print"},{"value":"9780191883873","type":"electronic"}],"content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2019,11,28]]},"abstract":"<p>This
+        chapter\u2019s goal is to show how to apply machine learning algorithms in
+        a general setting using some classic methods. In particular, it demonstrates
+        how to apply three important machine learning algorithms, a support vector
+        classifier (SVC), a random forest classifier (RFC), and a multilayer perceptron
+        (MLP). While many of the methods studied later go beyond these now classic
+        methods, this does not mean that these methods are obsolete. Also, the algorithms
+        discussed here provide some form of baseline to discuss advanced methods like
+        probabilistic reasoning and deep learning. The aim here is to demonstrate
+        that applying machine learning methods based on machine learning libraries
+        is not very difficult. It offers an opportunity to discuss evaluation techniques
+        that are very important in practice.<\/p>","DOI":"10.1093\/oso\/9780198828044.003.0003","type":"book-chapter","created":{"date-parts":[[2020,1,23]],"date-time":"2020-01-23T10:54:18Z","timestamp":1579776858000},"page":"38-65","source":"Crossref","is-referenced-by-count":19,"title":["Machine
+        learning with sklearn"],"prefix":"10.1093","author":[{"given":"Thomas P.","family":"Trappenberg","sequence":"first","affiliation":[],"role":[{"role":"author","vocabulary":"crossref"}]}],"member":"286","published-online":{"date-parts":[[2020,1,23]]},"container-title":["Fundamentals
+        of Machine Learning"],"original-title":["Machine learning with sklearn"],"language":"en","deposited":{"date-parts":[[2022,8,2]],"date-time":"2022-08-02T20:21:55Z","timestamp":1659471715000},"score":16.883614,"resource":{"primary":{"URL":"https:\/\/academic.oup.com\/book\/36775\/chapter\/321905277"}},"issued":{"date-parts":[[2019,11,28]]},"ISBN":["9780198828044","9780191883873"],"references-count":0,"URL":"https:\/\/doi.org\/10.1093\/oso\/9780198828044.003.0003","published":{"date-parts":[[2019,11,28]]}},{"indexed":{"date-parts":[[2026,8,19]],"date-time":"2026-08-19T16:28:12Z","timestamp":1787156892203,"version":"3.56.0"},"edition-number":"1","reference-count":0,"publisher":"Wiley","isbn-type":[{"value":"9781789450712","type":"print"},{"value":"9781119902881","type":"electronic"}],"license":[{"start":{"date-parts":[[2022,2,25]],"date-time":"2022-02-25T00:00:00Z","timestamp":1645747200000},"content-version":"tdm","delay-in-days":0,"URL":"http:\/\/doi.wiley.com\/10.1002\/tdm_license_1.1"}],"content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2022,3,21]]},"DOI":"10.1002\/9781119902881","type":"monograph","created":{"date-parts":[[2022,2,25]],"date-time":"2022-02-25T17:49:03Z","timestamp":1645811343000},"source":"Crossref","is-referenced-by-count":1,"title":["Optimization
+        and Machine Learning"],"prefix":"10.1002","member":"311","published-online":{"date-parts":[[2022,2,25]]},"language":"en","link":[{"URL":"https:\/\/onlinelibrary.wiley.com\/doi\/pdf\/10.1002\/9781119902881","content-type":"application\/pdf","content-version":"vor","intended-application":"text-mining"},{"URL":"https:\/\/onlinelibrary.wiley.com\/doi\/pdf\/10.1002\/9781119902881","content-type":"unspecified","content-version":"vor","intended-application":"similarity-checking"}],"deposited":{"date-parts":[[2026,8,19]],"date-time":"2026-08-19T15:51:36Z","timestamp":1787154696000},"score":16.4019,"resource":{"primary":{"URL":"https:\/\/onlinelibrary.wiley.com\/doi\/book\/10.1002\/9781119902881"}},"subtitle":["Optimization
+        for Machine Learning and Machine Learning for Optimization"],"issued":{"date-parts":[[2022,2,25]]},"ISBN":["9781789450712","9781119902881"],"references-count":0,"alternative-id":["10.1002\/9781119902881"],"URL":"https:\/\/doi.org\/10.1002\/9781119902881","published":{"date-parts":[[2022,2,25]]}},{"indexed":{"date-parts":[[2026,5,1]],"date-time":"2026-05-01T03:50:48Z","timestamp":1777607448356,"version":"3.51.4"},"reference-count":0,"publisher":"Oxford
+        University Press","isbn-type":[{"value":"9780190941659","type":"print"},{"value":"9780197601495","type":"electronic"}],"content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2021,7,29]]},"abstract":"<p>Machine
+        learning is involved in search, translation, detecting depression, likelihood
+        of college dropout, finding lost children, and to sell all kinds of products.
+        While barely beyond its inception, the current machine learning revolution
+        will affect people and organizations no less than the Industrial Revolution\u2019s
+        effect on weavers and many other skilled laborers. Machine learning will automate
+        hundreds of millions of jobs that were considered too complex for machines
+        ever to take over even a decade ago, including driving, flying, painting,
+        programming, and customer service, as well as many of the jobs previously
+        reserved for humans in the fields of finance, marketing, operations, accounting,
+        and human resources. This section explains how automated machine learning
+        addresses exploratory data analysis, feature engineering, algorithm selection,
+        hyperparameter tuning, and model diagnostics. The section covers the eight
+        criteria considered essential for AutoML to have significant impact: <italic>accuracy,
+        productivity, ease of use, understanding and learning, resource availability,
+        process transparency, generalization<\/italic>, and <italic>recommended actions.<\/italic>\n               <\/p>","DOI":"10.1093\/oso\/9780190941659.003.0001","type":"book-chapter","created":{"date-parts":[[2021,7,21]],"date-time":"2021-07-21T12:49:28Z","timestamp":1626871768000},"page":"1-22","source":"Crossref","is-referenced-by-count":10,"title":["Why
+        Use Automated Machine Learning?"],"prefix":"10.1093","author":[{"given":"Kai
+        R.","family":"Larsen","sequence":"first","affiliation":[],"role":[{"role":"author","vocabulary":"crossref"}]},{"given":"Daniel
+        S.","family":"Becker","sequence":"additional","affiliation":[],"role":[{"role":"author","vocabulary":"crossref"}]}],"member":"286","published-online":{"date-parts":[[2021,7,22]]},"container-title":["Automated
+        Machine Learning for Business"],"original-title":["Why Use Automated Machine
+        Learning?"],"language":"en","deposited":{"date-parts":[[2022,8,2]],"date-time":"2022-08-02T20:59:58Z","timestamp":1659473998000},"score":16.256983,"resource":{"primary":{"URL":"https:\/\/academic.oup.com\/book\/40037\/chapter\/340418906"}},"issued":{"date-parts":[[2021,7,22]]},"ISBN":["9780190941659","9780197601495"],"references-count":0,"URL":"https:\/\/doi.org\/10.1093\/oso\/9780190941659.003.0001","published":{"date-parts":[[2021,7,22]]}},{"indexed":{"date-parts":[[2024,2,13]],"date-time":"2024-02-13T18:09:49Z","timestamp":1707847789738},"edition-number":"1","reference-count":0,"publisher":"Cambridge
+        University Press","license":[{"start":{"date-parts":[[2012,6,5]],"date-time":"2012-06-05T00:00:00Z","timestamp":1338854400000},"content-version":"unspecified","delay-in-days":0,"URL":"https:\/\/www.cambridge.org\/core\/terms"}],"content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2012,6,5]]},"DOI":"10.1017\/cbo9780511804779.017","type":"book-chapter","created":{"date-parts":[[2012,6,19]],"date-time":"2012-06-19T17:06:44Z","timestamp":1340125604000},"page":"303-304","source":"Crossref","is-referenced-by-count":1,"title":["Machine
+        learning"],"prefix":"10.1017","member":"56","container-title":["Bayesian Reasoning
+        and Machine Learning"],"link":[{"URL":"https:\/\/www.cambridge.org\/core\/services\/aop-cambridge-core\/content\/view\/DE69032737ABE83A631835141D577DCB","content-type":"unspecified","content-version":"vor","intended-application":"similarity-checking"}],"deposited":{"date-parts":[[2022,6,13]],"date-time":"2022-06-13T11:14:15Z","timestamp":1655118855000},"score":16.225885,"resource":{"primary":{"URL":"https:\/\/www.cambridge.org\/core\/product\/identifier\/CBO9780511804779A124\/type\/book_part"}},"issued":{"date-parts":[[2012,6,5]]},"references-count":0,"URL":"https:\/\/doi.org\/10.1017\/cbo9780511804779.017","published":{"date-parts":[[2012,6,5]]}},{"indexed":{"date-parts":[[2025,7,10]],"date-time":"2025-07-10T12:10:03Z","timestamp":1752149403738,"version":"3.41.2"},"reference-count":7,"publisher":"Springer
+        Science and Business Media LLC","issue":"1","license":[{"start":{"date-parts":[[1987,3,1]],"date-time":"1987-03-01T00:00:00Z","timestamp":541555200000},"content-version":"tdm","delay-in-days":0,"URL":"https:\/\/www.springernature.com\/gp\/researchers\/text-and-data-mining"},{"start":{"date-parts":[[1987,3,1]],"date-time":"1987-03-01T00:00:00Z","timestamp":541555200000},"content-version":"vor","delay-in-days":0,"URL":"https:\/\/www.springernature.com\/gp\/researchers\/text-and-data-mining"}],"content-domain":{"domain":["link.springer.com"],"crossmark-restriction":false},"short-container-title":["Machine
+        Learning"],"published-print":{"date-parts":[[1987,3]]},"DOI":"10.1023\/a:1022808826027","type":"journal-article","created":{"date-parts":[[2003,4,4]],"date-time":"2003-04-04T16:57:10Z","timestamp":1049475430000},"page":"5-8","update-policy":"https:\/\/doi.org\/10.1007\/springer_crossmark_policy","source":"Crossref","is-referenced-by-count":1,"title":["Machine
+        Learning and Grammar Induction"],"prefix":"10.1007","volume":"2","author":[{"given":"Pat","family":"Langely","sequence":"first","affiliation":[],"role":[{"role":"author","vocabulary":"crossref"}]}],"member":"297","reference":[{"unstructured":"Anderson,
+        J.R.(1977).Induction of augmented transition networks.Cog-nitive Science,1125-157.","key":"422905_CR1"},{"doi-asserted-by":"crossref","unstructured":"Angluin,
+        D.(1982).Inference of reversible languages.Journal of the As-sociation for
+        Computing Machinery,29741-765.","key":"422905_CR2","DOI":"10.1145\/322326.322334"},{"doi-asserted-by":"crossref","unstructured":"Gold,
+        E.M.(1967).Language identification in the limit.Information and Control,10447-474.","key":"422905_CR3","DOI":"10.1016\/S0019-9958(67)91165-5"},{"unstructured":"Klein,
+        S.,& Kuppin, M.A.(1970).An interactive,heuristic program for learning transformational
+        grammar(Technical Report No.97).Madi-son:University of Wisconsin,Department
+        of Computer Science.","key":"422905_CR4"},{"doi-asserted-by":"crossref","unstructured":"Mitchell,
+        T.M.(1982).Generalization as search.Artificial Intelligence, 18203-226","key":"422905_CR5","DOI":"10.1016\/0004-3702(82)90040-6"},{"unstructured":"Sik\u00f3ssy,
+        L.(1972).Natural language learning by computer.In H.A. Simon & L. Siklossy
+        (Eds.),Representation and meaning:Experiments with information processing
+        systems.Englewood Cliffs,NJ: Prentice-Hall.","key":"422905_CR6"},{"unstructured":"Solomonoff,
+        R.(1959).A new method for discovering the grammars of phrase structure languages.Proceedings
+        of the International Confer-ence on Information Processing.","key":"422905_CR7"}],"container-title":["Machine
+        Learning"],"language":"en","link":[{"URL":"https:\/\/link.springer.com\/content\/pdf\/10.1023\/A:1022808826027.pdf","content-type":"application\/pdf","content-version":"vor","intended-application":"text-mining"},{"URL":"https:\/\/link.springer.com\/article\/10.1023\/A:1022808826027\/fulltext.html","content-type":"text\/html","content-version":"vor","intended-application":"text-mining"},{"URL":"https:\/\/link.springer.com\/content\/pdf\/10.1023\/A:1022808826027.pdf","content-type":"application\/pdf","content-version":"vor","intended-application":"similarity-checking"}],"deposited":{"date-parts":[[2025,7,10]],"date-time":"2025-07-10T11:42:32Z","timestamp":1752147752000},"score":16.20483,"resource":{"primary":{"URL":"https:\/\/link.springer.com\/10.1023\/A:1022808826027"}},"issued":{"date-parts":[[1987,3]]},"references-count":7,"journal-issue":{"issue":"1","published-print":{"date-parts":[[1987,3]]}},"alternative-id":["422905"],"URL":"https:\/\/doi.org\/10.1023\/a:1022808826027","ISSN":["0885-6125","1573-0565"],"issn-type":[{"type":"print","value":"0885-6125"},{"type":"electronic","value":"1573-0565"}],"published":{"date-parts":[[1987,3]]},"assertion":[{"value":"This
+        content has been made available to all.","name":"free","label":"Free to read"}]}],"items-per-page":5,"query":{"start-index":0,"search-terms":"\"machine
+        learning\""}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '4019'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 20 Aug 2026 23:17:10 GMT
+      access-control-allow-headers:
+      - X-Requested-With, Accept, Accept-Encoding, Accept-Charset, Accept-Language,
+        Accept-Ranges, Cache-Control
+      access-control-allow-origin:
+      - '*'
+      access-control-expose-headers:
+      - Link
+      content-encoding:
+      - gzip
+      permissions-policy:
+      - interest-cohort=()
+      server:
+      - Jetty(9.4.40.v20210413)
+      vary:
+      - Accept-Encoding
+      x-api-pool:
+      - polite-array
+      x-concurrency-limit:
+      - '3'
+      x-rate-limit-interval:
+      - 1s
+      x-rate-limit-limit:
+      - '3'
+    status:
+      code: 200
+      message: OK
+version: 1

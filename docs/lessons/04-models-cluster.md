@@ -1,60 +1,58 @@
 # Lesson 2.4: Clusters & Non-Destructive Merging (`DocumentCluster`)
 
-**Status**: 🟢 **[🟢 Implemented v0.1.0]** (Baseline in `models.py`) / 🟡 **[🟡 Lesson Milestone Target]** (Extended Metadata & Match Method)
-
----
-
 ## 1. Scientific Motivation & Context
-
-Deduplication directly alters the statistical denominator of any literature collection. When deduplication permanently drops records, the research becomes unauditable: peers cannot verify why two records were merged, what provider-specific metadata was discarded, or whether a false merge corrupted the study set. Grouping duplicates into `DocumentCluster` instances preserves the entire evidence trail without data loss.
-
----
-
-## 2. Reference Architecture Analysis
-
-* **Reference Source**: `strategy-pipeline/src/slr/core/models.py::DocumentCluster`
-* **Observed Behavior**:
-  * Fields: `cluster_id`, `representative: Document`, `members: List[Document]`.
-  * Aggregated metadata: `all_dois: List[str]`, `all_arxiv_ids: List[str]`, `provider_counts: Dict[str, int]`.
-  * Evidence metric: Reports `1.0` if an exact persistent identifier match occurred; `0.95` for conservative title similarity.
+Deduplication directly alters the statistical denominator of any literature review. When duplicate records are dropped naively without grouping, the research becomes unauditable: reviewers cannot verify why two records were merged or what provider-specific metadata was discarded. Grouping duplicates into `DocumentCluster` preserves the full provenance trail while allowing intelligent metadata merging into the representative record.
 
 ---
 
-## 3. Explicit Component Contracts
+## 2. Component Contract & Implementation
 
-### 🟢 Baseline Implementation Contract (`v0.1.0`)
+* **Module**: `scholar_search.models`
+* **Dataclass**: `DocumentCluster`
 
-* **Fields**:
-  * `cluster_id`: `int` — Unique sequential cluster identifier.
-  * `representative`: `Document` — Canonical representative chosen for export.
-  * `members`: `List[Document]` — Complete list of merged member records.
-* **Derived Properties**:
-  * `size -> int`: `len(self.members)`.
-  * `confidence -> float`: `1.0` if any member has an external ID else `0.95`.
+```python
+from dataclasses import dataclass
+from .models import Document
 
-### 🟡 Lesson Milestone Target Contract
+@dataclass
+class DocumentCluster:
+    cluster_id: int
+    representative: Document
+    members: list[Document]
 
-* **Target Fields**:
-  * `all_dois`: `List[str] = field(default_factory=list)`
-  * `all_arxiv_ids`: `List[str] = field(default_factory=list)`
-  * `provider_counts`: `Dict[str, int] = field(default_factory=dict)`
-  * `match_method`: `Optional[str] = None` (`"exact_doi"`, `"exact_arxiv_id"`, `"fuzzy_title"`)
+    @property
+    def size(self) -> int:
+        return len(self.members)
 
-### Scientific Caution on Confidence Scores
-
-> [!NOTE]
-> The `0.95` and `1.0` scores are heuristic evidence markers, not calibrated Bayesian probabilities. In scientific publications and formal review protocols, researchers should inspect `match_method` (`exact_doi`, `exact_arxiv_id`, `fuzzy_title`) rather than treating `confidence` as a statistical probability.
+    @property
+    def confidence(self) -> float:
+        has_identifier = any(
+            member.external_ids.doi or member.external_ids.arxiv_id or member.external_ids.pubmed_id
+            for member in self.members
+        )
+        return 1.0 if has_identifier else 0.95
+```
 
 ---
 
-## 4. Verification & Falsifying Tests
+## 3. Invariants & Usage Rules
 
-### 🟢 Baseline Verification Test (Current Implementation)
+1. **Non-Destructive Preservation**: All duplicate records remain accessible in `cluster.members`.
+2. **Canonical Representative**: `cluster.representative` holds the merged metadata record intended for exports.
+3. **Confidence Evidence Metric**:
+   - `1.0`: Exact persistent identifier match (DOI, arXiv ID, PMID, etc.).
+   - `0.95`: Fuzzy title similarity ($\ge 97\%$).
+
+---
+
+## 4. Verification & Automated Tests
+
+Run with `pytest tests/test_models.py -k "test_document_cluster"`:
 
 ```python
 from scholar_search.models import Document, DocumentCluster, ExternalIds
 
-def test_document_cluster_baseline():
+def test_document_cluster():
     d1 = Document("Paper A", external_ids=ExternalIds(doi="10.1/abc"), provider="openalex")
     d2 = Document("Paper A", external_ids=ExternalIds(doi="10.1/abc"), provider="crossref")
     
@@ -68,29 +66,4 @@ def test_document_cluster_baseline():
     assert cluster.confidence == 1.0
     assert d1 in cluster.members
     assert d2 in cluster.members
-```
-
-### 🟡 Lesson Milestone Target Test (Target Implementation)
-
-```python
-def test_document_cluster_extended_milestone():
-    d1 = Document("Paper A", external_ids=ExternalIds(doi="10.1/abc"), provider="openalex")
-    d2 = Document("Paper A", external_ids=ExternalIds(doi="10.1/abc"), provider="crossref")
-    
-    # In target milestone:
-    # cluster = DocumentCluster(cluster_id=1, representative=d1, members=[d1, d2],
-    #                           all_dois=["10.1/abc"], provider_counts={"openalex": 1, "crossref": 1},
-    #                           match_method="exact_doi")
-    # assert cluster.match_method == "exact_doi"
-```
-
----
-
-## 5. AI Build Prompt
-
-```text
-Enhance DocumentCluster in scholar_search.models from baseline v0.1.0 to the Lesson 2.4 target milestone.
-Add aggregated DOIs, arXiv IDs, provider counts, and explicit match_method tracking.
-Ensure non-destructive clustering preserving all original document fields.
-Add unit tests in tests/test_models.py.
 ```

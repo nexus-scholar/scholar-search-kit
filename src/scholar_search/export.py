@@ -1,4 +1,4 @@
-"""Simple deterministic exporters for normalized documents."""
+"""Deterministic exporters for normalized documents."""
 
 import csv
 import json
@@ -9,13 +9,35 @@ from .models import Document
 
 
 class Exporter:
-    """Export documents to CSV or JSONL without provider-specific logic."""
+    """Export documents to JSON, JSONL, or CSV without provider-specific logic."""
+
+    def json(self, documents: list[Document], output_file: str | Path, indent: int = 2) -> Path:
+        """Export documents as a clean, standardized JSON array."""
+        path = Path(output_file)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        data = [asdict(doc) for doc in documents]
+        with path.open("w", encoding="utf-8") as handle:
+            json.dump(data, handle, indent=indent, default=str)
+        return path
+
+    def jsonl(self, documents: list[Document], output_file: str | Path) -> Path:
+        """Export documents line-by-line as JSONL."""
+        path = Path(output_file)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="utf-8") as handle:
+            for document in documents:
+                handle.write(json.dumps(asdict(document), default=str) + "\n")
+        return path
 
     def csv(self, documents: list[Document], output_file: str | Path) -> Path:
+        """Export core metadata to CSV."""
         path = Path(output_file)
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("w", newline="", encoding="utf-8") as handle:
-            writer = csv.DictWriter(handle, fieldnames=["title", "year", "provider", "doi"])
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=["title", "year", "provider", "doi", "arxiv_id", "pubmed_id", "venue", "citations_count"]
+            )
             writer.writeheader()
             for document in documents:
                 writer.writerow({
@@ -23,13 +45,9 @@ class Exporter:
                     "year": document.year,
                     "provider": document.provider,
                     "doi": document.external_ids.doi or "",
+                    "arxiv_id": document.external_ids.arxiv_id or "",
+                    "pubmed_id": document.external_ids.pubmed_id or "",
+                    "venue": document.venue or "",
+                    "citations_count": document.citations_count or 0,
                 })
-        return path
-
-    def jsonl(self, documents: list[Document], output_file: str | Path) -> Path:
-        path = Path(output_file)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with path.open("w", encoding="utf-8") as handle:
-            for document in documents:
-                handle.write(json.dumps(asdict(document), default=str) + "\n")
         return path

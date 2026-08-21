@@ -1,73 +1,82 @@
 # Lesson 2.2: The Normalized Document & Author Model
 
 ## 1. Scientific Motivation & Context
-Academic documents from different sources arrive in incompatible schemas (OpenAlex JSON, Crossref works JSON, arXiv Atom XML, Semantic Scholar bulk JSON). To enable cross-provider search, deduplication, and export without vendor lock-in, all records must normalize into a single canonical `Document` model while strictly preserving source provenance.
+Academic documents from different sources arrive in incompatible schemas (OpenAlex JSON, Crossref works JSON, PubMed XML, arXiv Atom XML, Semantic Scholar bulk JSON). To enable cross-provider search, deduplication, verification, and export without vendor lock-in, all records must normalize into a single canonical `Document` model while strictly preserving source provenance and citation metadata.
 
-## 2. Reference Architecture Analysis
-* **Reference Sources**:
-  * `strategy-pipeline/src/slr/core/models.py::Author`
-  * `strategy-pipeline/src/slr/core/models.py::Document`
-  * `strategy-pipeline/src/slr/core/models.py::SearchResult`
-* **Observed Behavior**:
-  * `Author`: separates `family_name`, `given_name`, and `orcid`. Computes `full_name` property dynamically.
-  * `Document`: required `title`, optional `year`, `provider`, `provider_id`, `external_ids`, `abstract`, `authors`, `venue`, `url`, `language`, `cited_by_count`, `query_id`, `query_text`, `retrieved_at`, `cluster_id`, and `raw_data` (excluded from serialization).
-  * `SearchResult`: container wrapping `query`, `documents`, `total_found`, `provider`, `timestamp`, and `errors`.
+---
 
-## 3. Explicit Component Contracts
+## 2. Component Contracts & Implementation
 
-### 3.1 `Author`
-* **Fields**:
-  * `family_name`: `str` (required)
-  * `given_name`: `Optional[str] = None`
-  * `orcid`: `Optional[str] = None` (normalized without URL prefix)
-* **Properties**:
-  * `full_name -> str`: `f"{given_name} {family_name}"` if `given_name` is present, else `family_name`.
-
-### 3.2 `Document`
-#### 🟢 Baseline Implementation Contract (`v0.1.0`)
-* **Required Invariants**:
-  * `title`: String representing document title.
-  * `year`: Optional integer representing publication year.
-  * `provider`: String representing the source (defaults to `"unknown"`).
-  * `provider_id`: String representing the record in the provider's database (defaults to `""`).
-  * `external_ids`: Always an `ExternalIds` instance (default factory).
-  * `retrieved_at`: Optional UTC `datetime` (defaults to `None`).
-  * `raw_data`: Optional diagnostic dict, excluded from standard exports and JSON serialization.
-* **Fields**: `title`, `year`, `provider`, `provider_id`, `external_ids`, `abstract`, `authors`, `venue`, `url`, `query_id`, `retrieved_at`, `cluster_id`, `raw_data`.
-
-#### 🟡 Lesson Milestone Target Contract
-* **Extended Invariants**:
-  * `title`: Must be non-empty string.
-  * `year`: If present, must satisfy $1900 \le \text{year} \le 2100$.
-  * `provider`: Restrict to (`"openalex"`, `"crossref"`, `"arxiv"`, `"s2"`, `"memory"`).
-  * `provider_id`: Must be non-empty string.
-  * `retrieved_at`: Must be explicitly set to a UTC `datetime`.
-* **Extended Fields**: `language`, `cited_by_count`, `query_text`.
-
-### 3.3 `SearchResult`
-#### 🟡 Lesson Milestone Target Contract
-* **Fields**:
-  * `query`: `Query`
-  * `documents`: `List[Document]`
-  * `total_found`: `int` (total matched on provider server, which may exceed `len(documents)`)
-  * `provider`: `str`
-  * `timestamp`: `datetime` (UTC)
-  * `errors`: `List[str]`
-
-## 4. Edge Cases & Counterexamples
-| Scenario | Desired Behavior | Failure Mode to Avoid |
-| :--- | :--- | :--- |
-| Single-name author (e.g. "Plato", "Aristotle") | `Author(family_name="Plato", given_name=None)` | Creating whitespace `" Plato"` or failing required given name |
-| Missing publication year | `Document(title="X", year=None)` | Defaulting to `0` or `1970` which corrupts year filtering |
-| Timestamp assignment | UTC `datetime.now(timezone.utc)` | Naive local datetimes that break timezone comparisons across servers |
-
-## 5. Verification & Falsifying Tests
+* **Module**: `scholar_search.models`
+* **Dataclasses**: `Author`, `Document`
 
 ```python
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from scholar_search.models import Author, Document, ExternalIds
+from typing import Any
 
-def test_author_full_name():
+from .models import ExternalIds
+
+@dataclass
+class Author:
+    family_name: str
+    given_name: str | None = None
+    orcid: str | None = None
+
+    @property
+    def full_name(self) -> str:
+        return f"{self.given_name} {self.family_name}" if self.given_name else self.family_name
+
+
+@dataclass
+class Document:
+    title: str
+    year: int | None = None
+    provider: str = "unknown"
+    provider_id: str = ""
+    external_ids: ExternalIds = field(default_factory=ExternalIds)
+    abstract: str | None = None
+    authors: list[Author] = field(default_factory=list)
+    venue: str | None = None
+    url: str | None = None
+    
+    # Snowballing & Enhanced Metadata
+    citations_count: int | None = None
+    references_count: int | None = None
+    citation_intents: list[str] = field(default_factory=list)  # e.g. "methodology" from S2
+    mesh_terms: list[str] = field(default_factory=list)  # Medical Subject Headings from PubMed
+    tldr: str | None = None  # AI Summary from Semantic Scholar
+    
+    query_id: str | None = None
+    retrieved_at: datetime | None = None
+    cluster_id: int | None = None
+    raw_data: dict[str, Any] | None = None
+
+    def mark_retrieved(self) -> None:
+        self.retrieved_at = datetime.now(timezone.utc)
+```
+
+---
+
+## 3. Invariants & Data Integrity Rules
+
+1. **Title Required**: `title` is mandatory for every document.
+2. **Nullable Year**: If unknown, `year` remains `None` (never default to `0` or `1970` which corrupts chronological filtering).
+3. **Automatic ExternalIds**: Instantiating a `Document` always prepares an `ExternalIds` container.
+4. **UTC Audit Timestamps**: `mark_retrieved()` records standard UTC timestamps (`datetime.now(timezone.utc)`) ensuring auditable research logs across timezones.
+5. **Enriched Context**: Preserves biomedical `mesh_terms`, Semantic Scholar `citation_intents`, and `tldr` AI summaries when available.
+
+---
+
+## 4. Verification & Automated Tests
+
+Run with `pytest tests/test_models.py -k "test_author or test_document"`:
+
+```python
+from datetime import timezone
+from scholar_search.models import Author, Document
+
+def test_author_properties():
     a1 = Author(family_name="Turing", given_name="Alan")
     assert a1.full_name == "Alan Turing"
     
@@ -83,13 +92,4 @@ def test_document_defaults_and_retrieval():
     doc.mark_retrieved()
     assert doc.retrieved_at is not None
     assert doc.retrieved_at.tzinfo == timezone.utc
-```
-
-## 6. AI Build Prompt
-
-```text
-Implement Author, Document, and SearchResult models in scholar_search.models according to Lesson 2.2 specs.
-Ensure Document maintains provenance (query_id, query_text, provider, provider_id, retrieved_at).
-Ensure raw_data is excluded during serialization.
-Add comprehensive unit tests in tests/test_models.py.
 ```

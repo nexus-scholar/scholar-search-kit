@@ -1,0 +1,51 @@
+\documentclass[aspectratio=169]{beamer}
+\usetheme{metropolis}
+\usepackage{nexus_theme}
+
+\title{Building a Reproducible Scholarly Search Toolkit}
+\subtitle{Episode 16b: Verification \& Hallucination Detection}
+\author{Nexus Scholar Suite}
+\date{}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\begin{frame}{The LLM Hallucination Threat}
+  \begin{alertblock}{Synthetic Citations}
+    LLM agents frequently invent fake DOIs, blend distinct paper titles, and generate phantom authors.
+  \end{alertblock}
+  \vspace{0.3cm}
+  \begin{center}
+  \resizebox{0.9\linewidth}{!}{
+  \begin{tikzpicture}[node distance=1cm and 1.5cm]
+    \node[alertcard] (agent) {\textbf{Unverified Ingestion}\\LLM Citation / Legacy RIS};
+    \node[primarycard, right=of agent] (verifier) {\textbf{\texttt{DocumentVerifier}}\\Crossref Match (150M Records)\\Title Levenshtein Ratio};
+    \node[successcard, right=of verifier] (hydrated) {\textbf{Hydrated Record}\\OpenAlex Abstracts \& Venues};
+
+    \draw[flowarrow] (agent) -- node[above, font=\scriptsize\bfseries] {Verify} (verifier);
+    \draw[accentarrow] (verifier) -- node[above, font=\scriptsize\bfseries] {Enrich} (hydrated);
+  \end{tikzpicture}
+  }
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{DocumentVerifier} API}
+\begin{lstlisting}[style=nexuspython]
+verifier = DocumentVerifier()
+
+# 1. Verify Document Integrity
+result = verifier.verify_document(doc)
+if result.is_verified:
+    print(f"Verified via DOI: {result.matched_doi} (Conf: {result.confidence:.2f})")
+else:
+    print(f"Flagged Hallucination: {result.issues}")
+
+# 2. Hydrate Missing Metadata
+enriched_doc = verifier.hydrate_metadata(doc)
+\end{lstlisting}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,228 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - scholar-search-kit/0.1.0 (mailto:student@university.edu)
+    method: GET
+    uri: http://export.arxiv.org/api/query?search_query=ti%3A%22machine+learning%22&start=0&max_results=5
+  response:
+    body:
+      string: ''
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '0'
+      Date:
+      - Thu, 20 Aug 2026 23:17:10 GMT
+      Location:
+      - https://export.arxiv.org/api/query?search_query=ti%3A%22machine+learning%22&start=0&max_results=5
+      Retry-After:
+      - '0'
+      Server:
+      - Varnish
+      Strict-Transport-Security:
+      - max-age=300
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '0'
+      X-Served-By:
+      - cache-mrs10578-MRS
+      X-Timer:
+      - S1787267830.025091,VS0,VE0
+    status:
+      code: 301
+      message: Moved Permanently
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - scholar-search-kit/0.1.0 (mailto:student@university.edu)
+    method: GET
+    uri: https://export.arxiv.org/api/query?search_query=ti%3A%22machine+learning%22&start=0&max_results=5
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<feed xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\"
+        xmlns:arxiv=\"http://arxiv.org/schemas/atom\" xmlns=\"http://www.w3.org/2005/Atom\">\n
+        \ <id>https://arxiv.org/api/wiyzGeCU0lKK3WnCiv8bOQukPdY</id>\n  <title>arXiv
+        Query: search_query=ti:\"machine learning\"&amp;id_list=&amp;start=0&amp;max_results=5</title>\n
+        \ <updated>2026-08-20T23:16:28Z</updated>\n  <link href=\"https://arxiv.org/api/query?search_query=ti:%22machine+learning%22&amp;start=0&amp;max_results=5&amp;id_list=\"
+        type=\"application/atom+xml\"/>\n  <opensearch:itemsPerPage>5</opensearch:itemsPerPage>\n
+        \ <opensearch:totalResults>19553</opensearch:totalResults>\n  <opensearch:startIndex>0</opensearch:startIndex>\n
+        \ <entry>\n    <id>http://arxiv.org/abs/2512.11133v1</id>\n    <title>Machine
+        Learning</title>\n    <updated>2025-12-11T21:50:11Z</updated>\n    <link href=\"https://arxiv.org/abs/2512.11133v1\"
+        rel=\"alternate\" type=\"text/html\"/>\n    <link href=\"https://arxiv.org/pdf/2512.11133v1\"
+        rel=\"related\" type=\"application/pdf\" title=\"pdf\"/>\n    <summary>This
+        chapter gives an overview of the core concepts of machine learning (ML) --
+        the use of algorithms that learn from data, identify patterns, and make predictions
+        or decisions without being explicitly programmed -- that are relevant to particle
+        physics with some examples of applications to the energy, intensity, cosmic,
+        and accelerator frontiers.</summary>\n    <category term=\"physics.data-an\"
+        scheme=\"http://arxiv.org/schemas/atom\"/>\n    <category term=\"hep-ex\"
+        scheme=\"http://arxiv.org/schemas/atom\"/>\n    <category term=\"hep-ph\"
+        scheme=\"http://arxiv.org/schemas/atom\"/>\n    <category term=\"hep-th\"
+        scheme=\"http://arxiv.org/schemas/atom\"/>\n    <published>2025-12-11T21:50:11Z</published>\n
+        \   <arxiv:comment>Particle Data Group Review of Machine Learning, 2025 update,
+        also available at https://pdg.lbl.gov/2025/reviews/rpp2025-rev-machine-learning.pdf</arxiv:comment>\n
+        \   <arxiv:primary_category term=\"physics.data-an\"/>\n    <author>\n      <name>Javier
+        M. Duarte</name>\n    </author>\n    <author>\n      <name>Uros Seljak</name>\n
+        \   </author>\n    <author>\n      <name>Kazu Terao</name>\n    </author>\n
+        \ </entry>\n  <entry>\n    <id>http://arxiv.org/abs/2406.04344v3</id>\n    <title>Verbalized
+        Machine Learning: Revisiting Machine Learning with Language Models</title>\n
+        \   <updated>2025-02-14T09:51:46Z</updated>\n    <link href=\"https://arxiv.org/abs/2406.04344v3\"
+        rel=\"alternate\" type=\"text/html\"/>\n    <link href=\"https://arxiv.org/pdf/2406.04344v3\"
+        rel=\"related\" type=\"application/pdf\" title=\"pdf\"/>\n    <summary>Motivated
+        by the progress made by large language models (LLMs), we introduce the framework
+        of verbalized machine learning (VML). In contrast to conventional machine
+        learning (ML) models that are typically optimized over a continuous parameter
+        space, VML constrains the parameter space to be human-interpretable natural
+        language. Such a constraint leads to a new perspective of function approximation,
+        where an LLM with a text prompt can be viewed as a function parameterized
+        by the text prompt. Guided by this perspective, we revisit classical ML problems,
+        such as regression and classification, and find that these problems can be
+        solved by an LLM-parameterized learner and optimizer. The major advantages
+        of VML include (1) easy encoding of inductive bias: prior knowledge about
+        the problem and hypothesis class can be encoded in natural language and fed
+        into the LLM-parameterized learner; (2) automatic model class selection: the
+        optimizer can automatically select a model class based on data and verbalized
+        prior knowledge, and it can update the model class during training; and (3)
+        interpretable learner updates: the LLM-parameterized optimizer can provide
+        explanations for why an update is performed. We empirically verify the effectiveness
+        of VML, and hope that VML can serve as a stepping stone to stronger interpretability.</summary>\n
+        \   <category term=\"cs.LG\" scheme=\"http://arxiv.org/schemas/atom\"/>\n
+        \   <category term=\"cs.CL\" scheme=\"http://arxiv.org/schemas/atom\"/>\n
+        \   <category term=\"cs.CV\" scheme=\"http://arxiv.org/schemas/atom\"/>\n
+        \   <published>2024-06-06T17:59:56Z</published>\n    <arxiv:comment>Published
+        in Transactions on Machine Learning Research (116 pages, 32 figures, v3: refined
+        the paper structure and added more empirical results)</arxiv:comment>\n    <arxiv:primary_category
+        term=\"cs.LG\"/>\n    <author>\n      <name>Tim Z. Xiao</name>\n    </author>\n
+        \   <author>\n      <name>Robert Bamler</name>\n    </author>\n    <author>\n
+        \     <name>Bernhard Sch\xF6lkopf</name>\n    </author>\n    <author>\n      <name>Weiyang
+        Liu</name>\n    </author>\n  </entry>\n  <entry>\n    <id>http://arxiv.org/abs/2601.01779v1</id>\n
+        \   <title>Machine learning modularity</title>\n    <updated>2026-01-05T04:17:55Z</updated>\n
+        \   <link href=\"https://arxiv.org/abs/2601.01779v1\" rel=\"alternate\" type=\"text/html\"/>\n
+        \   <link href=\"https://arxiv.org/pdf/2601.01779v1\" rel=\"related\" type=\"application/pdf\"
+        title=\"pdf\"/>\n    <summary>Based on a transformer based sequence-to-sequence
+        architecture combined with a dynamic batching algorithm, this work introduces
+        a machine learning framework for automatically simplifying complex expressions
+        involving multiple elliptic Gamma functions, including the $q$-$\u03B8$ function
+        and the elliptic Gamma function. The model learns to apply algebraic identities,
+        particularly the SL$(2,\\mathbb{Z})$ and SL$(3,\\mathbb{Z})$ modular transformations,
+        to reduce heavily scrambled expressions to their canonical forms. Experimental
+        results show that the model achieves over 99\\% accuracy on in-distribution
+        tests and maintains robust performance (exceeding 90\\% accuracy) under significant
+        extrapolation, such as with deeper scrambling depths. This demonstrates that
+        the model has internalized the underlying algebraic rules of modular transformations
+        rather than merely memorizing training patterns. Our work presents the first
+        successful application of machine learning to perform symbolic simplification
+        using modular identities, offering a new automated tool for computations with
+        special functions in quantum field theory and the string theory.</summary>\n
+        \   <category term=\"hep-th\" scheme=\"http://arxiv.org/schemas/atom\"/>\n
+        \   <category term=\"cs.LG\" scheme=\"http://arxiv.org/schemas/atom\"/>\n
+        \   <published>2026-01-05T04:17:55Z</published>\n    <arxiv:comment>34 pages,
+        7 figures, 6 tables</arxiv:comment>\n    <arxiv:primary_category term=\"hep-th\"/>\n
+        \   <author>\n      <name>Yi Fan</name>\n    </author>\n    <author>\n      <name>Vishnu
+        Jejjala</name>\n    </author>\n    <author>\n      <name>Yang Lei</name>\n
+        \   </author>\n  </entry>\n  <entry>\n    <id>http://arxiv.org/abs/2506.12292v1</id>\n
+        \   <title>Quantum Machine Learning</title>\n    <updated>2025-06-14T00:58:54Z</updated>\n
+        \   <link href=\"https://arxiv.org/abs/2506.12292v1\" rel=\"alternate\" type=\"text/html\"/>\n
+        \   <link href=\"https://arxiv.org/pdf/2506.12292v1\" rel=\"related\" type=\"application/pdf\"
+        title=\"pdf\"/>\n    <summary>The meteoric rise of artificial intelligence
+        in recent years has seen machine learning methods become ubiquitous in modern
+        science, technology, and industry. Concurrently, the emergence of programmable
+        quantum computers, coupled with the expectation that large-scale fault-tolerant
+        machines will follow in the near to medium-term future, has led to much speculation
+        about the prospect of quantum machine learning (QML), namely machine learning
+        (ML) solutions which take advantage of quantum properties to outperform their
+        classical counterparts. Indeed, QML is widely considered as one of the front-running
+        use cases for quantum computing. In recent years, research in QML has gained
+        significant global momentum. In this chapter, we introduce the fundamentals
+        of QML and provide a brief overview of the recent progress and future trends
+        in the field of QML. We highlight key opportunities for achieving quantum
+        advantage in ML tasks, as well as describe some open challenges currently
+        facing the field of QML. Specifically in the context of cybersecurity, we
+        introduce the potential for QML in defence and security-sensitive applications,
+        where it has been predicted that the seamless integration of quantum computing
+        into ML will herald the development of robust and reliable QML systems, resilient
+        against sophisticated threats arising from data manipulation and poisoning.</summary>\n
+        \   <category term=\"quant-ph\" scheme=\"http://arxiv.org/schemas/atom\"/>\n
+        \   <published>2025-06-14T00:58:54Z</published>\n    <arxiv:comment>This invited
+        brief book chapter will appear in Springer Book \"Quantum Technologies: Trends
+        and Implications for Cyber Defence\", 2025 (https://link.springer.com/book/9783031907265)</arxiv:comment>\n
+        \   <arxiv:primary_category term=\"quant-ph\"/>\n    <author>\n      <name>Muhammad
+        Usman</name>\n    </author>\n  </entry>\n  <entry>\n    <id>http://arxiv.org/abs/1611.09347v2</id>\n
+        \   <title>Quantum Machine Learning</title>\n    <updated>2018-05-10T19:44:58Z</updated>\n
+        \   <link href=\"https://arxiv.org/abs/1611.09347v2\" rel=\"alternate\" type=\"text/html\"/>\n
+        \   <link href=\"https://arxiv.org/pdf/1611.09347v2\" rel=\"related\" type=\"application/pdf\"
+        title=\"pdf\"/>\n    <summary>Fuelled by increasing computer power and algorithmic
+        advances, machine learning techniques have become powerful tools for finding
+        patterns in data. Since quantum systems produce counter-intuitive patterns
+        believed not to be efficiently produced by classical systems, it is reasonable
+        to postulate that quantum computers may outperform classical computers on
+        machine learning tasks. The field of quantum machine learning explores how
+        to devise and implement concrete quantum software that offers such advantages.
+        Recent work has made clear that the hardware and software challenges are still
+        considerable but has also opened paths towards solutions.</summary>\n    <category
+        term=\"quant-ph\" scheme=\"http://arxiv.org/schemas/atom\"/>\n    <category
+        term=\"cond-mat.str-el\" scheme=\"http://arxiv.org/schemas/atom\"/>\n    <category
+        term=\"stat.ML\" scheme=\"http://arxiv.org/schemas/atom\"/>\n    <published>2016-11-28T20:59:46Z</published>\n
+        \   <arxiv:comment>24 pages, 2 figures</arxiv:comment>\n    <arxiv:primary_category
+        term=\"quant-ph\"/>\n    <arxiv:journal_ref>Nature 549, 195-202 (2017)</arxiv:journal_ref>\n
+        \   <author>\n      <name>Jacob Biamonte</name>\n    </author>\n    <author>\n
+        \     <name>Peter Wittek</name>\n    </author>\n    <author>\n      <name>Nicola
+        Pancotti</name>\n    </author>\n    <author>\n      <name>Patrick Rebentrost</name>\n
+        \   </author>\n    <author>\n      <name>Nathan Wiebe</name>\n    </author>\n
+        \   <author>\n      <name>Seth Lloyd</name>\n    </author>\n    <arxiv:doi>10.1038/nature23474</arxiv:doi>\n
+        \   <link rel=\"related\" href=\"https://doi.org/10.1038/nature23474\" title=\"doi\"/>\n
+        \ </entry>\n</feed>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Age:
+      - '42'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '10763'
+      Date:
+      - Thu, 20 Aug 2026 23:17:10 GMT
+      Strict-Transport-Security:
+      - max-age=300
+      X-Cache:
+      - MISS, MISS, HIT
+      X-Cache-Hits:
+      - 0, 0, 1
+      X-Served-By:
+      - cache-lga21992-LGA, cache-lga21992-LGA, cache-lga21940-LGA, cache-mrs10560-MRS
+      X-Timer:
+      - S1787267830.162086,VS0,VE1
+      content-type:
+      - application/atom+xml; charset=utf-8
+      server:
+      - Google Frontend
+      via:
+      - 1.1 google, 1.1 varnish, 1.1 varnish, 1.1 varnish
+      x-cloud-trace-context:
+      - 4b33c2d9aa3aefc4a8a1820df3d9bfb5
+    status:
+      code: 200
+      message: OK
+version: 1

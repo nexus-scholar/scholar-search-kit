@@ -1,0 +1,145 @@
+\ProvidesPackage{nexus_theme}
+
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, backgrounds, shadows}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+% Corporate Modern Color Palette
+\definecolor{NexusNavy}{HTML}{0F172A}       % Primary slate 900
+\definecolor{NexusDark}{HTML}{1E293B}       % Slate 800
+\definecolor{NexusBlue}{HTML}{2563EB}       % Brand Blue 600
+\definecolor{NexusIndigo}{HTML}{4F46E5}     % Electric Indigo 600
+\definecolor{NexusCyan}{HTML}{06B6D4}       % Cyan 500
+\definecolor{NexusEmerald}{HTML}{10B981}    % Emerald Green 500
+\definecolor{NexusRose}{HTML}{F43F5E}       % Rose Red 500
+\definecolor{NexusAmber}{HTML}{F59E0B}      % Amber Orange 500
+\definecolor{NexusBgLight}{HTML}{F8FAFC}    % Slate 50
+\definecolor{NexusCardBorder}{HTML}{CBD5E1} % Slate 300
+
+% Apply Colors to Beamer
+\setbeamercolor{palette primary}{bg=NexusNavy, fg=white}
+\setbeamercolor{palette secondary}{bg=NexusDark, fg=white}
+\setbeamercolor{palette tertiary}{bg=NexusBlue, fg=white}
+\setbeamercolor{structure}{fg=NexusBlue}
+\setbeamercolor{frametitle}{bg=NexusNavy, fg=white}
+
+% Title Page Text Colors (High Contrast)
+\setbeamercolor{title}{fg=NexusNavy}
+\setbeamercolor{title separator}{fg=NexusBlue}
+\setbeamercolor{subtitle}{fg=NexusBlue}
+\setbeamercolor{author}{fg=NexusDark}
+\setbeamercolor{date}{fg=NexusDark!70}
+\setbeamercolor{institute}{fg=NexusDark!70}
+
+% Standout Frame Colors
+\setbeamercolor{standout}{bg=NexusNavy, fg=white}
+
+% Block Colors
+\setbeamercolor{block title}{bg=NexusNavy!10, fg=NexusNavy}
+\setbeamercolor{block body}{bg=NexusBgLight, fg=NexusDark}
+\setbeamercolor{block title alerted}{bg=NexusRose!15, fg=NexusRose}
+\setbeamercolor{block body alerted}{bg=NexusBgLight, fg=NexusDark}
+\setbeamercolor{block title example}{bg=NexusEmerald!15, fg=NexusEmerald}
+\setbeamercolor{block body example}{bg=NexusBgLight, fg=NexusDark}
+
+% Code Listings Theme (Modern High-Contrast Dark Card)
+\definecolor{CodeBg}{HTML}{0F172A}
+\definecolor{CodeFg}{HTML}{F8FAFC}
+\definecolor{CodeKw}{HTML}{38BDF8}
+\definecolor{CodeStr}{HTML}{34D399}
+\definecolor{CodeCmt}{HTML}{94A3B8}
+\definecolor{CodeType}{HTML}{FBBF24}
+\definecolor{CodeFn}{HTML}{A78BFA}
+
+\lstdefinestyle{nexuspython}{
+    language=Python,
+    backgroundcolor=\color{CodeBg},
+    basicstyle=\ttfamily\scriptsize\color{CodeFg},
+    keywordstyle=\color{CodeKw}\bfseries,
+    stringstyle=\color{CodeStr},
+    commentstyle=\color{CodeCmt}\itshape,
+    emph={Document,Author,ExternalIds,Query,DocumentCluster,AcademicHttpClient,RateLimiter,SearchEngine,DocumentVerifier,Exporter,RISImporter,JSONImporter,JSONLImporter,ScholarSearchError,ProviderError,RateLimitExceededError,dataclass,field,self,verify_document,hydrate_metadata,search,snowball,deduplicate},
+    emphstyle=\color{CodeType}\bfseries,
+    morekeywords={match,case,with,as,None,True,False},
+    columns=flexible,
+    keepspaces=true,
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    frame=single,
+    rulecolor=\color{NexusDark},
+    frameround=tttt,
+    framesep=8pt,
+    xleftmargin=6pt,
+    xrightmargin=6pt,
+    aboveskip=10pt,
+    belowskip=10pt,
+    numbers=none
+}
+
+% TikZ Corporate Styles
+\tikzset{
+    card/.style={
+        rectangle,
+        draw=NexusCardBorder,
+        fill=white,
+        thick,
+        rounded corners=4pt,
+        align=center,
+        inner sep=8pt,
+        drop shadow={opacity=0.06, shadow xshift=1pt, shadow yshift=-1pt}
+    },
+    primarycard/.style={
+        rectangle,
+        draw=NexusBlue,
+        fill=NexusBlue!8,
+        thick,
+        rounded corners=4pt,
+        align=center,
+        inner sep=8pt,
+        drop shadow={opacity=0.08, shadow xshift=1pt, shadow yshift=-1pt}
+    },
+    successcard/.style={
+        rectangle,
+        draw=NexusEmerald,
+        fill=NexusEmerald!8,
+        thick,
+        rounded corners=4pt,
+        align=center,
+        inner sep=8pt,
+        drop shadow={opacity=0.08, shadow xshift=1pt, shadow yshift=-1pt}
+    },
+    alertcard/.style={
+        rectangle,
+        draw=NexusRose,
+        fill=NexusRose!8,
+        thick,
+        rounded corners=4pt,
+        align=center,
+        inner sep=8pt,
+        drop shadow={opacity=0.08, shadow xshift=1pt, shadow yshift=-1pt}
+    },
+    accentcard/.style={
+        rectangle,
+        draw=NexusIndigo,
+        fill=NexusIndigo!8,
+        thick,
+        rounded corners=4pt,
+        align=center,
+        inner sep=8pt,
+        drop shadow={opacity=0.08, shadow xshift=1pt, shadow yshift=-1pt}
+    },
+    flowarrow/.style={
+        -{Stealth[scale=1.2]},
+        thick,
+        color=NexusDark
+    },
+    accentarrow/.style={
+        -{Stealth[scale=1.2]},
+        thick,
+        color=NexusBlue
+    }
+}

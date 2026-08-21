@@ -1,25 +1,23 @@
-# Episode 16: Pluggable Output Formats (JSONL & RIS)
+# Episode 16: Multi-Provider Deduplication & Metadata Merging
 
-**Objective:** Abstract file I/O and implement specific formatters for standard JSON streaming and academic RIS files.
+**Objective:** Combine multi-source duplicate records non-destructively and synthesize complete canonical representations.
 
-## 🎬 Presentation Script
+## Presentation Script
 
 | Slide | Title | Talking Points | Action |
 | :--- | :--- | :--- | :--- |
-| 1 | **Title Slide** | We have the data in memory. Now we need to save it to disk. | *Show Title Slide.* |
-| 2 | **Episode Goal** | Different users need different formats. We can't hardcode file writing; we need a pluggable architecture. | *Highlight the goal block.* |
-| 3 | **The `Exporter` Protocol** | Just like Providers, Exporters share an interface. The Engine just calls `write_chunk()` and doesn't care what format is happening underneath. | *Point to the diagram.* |
-| 4 | **Implementation: JSON Lines** | JSON arrays require loading the whole file into memory to add one item. JSONL lets us append lines forever. | *Explain streaming JSON.* |
-| 5 | **Implementation: RIS Format** | RIS is ancient but universal. It maps our clean `Document` model to two-letter tags like `TI` and `AU`. | *Explain RIS tags.* |
-| 6 | **Verification** | Let's write our mock data to both formats and inspect the output. | *Transition to Terminal.* |
+| 1 | **Title Slide** | Clean literature sets require smart deduplication without data loss. | *Show Title Slide.* |
+| 2 | **Episode Goal** | Group identical records across databases and merge rich metadata into the representative record. | *Highlight goal.* |
+| 3 | **Two-Phase Matching** | Phase 1 matches exact persistent IDs; Phase 2 matches normalized fuzzy titles with year gating. | *Show flowchart.* |
+| 4 | **Smart Metadata Synthesis** | Combines PubMed MeSH terms, Semantic Scholar AI summaries, and OpenAlex citations. | *Show merging table.* |
+| 5 | **Implementation** | Walkthrough of `src/scholar_search/dedup.py`. | *Transition to code.* |
+| 6 | **Verification** | Run deduplication metadata merging tests. | *Transition to Terminal.* |
 
-## 💻 Terminal & Code Walkthrough
+## Terminal & Code Walkthrough
 
-1. **Show `exporters.py`**:
-   - Open `src/scholar_search/export/exporters.py`.
-   - Walk through the `JSONLExporter` and `RISExporter`.
-2. **Show the RIS formatting logic**:
-   - Highlight how authors are iterated and mapped to multiple `AU` tags.
-3. **Run the Tests**:
-   - In the terminal, run: `pytest tests/export/`
-   - Show the assertions checking for standard RIS line endings.
+1. **Show `dedup.py`**:
+   - Open `src/scholar_search/dedup.py`.
+   - Walk through `deduplicate()` and `_merge_metadata()`.
+2. **Run the Tests**:
+   - Run: `pytest tests/test_dedup.py`
+   - Confirm tests pass.

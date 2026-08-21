@@ -1,11 +1,10 @@
 \documentclass[aspectratio=169]{beamer}
-\usetheme[block=fill]{metropolis}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+\usetheme{metropolis}
+\usepackage{nexus_theme}
 
 \title{Building a Reproducible Scholarly Search Toolkit}
-\subtitle{Episode 12: The Provider Protocol \& In-Memory Engine}
-\author{Scholar Search Kit}
+\subtitle{Episode 12: The SearchProvider Protocol}
+\author{Nexus Scholar Suite}
 \date{}
 
 \begin{document}
@@ -14,67 +13,38 @@
   \titlepage
 \end{frame}
 
-\begin{frame}{Episode Goal}
-  \begin{alertblock}{The Goal}
-    Define a \texttt{SearchProvider} Protocol and implement an \texttt{InMemoryProvider} for blazing-fast, network-free testing.
-  \end{alertblock}
-  \vspace{0.5cm}
-  If our unit tests actually hit the OpenAlex API, they will be slow, flaky, and require internet access. We need a way to completely mock the provider layer.
-\end{frame}
-
-\begin{frame}{The \texttt{SearchProvider} Protocol}
+\begin{frame}{The \texttt{SearchProvider} Contract}
   \begin{center}
-  \resizebox{0.5\linewidth}{!}{
-  \begin{tikzpicture}[
-      node distance=1.5cm and 2cm,
-      proto/.style={rectangle, draw, thick, rounded corners, minimum width=3cm, align=center, fill=black!5},
-      impl/.style={rectangle, draw, thick, rounded corners, minimum width=3.5cm, align=center, fill=blue!10},
-      arrow/.style={-{Stealth[scale=1.2]}, thick, dashed}
-    ]
+  \resizebox{0.85\linewidth}{!}{
+  \begin{tikzpicture}[node distance=0.8cm and 1.5cm]
+    \node[primarycard] (proto) {\textbf{\texttt{SearchProvider} Protocol}\\\texttt{name: str}\\\texttt{search(query: Query) -> Iterator[Document]}};
     
-    \node[proto] (p) {\texttt{SearchProvider}\\(Protocol)};
-    
-    \node[impl, below=1cm of p, xshift=-2.5cm] (mem) {\texttt{InMemoryProvider}};
-    \node[impl, below=1cm of p, xshift=2.5cm] (oa) {\texttt{OpenAlexProvider}};
-    
-    \draw[arrow] (mem) -- (p);
-    \draw[arrow] (oa) -- (p);
+    \node[card, below left=1.2cm and -0.8cm of proto] (oa) {OpenAlexProvider};
+    \node[card, below=1.2cm of proto] (crossref) {CrossrefProvider};
+    \node[card, below right=1.2cm and -0.8cm of proto] (arxiv) {ArXivProvider};
+
+    \draw[flowarrow] (proto) -- (oa);
+    \draw[flowarrow] (proto) -- (crossref);
+    \draw[flowarrow] (proto) -- (arxiv);
   \end{tikzpicture}
   }
   \end{center}
-  \vspace{0.2cm}
-  Any class that implements \texttt{search(query: Query) -> SearchResult} satisfies the Protocol.
 \end{frame}
 
-\begin{frame}{Implementation: \texttt{InMemoryProvider}}
-  \begin{block}{Deterministic Testing}
-    The \texttt{InMemoryProvider} is initialized with a static list of \texttt{Document} objects.
-  \end{block}
-  
-  \begin{itemize}
-      \item When \texttt{search()} is called, it simulates latency and returns the predefined list.
-      \item This allows the rest of the application (deduplication, export, CLI) to be tested instantly without network variability.
-  \end{itemize}
-\end{frame}
+\begin{frame}[fragile]{Base Provider Architecture}
+\begin{lstlisting}[style=nexuspython]
+class SearchProvider(Protocol):
+    name: str
+    def search(self, query: Query) -> Iterator[Document]: ...
 
-\begin{frame}{The Registry Pattern}
-  \begin{block}{Dynamic Injection}
-    We use a \texttt{ProviderRegistry} to map names (e.g., "openalex") to their respective classes.
-  \end{block}
-  
-  \begin{itemize}
-      \item The CLI doesn't need to import \texttt{OpenAlexProvider} directly.
-      \item This allows users to pass \texttt{--provider=openalex} and instantiate the engine dynamically.
-  \end{itemize}
-\end{frame}
+class BaseProvider(ABC):
+    def __init__(self, name: str, rate_limit: float = 5.0):
+        self.name = name
+        self.http = AcademicHttpClient(name=name, rate_limit=rate_limit)
 
-\begin{frame}{Verification}
-  \begin{alertblock}{Success Criteria}
-    \begin{itemize}
-        \item The \texttt{InMemoryProvider} successfully passes the Pyright type-checker as a \texttt{SearchProvider}.
-        \item Fetching "in\_memory" from the \texttt{ProviderRegistry} returns the correct class.
-    \end{itemize}
-  \end{alertblock}
+    @abstractmethod
+    def search(self, query: Query) -> Iterator[Document]: ...
+\end{lstlisting}
 \end{frame}
 
 \end{document}

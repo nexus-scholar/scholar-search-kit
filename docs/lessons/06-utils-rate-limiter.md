@@ -1,68 +1,52 @@
-# Lesson 3.2: Rate Limiting with Token Buckets (`rate_limit.py`)
+# Lesson 3.2: Rate Limiting with Token Buckets (`http_client.py`)
 
-**Status**: 🟡 **Lesson Milestone Target** / 🔵 **Reference: `strategy-pipeline/src/slr/utils/rate_limit.py`**
+## 1. Scientific Motivation & Context
+Academic APIs enforce strict rate limits to protect public infrastructure (e.g. arXiv 1 req/s, OpenAlex 10 req/s polite pool, Crossref 5 req/s polite pool, Semantic Scholar 1 req/s). A client-side rate limiter regulates request bursts and prevents uncoordinated concurrency from triggering temporary IP bans.
 
 ---
 
-## 1. Scientific Motivation & Context
-Academic APIs enforce rate limits to protect public infrastructure (e.g. arXiv 3 req/s, OpenAlex 10 req/s polite pool, Crossref 50 req/s polite pool). A client-side rate limiter reduces client-generated request bursts and prevents uncoordinated concurrency from triggering temporary IP bans. However, because remote servers may enforce dynamic load shedding or shared-IP restrictions, client rate limiting must always be paired with HTTP 429 backoff handling.
+## 2. Component Contract & Implementation
 
-## 2. Reference Architecture Analysis
-* **Reference Source**: `strategy-pipeline/src/slr/utils/rate_limit.py`
-* **Implementations**:
-  * `TokenBucket`: Continuous token replenishment with burst capacity and thread-safe locking.
-  * `SlidingWindowRateLimiter`: Deque-based timestamp sliding window.
-  * `RateLimitDecorator`: Function wrapper enforcing rate limits.
-
-## 3. Explicit Component Contract
-
-### Class Definition: `TokenBucket`
-* **Mathematical Refill Model**:
-  $$\text{tokens}(t) = \min\Big(\text{capacity},\ \text{tokens}(t_{last}) + (t - t_{last}) \times \text{rate}\Big)$$
-* **Methods**:
-  * `__init__(rate: float, capacity: int)`:
-    * `rate`: Tokens added per second ($> 0$).
-    * `capacity`: Maximum token accumulation (default: $5 \times \text{rate}$).
-  * `consume(tokens: int = 1) -> bool`:
-    * Non-blocking. Consumes tokens if available and returns `True`, else `False`.
-  * `wait_for_token(tokens: int = 1, timeout: Optional[float] = None) -> bool`:
-    * Blocking. Computes deficit $\Delta = \text{tokens} - \text{current\_tokens}$.
-    * Calculates sleep interval: $t_{sleep} = \min(\Delta / \text{rate}, 1.0)$.
-    * Blocks until tokens available or `timeout` exceeded. Returns `True` if acquired, `False` on timeout.
-
-### Invariants & Thread Safety
-1. **Thread Lock**: All state access (`tokens`, `last_update`) must be guarded by `threading.Lock()`.
-2. **Clock Source**: Must use `time.monotonic()` to guard against system clock adjustments.
-
-## 4. Verification & Falsifying Tests
+* **Module**: `scholar_search.http_client`
+* **Class**: `RateLimiter`
 
 ```python
 import time
-from scholar_search.utils.rate_limit import TokenBucket
 
-def test_token_bucket_burst_and_refill():
-    bucket = TokenBucket(rate=10.0, capacity=5)
-    
-    # Can burst up to capacity
-    assert bucket.consume(5) is True
-    # Immediate next consumption fails
-    assert bucket.consume(1) is False
-    
-    # After 0.25s, at least 2 tokens refill (0.25 * 10 = 2.5)
-    time.sleep(0.25)
-    assert bucket.consume(2) is True
+class RateLimiter:
+    """Token bucket rate limiter ensuring polite client-side request rates."""
 
-def test_token_bucket_wait_timeout():
-    bucket = TokenBucket(rate=1.0, capacity=1)
-    bucket.consume(1)
-    # Waiting with short timeout should fail
-    assert bucket.wait_for_token(tokens=10, timeout=0.1) is False
+    def __init__(self, rate: float):
+        self.rate = rate
+        self.capacity = max(1.0, rate)
+        self.tokens = self.capacity
+        self.last_update = time.time()
+
+    def wait(self) -> None:
+        """Wait until at least 1.0 token is available."""
+        if self.rate <= 0:
+            return
+            
+        while True:
+            now = time.time()
+            elapsed = now - self.last_update
+            self.tokens = min(self.capacity, self.tokens + elapsed * self.rate)
+            self.last_update = now
+
+            if self.tokens >= 1.0:
+                self.tokens -= 1.0
+                return
+            
+            sleep_time = (1.0 - self.tokens) / self.rate
+            time.sleep(max(0.01, sleep_time))
 ```
 
-## 5. AI Build Prompt
+---
 
-```text
-Implement TokenBucket, SlidingWindowRateLimiter, and RateLimitDecorator in scholar_search/utils/rate_limit.py following Lesson 3.2.
-Ensure thread-safety with threading.Lock, monotonic clock timing, burst capacity, and blocking wait_for_token logic.
-Add unit tests in tests/test_rate_limit.py.
-```
+## 3. Mathematical Refill Model
+
+$$\text{tokens}(t) = \min\Big(\text{capacity},\ \text{tokens}(t_{last}) + (t - t_{last}) \times \text{rate}\Big)$$
+
+1. **Burst Capacity**: Allows up to `capacity` requests instantaneously if the system has been idle.
+2. **Smooth Replenishment**: Continuously refills at `rate` tokens per second.
+3. **Adaptive Sleep**: Computes the exact duration needed before the next token is ready.

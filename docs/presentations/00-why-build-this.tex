@@ -1,12 +1,10 @@
 \documentclass[aspectratio=169]{beamer}
 \usetheme{metropolis}
-\metroset{block=fill}
-\usepackage{tikz}
-\usetikzlibrary{positioning, arrows.meta, shapes.geometric}
+\usepackage{nexus_theme}
 
 \title{Building a Reproducible Scholarly Search Toolkit}
-\subtitle{Episode 0: Why Build This?}
-\author{Scholar Search Kit}
+\subtitle{Episode 0: The Architecture of Scientific Discovery}
+\author{Nexus Scholar Suite}
 \date{}
 
 \begin{document}
@@ -15,64 +13,58 @@
   \titlepage
 \end{frame}
 
-\begin{frame}{The Scientific Need}
-  \begin{itemize}
-    \item \textbf{Exploratory Research} often relies on proprietary algorithms.
-    \item \textbf{Systematic Literature Reviews (SLR)} demand absolute transparency.
-    \item \textbf{The Core Problem}: Most tools inextricably couple \textit{search mechanics} with the \textit{research methodology}.
-  \end{itemize}
+\begin{frame}{The Scientific Literature Crisis}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Proprietary Silos}
+        \begin{itemize}
+          \item Black-box search ranking algorithms.
+          \item Unreproducible result lists over time.
+          \item Vendor lock-in and steep API costs.
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Scientific Requirement}
+        \begin{itemize}
+          \item Full query auditability \& provenance.
+          \item Multi-provider federated discovery.
+          \item Deterministic deduplication trails.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{The Goal of this Toolkit}
-  \begin{itemize}
-    \item Build a \textbf{modular}, \textbf{extensible}, and \textbf{scientifically auditable} search toolkit.
-    \item Support multiple providers through a unified interface.
-    \item Decouple the execution of search and deduplication from the theoretical research protocol.
-  \end{itemize}
-  
-  \vspace{0.5cm}
+\begin{frame}{Nexus Scholar Suite Architecture}
   \begin{center}
-  \resizebox{\linewidth}{!}{
-  \begin{tikzpicture}[
-      node distance=1.5cm and 2cm,
-      box/.style={rectangle, draw, thick, rounded corners, align=center, minimum width=2.5cm, minimum height=1cm, fill=black!5},
-      arrow/.style={-{Stealth[scale=1.2]}, thick}
-    ]
-    \node[box] (providers) {Providers\\(OpenAlex, arXiv, ...)};
-    \node[box, right=of providers] (toolkit) {Search Toolkit\\(Ingest \& Normalize)};
-    \node[box, right=of toolkit] (harness) {AI Harness\\(Research Protocol)};
+  \resizebox{0.9\linewidth}{!}{
+  \begin{tikzpicture}[node distance=1.2cm and 1.5cm]
+    \node[card, fill=NexusBlue!10, draw=NexusBlue] (prov) {\textbf{Federated Providers}\\OpenAlex, Crossref, arXiv\\PubMed, S2, bioRxiv};
+    \node[primarycard, right=of prov] (core) {\textbf{scholar-search-kit}\\Lexing $\cdot$ Deduplication\\Crossref Verification};
+    \node[successcard, right=of core] (downstream) {\textbf{Nexus Ecosystem}\\scholar-pdf-kit\\scholar-rag-kit $\cdot$ bib-kit};
 
-    \draw[arrow] (providers) -- (toolkit);
-    \draw[arrow] (toolkit) -- (harness);
+    \draw[flowarrow] (prov) -- node[above, font=\scriptsize\bfseries] {Normalizes} (core);
+    \draw[accentarrow] (core) -- node[above, font=\scriptsize\bfseries] {Structured JSON} (downstream);
   \end{tikzpicture}
   }
   \end{center}
 \end{frame}
 
-\begin{frame}{Why Build from Scratch?}
-  \begin{alertblock}{Auditability over Convenience}
-    We cannot scientifically trust what we cannot trace. By building from first principles, we guarantee the provenance of every deduplicated record and every normalized timestamp.
-  \end{alertblock}
-  \vspace{0.5cm}
+\begin{frame}{Why Build from First Principles?}
+  \begin{block}{Auditability over Convenience}
+    We cannot scientifically trust what we cannot trace. Building clean-room components ensures mathematical exactness for deduplication denominators and citation metrics.
+  \end{block}
+  \vspace{0.3cm}
   \begin{itemize}
-    \item We learn \textbf{resilient design} (rate limiters, token buckets).
-    \item We understand \textbf{API discrepancies} across providers.
-    \item We prepare for \textbf{AI orchestration} (building CLI tools that an AI agent can reliably execute).
+    \item \textbf{Resilient Client}: Polite token buckets and SQLite session caching.
+    \item \textbf{Anti-Hallucination}: Verification against 150M Crossref records.
+    \item \textbf{Agentic Automation}: Native Antigravity skills for AI research assistants.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{What to Expect}
-  \begin{enumerate}
-    \item \textbf{Season 1}: Foundation \& Contracts
-    \item \textbf{Season 2}: Data Models \& Resilience
-    \item \textbf{Season 3}: Providers \& Ingestion
-    \item \textbf{Season 4}: Matching \& Export
-    \item \textbf{Season 5}: CLI, Harness \& AI
-  \end{enumerate}
-\end{frame}
-
 \begin{frame}[standout]
-  Let's start reading the contract!
+  Let's build the scientific search backbone.
 \end{frame}
 
 \end{document}

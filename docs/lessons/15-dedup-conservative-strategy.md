@@ -1,65 +1,60 @@
-# Lesson 6.1: Deduplication & Conservative Matching (`dedup/`)
-
-**Status**: 🟢 **Implemented (Baseline v0.1.0 in `dedup.py`)** / 🟡 **4-Phase Strategy Target**
-
----
+# Lesson 6.1: Multi-Provider Deduplication & Smart Metadata Merging (`dedup.py`)
 
 ## 1. Scientific Motivation & Context
-When aggregating literature from multiple databases, duplicate records appear frequently (e.g. preprints vs published papers, Crossref DOI records vs OpenAlex works). Deduplication precision is paramount:
-* **False Merges (High Scientific Risk)**: Erroneously collapsing two distinct papers with similar titles permanently deletes evidence.
-* **Missed Merges**: Inflates review counts and forces duplicate human screening.
+When querying federated databases, duplicate records are ubiquitous (e.g. arXiv preprints vs peer-reviewed Crossref DOIs vs PubMed citations).
+A naive deduplicator discards duplicate records entirely, throwing away valuable provider-specific metadata (such as PubMed MeSH headings or Semantic Scholar AI TLDR summaries).
+Our `Deduplicator` groups duplicates non-destructively and synthesizes the most complete canonical `representative` record.
 
 ---
 
-## 2. Implementation Tiers
+## 2. Component Contract & Algorithm
 
-### 🟢 Current Baseline Implementation (`v0.1.0`)
-* Located in `src/scholar_search/dedup.py`.
-* **Mechanism**:
-  1. Checks exact matching on `external_ids.doi` or `external_ids.arxiv_id`.
-  2. If no identifier match, checks conservative title similarity via Python `difflib.SequenceMatcher.ratio() >= 0.97` on alphanumeric lowercased strings.
-  3. Appends document to matching cluster or creates new cluster.
-  4. Computes total, unique, and duplicate count statistics.
+* **Module**: `scholar_search.dedup`
+* **Class**: `Deduplicator`
 
-### 🟡 Target Milestone: 4-Phase Conservative Algorithm
-* Expands the baseline into multi-phase candidate indexing and publication year gap gating:
-  1. **Phase 1 (Exact DOI Index)**: Merges all unclustered records sharing identical normalized DOI (`confidence = 1.0`, `match_method = "exact_doi"`).
-  2. **Phase 2 (Exact arXiv ID Index)**: Merges all remaining unclustered records sharing identical arXiv ID (`confidence = 1.0`, `match_method = "exact_arxiv_id"`).
-  3. **Phase 3 (Fuzzy Title + Year Gap Gating)**: Merges remaining unclustered records matching on normalized title if $|year_1 - year_2| \le \text{max\_year\_gap}$ (default: $1$) (`confidence = 0.95`, `match_method = "fuzzy_title"`).
-  4. **Phase 4 (Singletons)**: Assigns all remaining unique records to singleton clusters.
-* **Representative Document Scoring Formula**:
-  $$\text{Score}(d) = \Big( \text{Completeness}(d),\ \text{Citations}(d),\ \text{ProviderPriority}(d) \Big)$$
-  * $\text{Completeness}(d) = 10 \cdot \mathbb{I}(\text{abstract}) + 5 \cdot \mathbb{I}(\text{authors}) + 3 \cdot \mathbb{I}(\text{venue}) + 2 \cdot \mathbb{I}(\text{doi})$
-  * $\text{ProviderPriority}$: Crossref (4) > OpenAlex (3) > Semantic Scholar (2) > arXiv (1) > Unknown (0).
+### 2-Phase Matching Engine
+1. **Phase 1 (Persistent Identifiers)**: Matches on exact normalized `doi`, `arxiv_id`, `pubmed_id`, `openalex_id`, or `s2_id`.
+2. **Phase 2 (Fuzzy Title + Year Gating)**: Matches on cleaned lowercase alphanumeric titles with `difflib.SequenceMatcher.ratio() >= 0.95` and $|year_1 - year_2| \le 1$.
+
+### Non-Destructive Metadata Merging (`_merge_metadata`)
+When a duplicate is added to an existing cluster, the representative document is dynamically enriched:
+- Backfills missing `abstract`, `venue`, `year`, `url`.
+- Combines distinct `authors` by ORCID/name.
+- Merges `mesh_terms`, `citation_intents`, and `tldr` summaries.
+- Adopts maximum `citations_count` and `references_count`.
 
 ---
 
-## 3. Verification & Falsifying Tests
+## 3. Verification & Automated Tests
+
+Run with `pytest tests/test_dedup.py`:
 
 ```python
 from scholar_search.dedup import Deduplicator
 from scholar_search.models import Document, ExternalIds
 
-def test_dedup_doi_and_title_phases():
-    d1 = Document("Deep Residual Learning", year=2016, external_ids=ExternalIds(doi="10.1109/CVPR.2016.90"))
-    d2 = Document("Deep Residual Learning", year=2015, external_ids=ExternalIds(arxiv_id="1512.03385"))
-    d3 = Document("Deep Residual Learning", year=2016, external_ids=ExternalIds(doi="10.1109/cvpr.2016.90"))
+def test_dedup_metadata_merging():
+    d1 = Document(
+        title="Attention Is All You Need",
+        year=2017,
+        provider="arxiv",
+        external_ids=ExternalIds(arxiv_id="1706.03762"),
+        abstract="The dominant sequence transduction models...",
+    )
+    d2 = Document(
+        title="Attention is All You Need",
+        year=2017,
+        provider="pubmed",
+        external_ids=ExternalIds(arxiv_id="1706.03762"),
+        mesh_terms=["Neural Networks, Computer", "Natural Language Processing"],
+        citations_count=120000,
+    )
     
-    clusters = Deduplicator().deduplicate([d1, d2, d3])
+    clusters = Deduplicator().deduplicate([d1, d2])
+    assert len(clusters) == 1
+    rep = clusters[0].representative
     
-    # d1 and d3 merge on DOI
-    assert len(clusters) <= 2
-    doi_cluster = next(c for c in clusters if d1 in c.members and d3 in c.members)
-    assert doi_cluster.size == 2
-```
-
----
-
-## 4. AI Build Prompt
-
-```text
-Enhance Deduplicator in scholar_search/dedup.py from the baseline v0.1.0 to the Lesson 6.1 4-phase target milestone.
-Implement candidate indexing (exact DOI -> exact arXiv -> fuzzy title with max_year_gap <= 1 -> singletons).
-Implement lexicographic representative scoring tuple.
-Add unit tests in tests/test_dedup.py.
+    assert rep.abstract is not None
+    assert "Neural Networks, Computer" in rep.mesh_terms
+    assert rep.citations_count == 120000
 ```

@@ -1,60 +1,46 @@
-# Lesson 5.1: The Provider Protocol & In-Memory Engine (`providers/base.py`)
+# Lesson 5.1: The Provider Protocol & Multi-Provider Engine (`providers/base.py` & `engine.py`)
 
 ## 1. Scientific Motivation & Context
-Testing literature search workflows against live APIs creates non-deterministic tests, triggers rate limits, requires API credentials, and fails during network downtime. By establishing an abstract `BaseProvider` contract and a deterministic `InMemoryProvider`, complete research pipelines can be tested, benchmarked, and demonstrated entirely offline without external dependencies.
+No single academic index has complete coverage of global scholarly literature. Biomedical literature lives in PubMed, computer science preprints in arXiv, open-access metadata in OpenAlex, published DOI records in Crossref, and AI citation graphs in Semantic Scholar.
 
-## 2. Reference Architecture Analysis
-* **Reference Source**: `strategy-pipeline/src/slr/providers/base.py`
-* **Components**:
-  * `BaseProvider(ABC)`: Abstract class managing rate limiter initialization, `_make_request()` with retries, and abstract methods `search()`, `_translate_query()`, `_normalize_response()`.
-  * `ProviderRegistry`: Central registration and discovery engine.
-  * `InMemoryProvider`: In-memory collection filtering engine.
+To achieve exhaustive literature discovery, we define a polymorphic `SearchProvider` protocol orchestrated by a federated `SearchEngine`.
 
-## 3. Explicit Component Contract
+---
 
-### 3.1 `SearchProvider` Protocol / `BaseProvider`
-* **Methods**:
-  * `search(query: Query) -> Iterator[Document]`: Main entry point yielding normalized documents.
-  * `_translate_query(query: Query) -> Dict[str, Any]`: Converts `Query` to provider API params.
-  * `_normalize_response(raw: Dict[str, Any]) -> Optional[Document]`: Normalizes provider payload.
-  * `_make_request(url: str, params: Dict, headers: Dict) -> Dict[str, Any]`: Executes HTTP request with TokenBucket waiting and retry logic.
+## 2. Component Contract & Implementation
 
-### 3.2 `InMemoryProvider`
-* **Behavior**:
-  * Initializes with `Iterable[Document]`.
-  * Filters in-memory documents against:
-    1. Case-insensitive term search across `title` and `abstract`.
-    2. Lower and upper publication year bounds (`year_min`, `year_max`).
-    3. Maximum results count (`max_results`).
-  * Attaches `query_id` and calls `doc.mark_retrieved()` on each returned record.
-
-## 4. Verification & Falsifying Tests
+* **Module**: `scholar_search.providers.base` & `scholar_search.engine`
 
 ```python
-from scholar_search.models import Document, Query
-from scholar_search.providers import InMemoryProvider
+from typing import Protocol, Iterator
+from scholar_search.models import Query, Document
 
-def test_in_memory_provider_deterministic_filtering():
-    corpus = [
-        Document("Neural Networks in Medicine", year=2021, abstract="Clinical study"),
-        Document("Neural Networks in Finance", year=2023, abstract="Market analysis"),
-        Document("Quantum Computing", year=2022, abstract="Physics review"),
-    ]
-    provider = InMemoryProvider(corpus)
-    
-    q = Query(id="Q99", text="neural medicine", year_min=2020)
-    results = list(provider.search(q))
-    
-    assert len(results) == 1
-    assert results[0].title == "Neural Networks in Medicine"
-    assert results[0].query_id == "Q99"
-    assert results[0].retrieved_at is not None
+class SearchProvider(Protocol):
+    name: str
+
+    def search(self, query: Query) -> Iterator[Document]:
+        """Execute search and yield normalized Document objects."""
+        ...
 ```
 
-## 5. AI Build Prompt
+* **Federated `SearchEngine`**:
+  - Distributes the `Query` across selected providers (`openalex`, `crossref`, `pubmed`, `arxiv`, `semanticscholar`, `biorxiv`).
+  - Merges and deduplicates results into `DocumentCluster` representations.
+  - Supports backward and forward citation snowballing.
 
-```text
-Implement BaseProvider, ProviderRegistry, and InMemoryProvider in scholar_search/providers/base.py and providers.py following Lesson 5.1.
-Ensure InMemoryProvider filters on terms, years, and max_results deterministically and sets query provenance.
-Add unit tests in tests/test_providers.py.
+---
+
+## 3. Verification & Automated Tests
+
+Run with `pytest tests/test_engine.py`:
+
+```python
+from scholar_search.engine import SearchEngine
+from scholar_search.models import Query
+
+def test_search_engine_federation():
+    engine = SearchEngine(providers=["openalex", "crossref"])
+    q = Query(text="quantum computing", max_results=10)
+    results = engine.search(q)
+    assert len(results) > 0
 ```

@@ -1,24 +1,14 @@
-# Episode 22: The Harness Tutorial Conclusion
+# Episode 22: Course Conclusion & The Nexus Scholar Suite
 
-**Objective:** Wrap up the video series, summarize the architectural achievements, and provide a call to action for the open-source community.
+**Objective:** Summarize achievements and show how `scholar-search-kit` powers the complete scientific ecosystem.
 
-## 🎬 Presentation Script
+## Presentation Script
 
 | Slide | Title | Talking Points | Action |
 | :--- | :--- | :--- | :--- |
-| 1 | **Title Slide** | We made it. | *Show Title Slide.* |
-| 2 | **Episode Goal** | 22 episodes ago, this was just an idea. Now it's a living open-source library. Let's look at what we accomplished. | *Highlight the goal block.* |
-| 3 | **The Final Architecture** | Notice how everything points to the `Document` contract. The UI, the Exporters, and the Providers all agree on what data is. | *Point to the diagram.* |
-| 4 | **Key Takeaways** | We decoupled the logic. We enforced reproducibility. We built resilience with exponential backoff. | *Read takeaways.* |
-| 5 | **What's Next?** | The code is on GitHub, and it's on PyPI. It's ready for you to fork it, break it, and make it better. | *Call to action.* |
-
-## 💻 Terminal & Code Walkthrough
-
-1. **The Final Spin**:
-   - In the terminal, run a beautiful, flawless command: `scholar-search "Systematic Literature Review Automation" --provider openalex --format ris`
-   - Watch the logs stream gracefully into the terminal.
-2. **The Output Directory**:
-   - Show the final `outputs/` folder.
-3. **Sign-off**:
-   - Thank the viewers for sticking through the Harness Tutorial. 
-   - Roll Outro.
+| 1 | **Title Slide** | We have built a modern, hardened scholarly search toolkit from scratch. | *Show Title Slide.* |
+| 2 | **What We Built** | 6 external providers, polite rate limiting, SQLite caching, Boolean lexing, smart deduplication, and Crossref hallucination verification. | *Show architecture summary.* |
+| 3 | **The Nexus Scholar Suite** | `scholar-search-kit` feeds into `scholar-pdf-kit`, `scholar-rag-kit`, `scholar-bib-kit`, `scholar-graph-kit`, and `scholar-monitor-kit`. | *Show suite diagram.* |
+| 4 | **Agentic Capabilities** | With dedicated `.agents/skills/`, AI agents can discover, verify, and ingest scientific literature reliably. | *Show agent skill workflow.* |
+| 5 | **Next Steps** | Explore the API reference, run the tutorial, and build custom scientific applications. | *Show documentation links.* |
+| 6 | **Wrap-Up** | Thank you for building reproducible scientific research tooling! | *Final slide.* |

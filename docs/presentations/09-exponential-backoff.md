@@ -1,25 +1,22 @@
-# Episode 9: Exponential Backoff & Rate Limit Retries
+# Episode 9: Exponential Backoff & SQLite Response Caching
 
-**Objective:** Use Python decorators to cleanly inject retry logic around flaky network calls without polluting the business logic.
+**Objective:** Combine SQLite local response caching, HTTP adapter retries, and socket timeouts into `AcademicHttpClient`.
 
-## 🎬 Presentation Script
+## Presentation Script
 
 | Slide | Title | Talking Points | Action |
 | :--- | :--- | :--- | :--- |
-| 1 | **Title Slide** | We have our Exception hierarchy. Now we use it to make our code bulletproof. | *Show Title Slide.* |
-| 2 | **Episode Goal** | We want to write code assuming the network is perfect, and let a wrapper handle the failures. | *Highlight the goal block.* |
-| 3 | **The Decorator Pattern** | By wrapping our functions, the retry logic acts as a shield between us and the API. | *Point to the diagram.* |
-| 4 | **Implementation: `retry_with_backoff`** | If the network drops, we try again, but we back off exponentially to avoid hammering a struggling server. | *Explain backoff and jitter.* |
-| 5 | **Implementation: `retry_on_rate_limit`** | If we hit a 429, the server tells us exactly how long to wait. We read that value from our exception. | *Explain extracting `retry_after`.* |
-| 6 | **Verification** | Let's mock a flaky function and watch the decorator save the day. | *Transition to Terminal.* |
+| 1 | **Title Slide** | Making network calls reliable and cached. | *Show Title Slide.* |
+| 2 | **Episode Goal** | Prevent re-querying identical papers and survive transient gateway errors. | *Highlight goal.* |
+| 3 | **SQLite Caching** | Uses `requests_cache.CachedSession` to store HTTP 200 responses in a local `.cache/scholar_cache.sqlite` database. | *Show architecture diagram.* |
+| 4 | **Exponential Backoff** | `urllib3.util.retry.Retry` automatically retries 429, 500, 502, 503, 504 errors with 2s, 4s, 8s backoff. | *Explain retry adapter.* |
+| 5 | **Explicit Timeouts** | Default 30s timeout prevents hung sockets from blocking workflows indefinitely. | *Explain timeout defense.* |
+| 6 | **Verification** | Demonstrate cache hits and fast response times. | *Transition to code.* |
 
-## 💻 Terminal & Code Walkthrough
+## Terminal & Code Walkthrough
 
-1. **Show `retry.py`**:
-   - Open `src/scholar_search/utils/retry.py`.
-   - Walk through the `retry_with_backoff` and `retry_on_rate_limit` decorators.
-2. **Explain the magic**:
-   - Show how `functools.wraps` preserves the original function signatures.
-3. **Run the Tests**:
-   - In the terminal, run: `pytest -k "test_retry"`
-   - Show the logs indicating the sleep periods between retries.
+1. **Show `AcademicHttpClient` in `http_client.py`**:
+   - Open `src/scholar_search/http_client.py`.
+   - Walk through the session configuration, cache backend, and retry adapter mounting.
+2. **Demonstrate Cache Hits**:
+   - Show how repeat calls return `response.from_cache == True` in <1ms without hitting external servers.

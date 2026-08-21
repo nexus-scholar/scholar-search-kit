@@ -1,11 +1,10 @@
 \documentclass[aspectratio=169]{beamer}
-\usetheme[block=fill]{metropolis}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+\usetheme{metropolis}
+\usepackage{nexus_theme}
 
 \title{Building a Reproducible Scholarly Search Toolkit}
-\subtitle{Episode 4: The Normalized Document \& Author Model}
-\author{Scholar Search Kit}
+\subtitle{Episode 4: The Canonical \texttt{Document} Model}
+\author{Nexus Scholar Suite}
 \date{}
 
 \begin{document}
@@ -14,71 +13,70 @@
   \titlepage
 \end{frame}
 
-\begin{frame}{Episode Goal}
-  \begin{alertblock}{The Goal}
-    Create the core \texttt{Document} and \texttt{Author} dataclasses to serve as the universal language of our system.
-  \end{alertblock}
-  \vspace{0.5cm}
-  Every provider (OpenAlex, arXiv, Crossref) returns wildly different JSON. We must map them all into a single, strongly-typed \texttt{Document} structure immediately upon ingest.
-\end{frame}
-
 \begin{frame}{The Normalization Boundary}
   \begin{center}
-  \resizebox{0.75\linewidth}{!}{
-  \begin{tikzpicture}[
-      node distance=1.5cm and 2cm,
-      provider/.style={rectangle, draw, thick, rounded corners, minimum width=2.5cm, align=center, fill=black!5},
-      model/.style={rectangle, draw, thick, rounded corners, minimum width=3cm, align=center, fill=blue!10},
-      arrow/.style={-{Stealth[scale=1.2]}, thick}
-    ]
+  \resizebox{0.85\linewidth}{!}{
+  \begin{tikzpicture}[node distance=0.8cm and 1.2cm]
+    \node[card] (raw1) {OpenAlex JSON};
+    \node[card, below=of raw1] (raw2) {PubMed XML};
+    \node[card, below=of raw2] (raw3) {Crossref JSON};
+    \node[card, below=of raw3] (raw4) {arXiv Atom XML};
+
+    \node[primarycard, right=of raw2, minimum height=3.5cm, align=center] (boundary) {\textbf{Normalization}\\\textbf{Boundary}\\Field Parsers};
     
-    \node[provider] (openalex) {OpenAlex JSON};
-    \node[provider, below=0.2cm of openalex] (crossref) {Crossref JSON};
-    \node[provider, below=0.2cm of crossref] (arxiv) {arXiv XML};
-    
-    \node[model, right=of crossref] (document) {\texttt{Document}\\\texttt{Author}};
-    
-    \draw[arrow] (openalex) -- (document);
-    \draw[arrow] (crossref) -- (document);
-    \draw[arrow] (arxiv) -- (document);
+    \node[successcard, right=of boundary, minimum height=3.5cm, align=center] (doc) {\textbf{Canonical \texttt{Document}}\\Title, Authors, Year, IDs\\MeSH Terms, Citations, Provenance};
+
+    \draw[flowarrow] (raw1.east) -- (boundary.west);
+    \draw[flowarrow] (raw2.east) -- (boundary.west);
+    \draw[flowarrow] (raw3.east) -- (boundary.west);
+    \draw[flowarrow] (raw4.east) -- (boundary.west);
+    \draw[accentarrow] (boundary.east) -- (doc.west);
   \end{tikzpicture}
   }
   \end{center}
 \end{frame}
 
-\begin{frame}{The \texttt{Document} Model}
-  \begin{block}{Key Fields}
-    Enforcing strict types prevents runtime crashes during analysis.
-  \end{block}
-  
-  \begin{itemize}
-      \item \texttt{external\_ids}: Our \texttt{ExternalIds} object.
-      \item \texttt{title} \& \texttt{abstract}: Text content.
-      \item \texttt{authors}: List of \texttt{Author} objects.
-      \item \texttt{year} \& \texttt{publication\_date}: For temporal filtering.
-      \item \texttt{provider\_id}: Provenance (e.g., "openalex").
-  \end{itemize}
+\begin{frame}[fragile]{The \texttt{Document} Dataclass}
+\begin{lstlisting}[style=nexuspython]
+@dataclass
+class Document:
+    title: str
+    year: int | None = None
+    provider: str = "unknown"
+    provider_id: str = ""
+    external_ids: ExternalIds = field(default_factory=ExternalIds)
+    abstract: str | None = None
+    authors: list[Author] = field(default_factory=list)
+    venue: str | None = None
+    citations_count: int | None = None
+    mesh_terms: list[str] = field(default_factory=list)
+    tldr: str | None = None
+    query_id: str | None = None
+    retrieved_at: datetime | None = None
+\end{lstlisting}
 \end{frame}
 
-\begin{frame}{Implementation: UTC Timestamps}
-  \begin{block}{The Golden Rule of Time}
-    Always store dates and times in UTC.
-  \end{block}
-  
-  \begin{itemize}
-      \item We add a \texttt{retrieved\_at} field to track exactly when we pulled this data.
-      \item This guarantees auditability—essential for systematic literature reviews where search dates matter.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Verification}
-  \begin{alertblock}{Success Criteria}
-    \begin{itemize}
-        \item Can instantiate a \texttt{Document} with mocked data.
-        \item Missing required fields trigger \texttt{TypeError}.
-        \item \texttt{Author} objects correctly nest inside the \texttt{Document}.
-    \end{itemize}
-  \end{alertblock}
+\begin{frame}{Provenance \& Audit Guarantees}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Scientific Traceability}
+        \begin{itemize}
+          \item \texttt{provider\_id}: Primary key in remote repository.
+          \item \texttt{query\_id}: Links to exact search instrument.
+          \item \texttt{retrieved\_at}: ISO UTC timestamp.
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Enriched Metadata}
+        \begin{itemize}
+          \item Medical Subject Headings (\texttt{mesh\_terms}).
+          \item AI Abstract Summaries (\texttt{tldr}).
+          \item Citation Graph Counts (\texttt{citations\_count}).
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \end{document}

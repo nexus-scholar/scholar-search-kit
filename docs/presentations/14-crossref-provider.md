@@ -1,25 +1,22 @@
-# Episode 14: Ingesting Crossref DOIs & Metadata
+# Episode 14: Crossref & Bibliographic Validation
 
-**Objective:** Integrate the definitive source of DOI metadata, managing complex URL-encoded cursors and chaotic nested date schemas.
+**Objective:** Ingest published DOIs and validate unformatted citation references against Crossref.
 
-## 🎬 Presentation Script
+## Presentation Script
 
 | Slide | Title | Talking Points | Action |
 | :--- | :--- | :--- | :--- |
-| 1 | **Title Slide** | OpenAlex was our broad net. Crossref is our sniper rifle. | *Show Title Slide.* |
-| 2 | **Episode Goal** | If a paper has a DOI, Crossref has its canonical metadata. We need to parse it cleanly. | *Highlight the goal block.* |
-| 3 | **Deep Cursor Pagination** | Crossref cursors are heavily base64 encoded. If we don't URL-encode them properly, the `+` turns into a space and the loop breaks. | *Point to the diagram.* |
-| 4 | **Implementation: `issued.date-parts`** | Crossref's date structure is infamous. We have to parse nested arrays that might randomly be missing elements. | *Explain the date fallback logic.* |
-| 5 | **Implementation: The Polite Pool** | Again, providing an email gets us VIP server access. | *Reiterate etiquette.* |
-| 6 | **Verification** | Let's feed our normalizer a fragmented date array and watch it safely extract the year. | *Transition to Terminal.* |
+| 1 | **Title Slide** | The definitive registry for published DOIs: Crossref. | *Show Title Slide.* |
+| 2 | **Episode Goal** | Query registered publisher metadata and validate citation strings. | *Highlight goal.* |
+| 3 | **Polite Pool Etiquette** | Attaching researcher email headers for fast, dedicated API rate limits. | *Show header setup.* |
+| 4 | **Bibliographic Matching** | Cross-checking messy reference strings against 150M records with `validate_reference()`. | *Show matching diagram.* |
+| 5 | **Implementation** | Walkthrough of `src/scholar_search/providers/crossref.py`. | *Transition to code.* |
+| 6 | **Verification** | Run Crossref provider tests. | *Transition to Terminal.* |
 
-## 💻 Terminal & Code Walkthrough
+## Terminal & Code Walkthrough
 
 1. **Show `crossref.py`**:
    - Open `src/scholar_search/providers/crossref.py`.
-   - Walk through the `CrossrefNormalizer._parse_date` method.
-2. **Show Author extraction**:
-   - Show how `family` and `given` names are safely joined.
-3. **Run the Tests**:
-   - In the terminal, run: `pytest tests/providers/test_crossref.py`
-   - Prove that the mock responses are normalized perfectly into `Document` models.
+   - Walk through `search()` and `validate_reference()`.
+2. **Run the Tests**:
+   - Run: `pytest tests/test_providers.py -k "test_crossref"`

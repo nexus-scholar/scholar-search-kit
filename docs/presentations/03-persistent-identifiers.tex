@@ -1,11 +1,10 @@
 \documentclass[aspectratio=169]{beamer}
-\usetheme[block=fill]{metropolis}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+\usetheme{metropolis}
+\usepackage{nexus_theme}
 
 \title{Building a Reproducible Scholarly Search Toolkit}
 \subtitle{Episode 3: Persistent Identifiers (\texttt{ExternalIds})}
-\author{Scholar Search Kit}
+\author{Nexus Scholar Suite}
 \date{}
 
 \begin{document}
@@ -14,70 +13,56 @@
   \titlepage
 \end{frame}
 
-\begin{frame}{Episode Goal}
-  \begin{alertblock}{The Goal}
-    Build a unified \texttt{ExternalIds} model to track documents across multiple upstream providers.
-  \end{alertblock}
-  \vspace{0.5cm}
-  A DOI from Crossref might look like \texttt{10.1000/182}, while from OpenAlex it might be \texttt{https://doi.org/10.1000/182}. We must normalize these to safely deduplicate records later.
-\end{frame}
-
 \begin{frame}{The Identifier Zoo}
+  \begin{alertblock}{The Problem of Identity}
+    A single paper may arrive with wildly differing identifier representations across databases.
+  \end{alertblock}
+  \vspace{0.4cm}
   \begin{center}
   \resizebox{0.8\linewidth}{!}{
-  \begin{tikzpicture}[
-      node distance=1.5cm and 2cm,
-      box/.style={rectangle, draw, thick, rounded corners, minimum width=2.5cm, align=center, fill=blue!5},
-      norm/.style={rectangle, draw, thick, rounded corners, minimum width=3cm, align=center, fill=green!10},
-      arrow/.style={-{Stealth[scale=1.2]}, thick}
-    ]
-    
-    \node[box] (doi1) {\texttt{https://doi.org/...}};
-    \node[box, below=0.2cm of doi1] (doi2) {\texttt{doi:10.xxx/...}};
-    \node[box, below=0.2cm of doi2] (doi3) {\texttt{10.xxx/...}};
-    
-    \node[norm, right=of doi2] (normalized) {Normalized\\DOI};
-    
-    \draw[arrow] (doi1) -- (normalized);
-    \draw[arrow] (doi2) -- (normalized);
-    \draw[arrow] (doi3) -- (normalized);
+  \begin{tikzpicture}[node distance=0.4cm and 1.8cm]
+    \node[card] (doi1) {\texttt{https://doi.org/10.1000/182}};
+    \node[card, below=of doi1] (doi2) {\texttt{http://dx.doi.org/10.1000/182}};
+    \node[card, below=of doi2] (doi3) {\texttt{doi: 10.1000/182}};
+    \node[card, below=of doi3] (doi4) {\texttt{HTTPS://DOI.ORG/10.1000/182}};
+
+    \node[successcard, right=of doi2, minimum height=2.2cm] (norm) {\textbf{Normalized Canonical DOI}\\\texttt{10.1000/182}};
+
+    \draw[flowarrow] (doi1.east) -- (norm.west);
+    \draw[flowarrow] (doi2.east) -- (norm.west);
+    \draw[flowarrow] (doi3.east) -- (norm.west);
+    \draw[flowarrow] (doi4.east) -- (norm.west);
   \end{tikzpicture}
   }
   \end{center}
 \end{frame}
 
-\begin{frame}{The \texttt{ExternalIds} Dataclass}
-  \begin{block}{Centralized Identity}
-    We use a single dataclass to hold all known identities for a paper.
-  \end{block}
-  
-  \begin{itemize}
-      \item \texttt{doi}: The Digital Object Identifier (Normalized)
-      \item \texttt{arxiv}: e.g., \texttt{2103.00020}
-      \item \texttt{pubmed}: PubMed ID
-      \item \texttt{openalex}: e.g., \texttt{W312...}
-      \item \texttt{semantic\_scholar}: \texttt{CorpusId} or SHA
-  \end{itemize}
+\begin{frame}[fragile]{The \texttt{ExternalIds} Contract}
+\begin{lstlisting}[style=nexuspython]
+@dataclass
+class ExternalIds:
+    doi: str | None = None
+    arxiv_id: str | None = None
+    pubmed_id: str | None = None
+    openalex_id: str | None = None
+    s2_id: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.doi:
+            val = self.doi.strip().lower()
+            for p in ("https://doi.org/", "http://doi.org/", "doi:"):
+                if val.startswith(p): val = val[len(p):]
+            self.doi = val.strip() or None
+\end{lstlisting}
 \end{frame}
 
-\begin{frame}{Implementation: Normalizing DOIs}
-  \begin{block}{Regex to the Rescue}
-    We strip prefixes (\texttt{https://doi.org/}, \texttt{doi:}) before storing.
-  \end{block}
-  
+\begin{frame}{Invariants \& Guarantees}
   \begin{itemize}
-      \item Why? If Provider A returns a URL, and Provider B returns just the ID, a string comparison will fail.
-      \item By normalizing to the bare \texttt{10.xxxx/...}, we guarantee that matching logic is foolproof.
+    \item \textbf{Case-Insensitive}: Lowercases all DOI strings deterministically.
+    \item \textbf{Prefix Stripping}: URL schemes and URN prefixes are stripped.
+    \item \textbf{Whitespace Cleansing}: Blank strings become \texttt{None}.
+    \item \textbf{No Cross-Contamination}: Separate fields for DOI, arXiv, PubMed, OpenAlex, and S2 Corpus IDs.
   \end{itemize}
-\end{frame}
-
-\begin{frame}{Verification}
-  \begin{alertblock}{Success Criteria}
-    \begin{itemize}
-        \item Initializing \texttt{ExternalIds} with a full URL DOI yields the stripped DOI.
-        \item Two identical papers from different providers match perfectly on their \texttt{ExternalIds.doi}.
-    \end{itemize}
-  \end{alertblock}
 \end{frame}
 
 \end{document}

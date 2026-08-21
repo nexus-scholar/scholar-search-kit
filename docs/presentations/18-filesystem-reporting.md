@@ -1,25 +1,21 @@
-# Episode 18: File System Export & Reporting
+# Episode 18: File I/O, Exporters & Importers
 
-**Objective:** Build a robust, cross-platform file writer that isolates execution runs into timestamped directories containing both data and metadata.
+**Objective:** Ingest and export scholarly data across JSON, JSONL, CSV, and RIS formats.
 
-## 🎬 Presentation Script
+## Presentation Script
 
 | Slide | Title | Talking Points | Action |
 | :--- | :--- | :--- | :--- |
-| 1 | **Title Slide** | We have a CLI, but right now it just dumps files in the root folder. Let's fix that. | *Show Title Slide.* |
-| 2 | **Episode Goal** | If you do 10 searches, you will overwrite your files. We need isolated, timestamped workspaces for every run. | *Highlight the goal block.* |
-| 3 | **The Output Architecture** | Every run generates a folder. Inside is the data, the logs, and the metadata receipt. | *Point to the directory tree diagram.* |
-| 4 | **Implementation: `RunReport`** | True reproducibility means we need a JSON file stating exactly what parameters created this data payload. | *Explain metadata logging.* |
-| 5 | **Safe Path Generation** | Never concatenate strings to make file paths. `pathlib` protects us from Windows/Linux slash differences and sanitizes file names. | *Explain `pathlib` benefits.* |
-| 6 | **Verification** | Let's trigger a run and inspect the newly created filesystem artifacts. | *Transition to Terminal.* |
+| 1 | **Title Slide** | Seamless data movement across the research tool ecosystem. | *Show Title Slide.* |
+| 2 | **Episode Goal** | Ingest legacy citation files and export structured datasets for downstream analysis. | *Highlight goal.* |
+| 3 | **Supported Formats** | Standard JSON arrays, streaming JSONL, flattened CSV, and RIS bibliographies. | *Show format grid.* |
+| 4 | **Verified Ingestion** | The `import` command can verify records against Crossref and hydrate missing fields on the fly. | *Explain verification pipeline.* |
+| 5 | **Implementation** | Walkthrough of `export.py` and `importers.py`. | *Transition to code.* |
+| 6 | **Verification** | Run roundtrip export-import tests. | *Transition to Terminal.* |
 
-## 💻 Terminal & Code Walkthrough
+## Terminal & Code Walkthrough
 
-1. **Show `reporting.py`**:
-   - Open `src/scholar_search/export/reporting.py`.
-   - Walk through the `RunMetadata` dataclass and `Path` generation logic.
-2. **Run a Live CLI Command**:
-   - In the terminal, run: `python -m scholar_search "Quantum Computing" --provider in_memory`
-3. **Inspect the Output**:
-   - Open the newly generated `outputs/` directory.
-   - Show the timestamped folder and open the `run_metadata.json` file to prove reproducibility.
+1. **Show `export.py` and `importers.py`**:
+   - Walk through `Exporter` methods and `RISImporter` parsing.
+2. **Run Tests**:
+   - Run: `pytest tests/test_importers_exporters.py`

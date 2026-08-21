@@ -1,11 +1,10 @@
 \documentclass[aspectratio=169]{beamer}
-\usetheme[block=fill]{metropolis}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+\usetheme{metropolis}
+\usepackage{nexus_theme}
 
 \title{Building a Reproducible Scholarly Search Toolkit}
-\subtitle{Episode 6: Clusters \& Duplicate Aggregation}
-\author{Scholar Search Kit}
+\subtitle{Episode 6: Non-Destructive Clustering}
+\author{Nexus Scholar Suite}
 \date{}
 
 \begin{document}
@@ -14,66 +13,48 @@
   \titlepage
 \end{frame}
 
-\begin{frame}{Episode Goal}
-  \begin{alertblock}{The Goal}
-    Create a \texttt{DocumentCluster} model to hold exact-duplicate documents without destroying data.
+\begin{frame}{Non-Destructive Deduplication}
+  \begin{alertblock}{Preventing Evidence Destruction}
+    Naive deduplication permanently deletes duplicate records. We preserve every merged record inside a \texttt{DocumentCluster} while synthesizing an enriched representative.
   \end{alertblock}
-  \vspace{0.5cm}
-  If OpenAlex and arXiv both return the exact same paper, we shouldn't arbitrarily delete one. We must cluster them together and retain the provenance of both.
-\end{frame}
-
-\begin{frame}{Non-Destructive Merging}
+  \vspace{0.3cm}
   \begin{center}
-  \resizebox{0.6\linewidth}{!}{
-  \begin{tikzpicture}[
-      node distance=1.5cm and 2cm,
-      doc/.style={circle, draw, thick, minimum size=1.5cm, align=center, fill=black!5},
-      cluster/.style={rectangle, draw, thick, rounded corners, minimum width=3.5cm, minimum height=2.5cm, align=center, fill=green!10},
-      arrow/.style={-{Stealth[scale=1.2]}, thick}
-    ]
-    
-    \node[doc] (d1) {$D_1$\\(arXiv)};
-    \node[doc, below=0.5cm of d1] (d2) {$D_2$\\(OpenAlex)};
-    
-    \node[cluster, right=of d1, yshift=-1cm] (c1) {Cluster 1\\(Contains $D_1$ and $D_2$)};
-    
-    \draw[arrow] (d1) -- (c1);
-    \draw[arrow] (d2) -- (c1);
+  \resizebox{0.85\linewidth}{!}{
+  \begin{tikzpicture}[node distance=0.8cm and 1.5cm]
+    \node[card] (m1) {\textbf{arXiv Record}\\Title + Abstract + Pre-print ID};
+    \node[card, below=0.4cm of m1] (m2) {\textbf{PubMed Record}\\Title + MeSH Headings + Citations};
+    \node[card, below=0.4cm of m2] (m3) {\textbf{Crossref Record}\\Title + Registered DOI + Venue};
+
+    \node[primarycard, right=of m2, minimum height=3cm] (cluster) {\textbf{\texttt{DocumentCluster}}\\Representative (Merged)\\Members $[m_1, m_2, m_3]$\\Confidence: $1.0$};
+
+    \draw[flowarrow] (m1.east) -- (cluster.west);
+    \draw[flowarrow] (m2.east) -- (cluster.west);
+    \draw[flowarrow] (m3.east) -- (cluster.west);
   \end{tikzpicture}
   }
   \end{center}
 \end{frame}
 
-\begin{frame}{The \texttt{DocumentCluster} Model}
-  \begin{block}{Holding the Bag}
-    A cluster is effectively a list of documents that we are confident are the same entity.
-  \end{block}
-  
-  \begin{itemize}
-      \item \texttt{documents}: A List of \texttt{Document} objects.
-      \item \texttt{match\_confidence}: E.g., \texttt{1.0} for exact DOI matches, \texttt{0.95} for fuzzy title matches.
-      \item \texttt{canonical\_document}: Property to extract the "best" version for export.
-  \end{itemize}
-\end{frame}
+\begin{frame}[fragile]{The \texttt{DocumentCluster} Dataclass}
+\begin{lstlisting}[style=nexuspython]
+@dataclass
+class DocumentCluster:
+    cluster_id: int
+    representative: Document
+    members: list[Document]
 
-\begin{frame}{Implementation: Confidence Metrics}
-  \begin{block}{Why Confidence Matters}
-    In an SLR, merging two distinct papers by accident is a fatal flaw.
-  \end{block}
-  
-  \begin{itemize}
-      \item We explicitly track the confidence level of a cluster.
-      \item If confidence is low, the AI Harness can flag it for human review.
-  \end{itemize}
-\end{frame}
+    @property
+    def size(self) -> int:
+        return len(self.members)
 
-\begin{frame}{Verification}
-  \begin{alertblock}{Success Criteria}
-    \begin{itemize}
-        \item A cluster can be initialized with multiple documents.
-        \item The \texttt{canonical\_document} property successfully picks the document with the most populated fields.
-    \end{itemize}
-  \end{alertblock}
+    @property
+    def confidence(self) -> float:
+        has_id = any(
+            m.external_ids.doi or m.external_ids.arxiv_id 
+            for m in self.members
+        )
+        return 1.0 if has_id else 0.95
+\end{lstlisting}
 \end{frame}
 
 \end{document}
