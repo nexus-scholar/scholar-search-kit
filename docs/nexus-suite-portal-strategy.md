@@ -1,104 +1,104 @@
 # Master Strategy: Nexus Scholar Suite & Academia Online Portal
 
-This strategy document defines the architecture, content federation, and deployment plan for the unified **Nexus Scholar Suite** developer portal and **Academia Course Platform** hosted under **`mouadh.org`** (or **`nexus.mouadh.org`**).
+This strategy document defines the authentic 6-toolkit ecosystem, the systematic hardening roadmap for remaining packages, and the deployment plan for the unified **Nexus Scholar Suite** developer portal and **Academia Course Platform** hosted under **`mouadh.org`** (or **`nexus.mouadh.org`**).
 
 ---
 
-## 1. Executive Vision
+## 1. The Authentic 6-Toolkit Ecosystem
 
-To establish an internationally recognized, peerless open-source academic intelligence ecosystem that brings together:
-1. **6 Modular Python Toolkits**:
-   - `scholar-search-kit`: Federated multi-provider discovery & Crossref verification.
-   - `scholar-pdf-kit`: Open-access PDF harvesting, hydration & parsing.
-   - `scholar-rag-kit`: Academic chunking, embedding & vector retrieval.
-   - `scholar-bib-kit`: Citation graph parsing & BibTeX/RIS reconciliation.
-   - `scholar-eval-kit`: Benchmark datasets & hallucination scoring.
-   - `scholar-agent-kit`: Autonomous research assistants & tool protocols.
-2. **The Academia Full Course**:
-   - A multi-module, graduate-level curriculum (23 episodes) with 16:9 vector slide decks, rigorous lessons, code contracts, and interactive exercises.
-3. **The Research Lab & Personal Portfolio**:
-   - Highlighting PhD research, scientific papers, and open-source contributions by Mouadh.
+The **Nexus Scholar Suite** is designed around Unix philosophy, open data, and local LLMs to replace fragile manual literature reviews with auditable, agentic workflows:
+
+| # | Toolkit | Core Responsibility | Status |
+|---|---|---|---|
+| 1 | **`scholar-search-kit`** | Federated discovery (OpenAlex, Crossref, arXiv, PubMed, bioRxiv, S2), 2-phase deduplication, and Crossref hallucination verification. | 🟢 Hardened & Documented (29 tests) |
+| 2 | **`scholar-pdf-kit`** | Open Access PDF resolution (Unpaywall, PMC, arXiv, OpenAlex), download resilience, and full-text extraction. | 🟢 Hardened & Documented |
+| 3 | **`scholar-rag-kit`** | Local vector embeddings (ChromaDB), domain-aware chunking, and local LLM semantic retrieval/Q&A over harvested PDFs. | 🟡 Planned for Hardening & Curriculum |
+| 4 | **`scholar-bib-kit`** | Automatic BibTeX/RIS linting, formatting, missing field repair, and Crossref bibliographic validation. | 🟡 Planned for Hardening & Curriculum |
+| 5 | **`scholar-graph-kit`** | Interactive citation networks (D3.js / PyVis), co-authorship graphs, and historiographical mapping. | 🟡 Planned for Hardening & Curriculum |
+| 6 | **`scholar-monitor-kit`** | Cron-based literature surveillance daemon for continuous alerts and newly published paper ingestion. | 🟡 Planned for Hardening & Curriculum |
 
 ---
 
-## 2. Tailwind UI Template Allocation Strategy
+## 2. Systematic Hardening & Documentation Blueprint (For Remaining 4 Kits)
 
-By combining specialized Tailwind UI templates, we achieve a tailored experience for every modality:
+For each of the remaining toolkits (`rag-kit`, `bib-kit`, `graph-kit`, `monitor-kit`), we will execute our proven 5-stage hardening cycle:
+
+```mermaid
+graph LR
+    A["1. Code Hardening<br/>(Typer CLI, Models, Resilience)"] --> B["2. Test Suite<br/>(Deterministic Pytest Fixtures)"]
+    B --> C["3. Dev Docs<br/>(Tutorial & API Reference)"]
+    C --> D["4. Agent Skill<br/>(.agents/skills/SKILL.md)"]
+    D --> E["5. Course & Slides<br/>(Lessons + 16:9 Beamer Decks)"]
+```
+
+1. **Stage 1: Architecture & Code Hardening**:
+   - Modern `src/` layout with PEP 621 `pyproject.toml`.
+   - Typed data models with mathematical invariants.
+   - Resilient `AcademicHttpClient` with token bucket and SQLite caching.
+   - Modern Typer CLI with Rich terminal spinners and formatted tables.
+2. **Stage 2: Deterministic Test Suite**:
+   - Complete unit and integration tests with zero network flakiness (using mocked responses/cassettes).
+3. **Stage 3: Developer Documentation**:
+   - Authoring `docs/tutorial.md` (CLI guide) and `docs/api_reference.md` (API contracts).
+4. **Stage 4: Specialized AI Agent Skill**:
+   - Authoring `.agents/skills/<kit-name>/SKILL.md` for Antigravity and autonomous researchers.
+5. **Stage 5: Curriculum & Presentation Decks**:
+   - Adding technical lessons to `docs/lessons/` and generating vector slide decks in `docs/presentations/`.
+
+---
+
+## 3. Tailwind UI Template Allocation Strategy
 
 | Template | Section / Route | Purpose & Key Features |
 |---|---|---|
-| **Spotlight** | **Landing Page (`/`)** | **Suite Showcase & Research Portfolio**: Hero section with live search terminal demo, interactive cards for all 6 packages, publications list, and bio. |
-| **Syntax** | **Documentation (`/docs/*`)** | **Multi-Package Documentation**: Package switcher dropdown, sticky sidebar navigation, instant client-side search (Pagefind), dark-mode code blocks, and copy buttons. |
-| **Primer / Transmit** | **Academia Course (`/course` or `/academy`)** | **Interactive Curriculum**: 23-episode syllabus, video player / audio embeds, slide deck PDF viewer drawers, and lesson transcripts. |
-| **Protocol** | **API Reference (`/api-reference`)** | **3-Column REST & Python API Reference**: Sidebar navigation $\cdot$ Signature explanation $\cdot$ Interactive code examples. |
+| **Spotlight** | **Landing Page (`/`)** | **Suite Showcase & Research Portfolio**: Hero section with interactive terminal preview, showcase cards for all 6 packages, your research publications, and GitHub links. |
+| **Syntax** | **Documentation (`/docs/*`)** | **Multi-Package Docs**: Package switcher dropdown (`search-kit`, `pdf-kit`, `rag-kit`, `bib-kit`, `graph-kit`, `monitor-kit`), sticky sidebar, instant search, dark-mode code blocks, and copy buttons. |
+| **Primer / Transmit** | **Academia Course (`/academy`)** | **Full Course & Lecture Hub**: Complete multi-module syllabus, video player embeds, slide deck PDF viewer drawers, and lesson transcripts. |
+| **Protocol** | **API Reference (`/api-reference`)** | **3-Column API Docs**: Sidebar navigation $\cdot$ Signature explanation $\cdot$ Interactive code examples. |
 
 ---
 
-## 3. Unified Information Architecture (`mouadh.org` / `nexus.mouadh.org`)
+## 4. Unified Information Architecture (`nexus.mouadh.org`)
 
 ```text
 nexus.mouadh.org/
 │
 ├── 🌐 / (Landing Page — Powered by Spotlight)
-│   ├── Hero: "The Clean-Room Academic Intelligence Suite"
-│   ├── 6 Toolkit Cards (Search, PDF, RAG, Bib, Eval, Agent)
-│   ├── Academia Course Teaser & Enrolment
-│   └── Research Publications & GitHub Links
+│   ├── Hero: "The Agent-First Academic Research Suite"
+│   ├── 6 Toolkit Cards:
+│   │   ├── scholar-search-kit
+│   │   ├── scholar-pdf-kit
+│   │   ├── scholar-rag-kit
+│   │   ├── scholar-bib-kit
+│   │   ├── scholar-graph-kit
+│   │   └── scholar-monitor-kit
+│   ├── The Academia Course Overview
+│   └── Research Publications & Bio
 │
 ├── 📚 /docs (Documentation Portal — Powered by Syntax)
-│   ├── /docs/search-kit/       (Federation, Crossref verification, Models, CLI)
-│   ├── /docs/pdf-kit/          (Unpaywall, arXiv, PMC Open Access harvesting)
-│   ├── /docs/rag-kit/          (Academic chunking, embedding, retrieval)
-│   ├── /docs/bib-kit/          (Citation networks, BibTeX/RIS tools)
-│   └── /docs/agent-kit/        (Antigravity skills, Autonomous workflows)
+│   ├── /docs/search-kit/       (Discovery, Crossref verification, Snowballing)
+│   ├── /docs/pdf-kit/          (Unpaywall, PMC, arXiv harvesting)
+│   ├── /docs/rag-kit/          (ChromaDB embeddings, Local LLM Q&A)
+│   ├── /docs/bib-kit/          (BibTeX/RIS linting & repair)
+│   ├── /docs/graph-kit/        (PyVis citation graphs & networks)
+│   └── /docs/monitor-kit/      (Cron daemons & literature surveillance)
 │
 ├── 🎓 /academy (Academia Full Course — Powered by Transmit/Syntax)
-│   ├── Module 1: Models & Invariants (Episodes 00–06)
-│   ├── Module 2: Resilient Infrastructure (Episodes 07–09)
-│   ├── Module 3: Provider Subsystems (Episodes 10–14)
-│   ├── Module 4: Deduplication & Verification (Episodes 15–16b)
-│   ├── Module 5: Modern CLI & I/O (Episodes 17–18)
-│   ├── Module 6: End-to-End Pipeline & CI (Episodes 19–22)
-│   └── [Each episode includes: Markdown Lesson + Embedded 16:9 PDF Deck + Pytest Counterexamples]
+│   ├── Course Syllabus & Modules
+│   └── [Each episode includes: Markdown Lesson + Embedded 16:9 PDF Deck + Code Contracts]
 │
 └── 🤖 /skills (Autonomous Research Skills Hub)
-    └── Machine-readable agent manifests and prompts
+    └── Machine-readable agent manifests and prompts for all 6 packages
 ```
 
 ---
 
-## 4. Repository & Deployment Architecture (Option B)
+## 5. Sequential Execution Roadmap
 
-### Repository Name: `nexus-scholar-org/nexus-portal`
-
-```text
-nexus-portal/
-├── app/                    # Next.js 15 App Router
-│   ├── (marketing)/        # Landing page (Spotlight)
-│   ├── docs/               # Documentation pages (Syntax)
-│   │   ├── search-kit/
-│   │   ├── pdf-kit/
-│   │   └── ...
-│   └── academy/            # Full Course syllabus & player (Syntax/Transmit)
-├── content/                # MDX content files
-│   ├── search-kit/         # Pulled/synchronized from scholar-search-kit
-│   ├── pdf-kit/            # Pulled/synchronized from scholar-pdf-kit
-│   └── academy/            # 23 lesson chapters & presentation notes
-├── public/                 # Static assets
-│   ├── slides/             # All 23 compiled 16:9 PDF slide decks
-│   ├── brand/              # SVG Nexus logos & dark-mode icons
-│   └── CNAME               # nexus.mouadh.org (or mouadh.org)
-├── components/             # Tailwind UI React components
-├── .github/workflows/      # Automated static build & GitHub Pages deploy
-└── next.config.mjs         # Static export configuration (output: 'export')
-```
-
----
-
-## 5. Next Steps & Execution Plan
-
-When you provide the template `.zip` archives:
-1. **Phase 1: Portal Repository Setup**: Initialize `nexus-portal` repository with Next.js, Tailwind CSS, and the Tailwind UI component library.
-2. **Phase 2: Content Ingestion Pipeline**: Ingest all 23 lessons, API reference, CLI guides, and 23 PDF slide decks from `scholar-search-kit`.
-3. **Phase 3: Package Switcher & Search**: Wire up multi-package navigation switcher and fast client-side Pagefind search.
-4. **Phase 4: Domain & CI/CD**: Configure GitHub Actions to automatically deploy to GitHub Pages under `nexus.mouadh.org` with HTTPS enforcement.
+* **Step 1**: Complete hardening of `scholar-search-kit` (Done 🟢).
+* **Step 2**: Harden and test `scholar-pdf-kit` (Done 🟢).
+* **Step 3**: Harden and test `scholar-rag-kit` (Next 🟡).
+* **Step 4**: Harden and test `scholar-bib-kit` (Next 🟡).
+* **Step 5**: Harden and test `scholar-graph-kit` (Next 🟡).
+* **Step 6**: Harden and test `scholar-monitor-kit` (Next 🟡).
+* **Step 7**: Build the unified Next.js `nexus-portal` repository using the Tailwind UI templates and deploy to `nexus.mouadh.org`.
