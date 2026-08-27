@@ -1,5 +1,6 @@
-from datetime import datetime, timezone
-from scholar_search.models import ExternalIds, Author, Document, Query, DocumentCluster
+from datetime import UTC
+
+from scholar_search.models import Author, Document, DocumentCluster, ExternalIds, Query
 
 
 def test_external_ids_normalization():
@@ -19,7 +20,7 @@ def test_external_ids_normalization():
 def test_author_properties():
     a1 = Author(family_name="Turing", given_name="Alan")
     assert a1.full_name == "Alan Turing"
-    
+
     a2 = Author(family_name="Euclid")
     assert a2.full_name == "Euclid"
 
@@ -29,10 +30,10 @@ def test_document_defaults_and_retrieval():
     assert doc.external_ids is not None
     assert doc.authors == []
     assert doc.retrieved_at is None
-    
+
     doc.mark_retrieved()
     assert doc.retrieved_at is not None
-    assert doc.retrieved_at.tzinfo == timezone.utc
+    assert doc.retrieved_at.tzinfo == UTC
 
 
 def test_query_model():
@@ -41,7 +42,7 @@ def test_query_model():
         text='"deep learning" AND robotics',
         year_min=2020,
         year_max=2024,
-        max_results=100
+        max_results=100,
     )
     assert q.id == "Q01"
     assert q.year_min == 2020
@@ -50,15 +51,15 @@ def test_query_model():
 
 
 def test_document_cluster():
-    d1 = Document("Paper A", external_ids=ExternalIds(doi="10.1/abc"), provider="openalex")
-    d2 = Document("Paper A", external_ids=ExternalIds(doi="10.1/abc"), provider="crossref")
-    
-    cluster = DocumentCluster(
-        cluster_id=1,
-        representative=d1,
-        members=[d1, d2]
+    d1 = Document(
+        "Paper A", external_ids=ExternalIds(doi="10.1/abc"), provider="openalex"
     )
-    
+    d2 = Document(
+        "Paper A", external_ids=ExternalIds(doi="10.1/abc"), provider="crossref"
+    )
+
+    cluster = DocumentCluster(cluster_id=1, representative=d1, members=[d1, d2])
+
     assert cluster.size == 2
     assert cluster.confidence == 1.0
     assert d1 in cluster.members

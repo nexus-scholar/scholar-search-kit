@@ -10,7 +10,7 @@ import logging
 import re
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .models import Query
 
@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class BooleanOperator(str, Enum):
     """Boolean operators for query composition."""
+
     AND = "AND"
     OR = "OR"
     NOT = "NOT"
@@ -26,6 +27,7 @@ class BooleanOperator(str, Enum):
 
 class QueryField(str, Enum):
     """Standard query fields."""
+
     TITLE = "title"
     ABSTRACT = "abstract"
     FULL_TEXT = "full_text"
@@ -39,10 +41,11 @@ class QueryField(str, Enum):
 
 class QueryToken:
     """Represents a token in a parsed query."""
+
     def __init__(
         self,
         value: str,
-        field: Optional[QueryField] = None,
+        field: QueryField | None = None,
         is_phrase: bool = False,
         is_operator: bool = False,
     ):
@@ -52,18 +55,20 @@ class QueryToken:
         self.is_operator = is_operator
 
     def __repr__(self) -> str:
-        return f"QueryToken({self.value!r}, field={self.field}, phrase={self.is_phrase})"
+        return (
+            f"QueryToken({self.value!r}, field={self.field}, phrase={self.is_phrase})"
+        )
 
 
 class QueryParser:
     """Parser for Boolean query syntax."""
-    
+
     FIELD_PATTERN = re.compile(r"(\w+):")
     PHRASE_PATTERN = re.compile(r'"([^"]*)"')
     OPERATOR_PATTERN = re.compile(r"\b(AND|OR|NOT)\b", re.IGNORECASE)
     PAREN_PATTERN = re.compile(r"[()]")
 
-    def parse(self, query_text: str) -> List[QueryToken]:
+    def parse(self, query_text: str) -> list[QueryToken]:
         tokens = []
         remaining = query_text
         current_field = None
@@ -114,7 +119,7 @@ class QueryParser:
             break
         return tokens
 
-    def validate(self, tokens: List[QueryToken]) -> bool:
+    def validate(self, tokens: list[QueryToken]) -> bool:
         if not tokens:
             return False
 
@@ -135,6 +140,7 @@ class QueryParser:
 
 class BaseQueryTranslator(ABC):
     """Abstract base class for provider-specific query translators."""
+
     def __init__(self) -> None:
         self.parser = QueryParser()
 
@@ -153,10 +159,11 @@ class BaseQueryTranslator(ABC):
 
 class BooleanQueryTranslator(BaseQueryTranslator):
     """Advanced query translator with Boolean operator support."""
+
     def __init__(
         self,
-        field_map: Dict[QueryField, str],
-        operator_map: Optional[Dict[str, str]] = None,
+        field_map: dict[QueryField, str],
+        operator_map: dict[str, str] | None = None,
         special_chars: str = "",
     ):
         super().__init__()
@@ -181,12 +188,14 @@ class BooleanQueryTranslator(BaseQueryTranslator):
                 else:
                     query_parts.append(token.value)
             else:
-                field = self.field_map.get(token.field, self.field_map.get(QueryField.ANY, ""))
+                field = self.field_map.get(
+                    token.field, self.field_map.get(QueryField.ANY, "")
+                )
                 term = self.escape_special_chars(token.value, self.special_chars)
-                
+
                 # Format: "field:term" or just "term" if no field
                 prefix = f"{field}:" if field else ""
-                
+
                 if token.is_phrase:
                     query_parts.append(f'{prefix}"{term}"')
                 else:

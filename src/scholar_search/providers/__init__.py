@@ -1,20 +1,20 @@
 """Provider package for scholar-search-kit."""
 
-from .base import SearchProvider, BaseAPIProvider
-from .openalex import OpenAlexProvider
-from .semanticscholar import SemanticScholarProvider
-from .crossref import CrossrefProvider
 from .arxiv import ArxivProvider
-from .pubmed import PubMedProvider
+from .base import BaseAPIProvider, SearchProvider
 from .biorxiv import BiorxivProvider
+from .crossref import CrossrefProvider
+from .openalex import OpenAlexProvider
+from .pubmed import PubMedProvider
+from .semanticscholar import SemanticScholarProvider
 
 __all__ = [
-    "SearchProvider",
-    "BaseAPIProvider",
-    "OpenAlexProvider",
-    "SemanticScholarProvider",
-    "CrossrefProvider",
     "ArxivProvider",
+    "BaseAPIProvider",
+    "BiorxivProvider",
+    "CrossrefProvider",
+    "OpenAlexProvider",
     "PubMedProvider",
-    "BiorxivProvider"
+    "SearchProvider",
+    "SemanticScholarProvider",
 ]

@@ -29,6 +29,7 @@ Heterogeneous API responses represent author names, publication dates, abstracts
 ```python
 from scholar_search.models import Author, Document
 
+
 def test_author_normalization():
     a = Author(family_name="Knuth", given_name="Donald E.")
     assert a.full_name == "Donald E. Knuth"

@@ -15,6 +15,7 @@ To achieve exhaustive literature discovery, we define a polymorphic `SearchProvi
 from typing import Protocol, Iterator
 from scholar_search.models import Query, Document
 
+
 class SearchProvider(Protocol):
     name: str
 
@@ -37,6 +38,7 @@ Run with `pytest tests/test_engine.py`:
 ```python
 from scholar_search.engine import SearchEngine
 from scholar_search.models import Query
+
 
 def test_search_engine_federation():
     engine = SearchEngine(providers=["openalex", "crossref"])

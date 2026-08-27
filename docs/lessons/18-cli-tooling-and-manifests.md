@@ -36,6 +36,7 @@ Run with `pytest tests/test_cli.py`:
 from typer.testing import CliRunner
 from scholar_search.cli import app
 
+
 def test_cli_search():
     runner = CliRunner()
     result = runner.invoke(app, ["search", "deep learning", "--limit", "3", "--quiet"])

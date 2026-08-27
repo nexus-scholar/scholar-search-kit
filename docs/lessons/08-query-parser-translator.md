@@ -20,6 +20,7 @@ Our query subsystem tokenizes generic search strings into structured tokens and 
 from enum import Enum
 from dataclasses import dataclass
 
+
 class QueryField(Enum):
     ALL = "all"
     TITLE = "title"
@@ -27,6 +28,7 @@ class QueryField(Enum):
     AUTHOR = "author"
     VENUE = "venue"
     YEAR = "year"
+
 
 @dataclass
 class QueryToken:
@@ -52,22 +54,28 @@ class QueryToken:
 Run with `pytest tests/test_query_translator.py`:
 
 ```python
-from scholar_search.query_translator import QueryParser, QueryField, BooleanQueryTranslator
+from scholar_search.query_translator import (
+    QueryParser,
+    QueryField,
+    BooleanQueryTranslator,
+)
+
 
 def test_query_parser_tokens():
     parser = QueryParser()
     tokens = parser.parse('title:"deep learning" AND (robotics OR vision)')
-    
+
     assert tokens[0].field == QueryField.TITLE
     assert tokens[0].value == "deep learning"
     assert tokens[0].is_phrase is True
     assert tokens[1].value == "AND"
     assert tokens[1].is_operator is True
 
+
 def test_boolean_translator():
     translator = BooleanQueryTranslator()
     parser = QueryParser()
-    tokens = parser.parse('machine learning AND robotics')
+    tokens = parser.parse("machine learning AND robotics")
     s2_query = translator.translate_to_s2(tokens)
     assert s2_query == "machine learning + robotics"
 ```

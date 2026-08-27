@@ -15,6 +15,7 @@ In scholarly research, works are indexed across multiple disparate databases (Cr
 ```python
 from dataclasses import dataclass
 
+
 @dataclass
 class ExternalIds:
     doi: str | None = None
@@ -34,7 +35,7 @@ class ExternalIds:
                 "doi:",
             ):
                 if value.startswith(prefix):
-                    value = value[len(prefix):]
+                    value = value[len(prefix) :]
             value = value.strip()
             self.doi = value if value else None
         else:
@@ -44,7 +45,7 @@ class ExternalIds:
             val = self.arxiv_id.strip()
             for prefix in ("arxiv:", "arXiv:"):
                 if val.startswith(prefix):
-                    val = val[len(prefix):]
+                    val = val[len(prefix) :]
             val = val.strip()
             self.arxiv_id = val if val else None
 ```
@@ -67,6 +68,7 @@ Run with `pytest tests/test_models.py -k "test_external_ids"`:
 
 ```python
 from scholar_search.models import ExternalIds
+
 
 def test_external_ids_normalization():
     cases = [

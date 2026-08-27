@@ -17,6 +17,7 @@ Our `DocumentVerifier` solves this by cross-referencing records against Crossref
 from dataclasses import dataclass, field
 from scholar_search.models import Document
 
+
 @dataclass
 class VerificationResult:
     document: Document
@@ -42,21 +43,23 @@ Run with `pytest tests/test_verifier.py`:
 from scholar_search.verifier import DocumentVerifier
 from scholar_search.models import Document, ExternalIds
 
+
 def test_verify_document_by_doi():
     verifier = DocumentVerifier()
     doc = Document(
         title="Attention Is All You Need",
-        external_ids=ExternalIds(doi="10.48550/arXiv.1706.03762")
+        external_ids=ExternalIds(doi="10.48550/arXiv.1706.03762"),
     )
     result = verifier.verify_document(doc)
     assert result.is_verified is True
     assert result.confidence >= 0.80
 
+
 def test_detect_hallucinated_document():
     verifier = DocumentVerifier()
     fake_doc = Document(
         title="Quantum Teleportation of Bananas using Convolutional Neural Networks",
-        external_ids=ExternalIds(doi="10.1000/182_fake_banana_hallucination")
+        external_ids=ExternalIds(doi="10.1000/182_fake_banana_hallucination"),
     )
     result = verifier.verify_document(fake_doc)
     assert result.is_verified is False

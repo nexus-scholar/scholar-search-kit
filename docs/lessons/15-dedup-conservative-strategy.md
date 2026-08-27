@@ -33,6 +33,7 @@ Run with `pytest tests/test_dedup.py`:
 from scholar_search.dedup import Deduplicator
 from scholar_search.models import Document, ExternalIds
 
+
 def test_dedup_metadata_merging():
     d1 = Document(
         title="Attention Is All You Need",
@@ -49,11 +50,11 @@ def test_dedup_metadata_merging():
         mesh_terms=["Neural Networks, Computer", "Natural Language Processing"],
         citations_count=120000,
     )
-    
+
     clusters = Deduplicator().deduplicate([d1, d2])
     assert len(clusters) == 1
     rep = clusters[0].representative
-    
+
     assert rep.abstract is not None
     assert "Neural Networks, Computer" in rep.mesh_terms
     assert rep.citations_count == 120000

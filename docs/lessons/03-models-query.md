@@ -13,6 +13,7 @@ In systematic scientific methodology, a search query is a formal research instru
 ```python
 from dataclasses import dataclass
 
+
 @dataclass
 class Query:
     text: str
@@ -40,13 +41,14 @@ Run with `pytest tests/test_models.py -k "test_query"`:
 ```python
 from scholar_search.models import Query
 
+
 def test_query_model():
     q = Query(
         id="Q01",
         text='"deep learning" AND robotics',
         year_min=2020,
         year_max=2024,
-        max_results=100
+        max_results=100,
     )
     assert q.id == "Q01"
     assert q.year_min == 2020

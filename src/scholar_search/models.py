@@ -1,7 +1,7 @@
 """Normalized models for the SLR and scholarly search workflow."""
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -23,8 +23,7 @@ class ExternalIds:
                 "http://dx.doi.org/",
                 "doi:",
             ):
-                if value.startswith(prefix):
-                    value = value[len(prefix):]
+                value = value.removeprefix(prefix)
             value = value.strip()
             self.doi = value if value else None
         else:
@@ -33,8 +32,7 @@ class ExternalIds:
         if self.arxiv_id:
             val = self.arxiv_id.strip()
             for prefix in ("arxiv:", "arXiv:"):
-                if val.startswith(prefix):
-                    val = val[len(prefix):]
+                val = val.removeprefix(prefix)
             val = val.strip()
             self.arxiv_id = val if val else None
 
@@ -47,7 +45,11 @@ class Author:
 
     @property
     def full_name(self) -> str:
-        return f"{self.given_name} {self.family_name}" if self.given_name else self.family_name
+        return (
+            f"{self.given_name} {self.family_name}"
+            if self.given_name
+            else self.family_name
+        )
 
 
 @dataclass
@@ -61,21 +63,25 @@ class Document:
     authors: list[Author] = field(default_factory=list)
     venue: str | None = None
     url: str | None = None
-    
+
     # Snowballing & Enhanced Metadata
     citations_count: int | None = None
     references_count: int | None = None
-    citation_intents: list[str] = field(default_factory=list)  # e.g. "methodology" from S2
-    mesh_terms: list[str] = field(default_factory=list)  # Medical Subject Headings from PubMed
+    citation_intents: list[str] = field(
+        default_factory=list
+    )  # e.g. "methodology" from S2
+    mesh_terms: list[str] = field(
+        default_factory=list
+    )  # Medical Subject Headings from PubMed
     tldr: str | None = None  # AI Summary from Semantic Scholar
-    
+
     query_id: str | None = None
     retrieved_at: datetime | None = None
     cluster_id: int | None = None
     raw_data: dict[str, Any] | None = None
 
     def mark_retrieved(self) -> None:
-        self.retrieved_at = datetime.now(timezone.utc)
+        self.retrieved_at = datetime.now(UTC)
 
 
 @dataclass
@@ -101,6 +107,7 @@ class DocumentCluster:
     @property
     def confidence(self) -> float:
         has_identifier = any(
-            member.external_ids.doi or member.external_ids.arxiv_id for member in self.members
+            member.external_ids.doi or member.external_ids.arxiv_id
+            for member in self.members
         )
         return 1.0 if has_identifier else 0.95

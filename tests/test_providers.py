@@ -1,29 +1,35 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
-import vcr
-from unittest.mock import patch, MagicMock
 import requests
+import vcr
 
 from scholar_search.models import Query
+from scholar_search.providers.arxiv import ArxivProvider
+from scholar_search.providers.biorxiv import BiorxivProvider
+from scholar_search.providers.crossref import CrossrefProvider
 from scholar_search.providers.openalex import OpenAlexProvider
 from scholar_search.providers.pubmed import PubMedProvider
-from scholar_search.providers.arxiv import ArxivProvider
-from scholar_search.providers.crossref import CrossrefProvider
 from scholar_search.providers.semanticscholar import SemanticScholarProvider
-from scholar_search.providers.biorxiv import BiorxivProvider
 
 # Setup VCR to save cassettes in tests/cassettes
 my_vcr = vcr.VCR(
-    serializer='yaml',
-    cassette_library_dir='tests/cassettes',
-    record_mode='once',
-    match_on=['uri', 'method'],
-    filter_headers=['authorization']
+    serializer="yaml",
+    cassette_library_dir="tests/cassettes",
+    record_mode="once",
+    match_on=["uri", "method"],
+    filter_headers=["authorization"],
 )
+
 
 @pytest.fixture(autouse=True)
 def disable_requests_cache():
-    with patch("scholar_search.http_client.requests_cache.CachedSession", lambda *args, **kwargs: requests.Session()):
+    with patch(
+        "scholar_search.http_client.requests_cache.CachedSession",
+        lambda *args, **kwargs: requests.Session(),
+    ):
         yield
+
 
 @my_vcr.use_cassette()
 def test_openalex_provider():
@@ -34,6 +40,7 @@ def test_openalex_provider():
     assert results[0].title is not None
     assert results[0].provider == "openalex"
 
+
 @my_vcr.use_cassette()
 def test_pubmed_provider():
     provider = PubMedProvider()
@@ -43,6 +50,7 @@ def test_pubmed_provider():
     assert results[0].title is not None
     assert results[0].provider == "pubmed"
 
+
 @my_vcr.use_cassette()
 def test_arxiv_provider():
     provider = ArxivProvider()
@@ -51,7 +59,8 @@ def test_arxiv_provider():
     assert len(results) > 0
     assert results[0].title is not None
     assert results[0].provider == "arxiv"
-    
+
+
 @my_vcr.use_cassette()
 def test_crossref_provider():
     provider = CrossrefProvider()
@@ -72,10 +81,10 @@ def test_semanticscholar_mocked():
                 "title": "Deep Residual Learning for Image Recognition",
                 "year": 2016,
                 "citationCount": 150000,
-                "externalIds": {"DOI": "10.1109/CVPR.2016.90"}
+                "externalIds": {"DOI": "10.1109/CVPR.2016.90"},
             }
         ],
-        "token": None
+        "token": None,
     }
     with patch.object(provider.client, "get", return_value=mock_resp):
         query = Query(text="deep residual learning", max_results=1)
@@ -98,9 +107,9 @@ def test_biorxiv_mocked():
                 "authors": "Smith, J; Doe, A",
                 "date": "2020-01-02",
                 "server": "biorxiv",
-                "abstract": "We describe a novel CRISPR method..."
+                "abstract": "We describe a novel CRISPR method...",
             }
-        ]
+        ],
     }
     with patch.object(provider.client, "get", return_value=mock_resp):
         query = Query(text="crispr genome", max_results=1)

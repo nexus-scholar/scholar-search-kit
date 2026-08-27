@@ -13,6 +13,7 @@ Academic APIs enforce strict rate limits to protect public infrastructure (e.g. 
 ```python
 import time
 
+
 class RateLimiter:
     """Token bucket rate limiter ensuring polite client-side request rates."""
 
@@ -26,7 +27,7 @@ class RateLimiter:
         """Wait until at least 1.0 token is available."""
         if self.rate <= 0:
             return
-            
+
         while True:
             now = time.time()
             elapsed = now - self.last_update
@@ -36,7 +37,7 @@ class RateLimiter:
             if self.tokens >= 1.0:
                 self.tokens -= 1.0
                 return
-            
+
             sleep_time = (1.0 - self.tokens) / self.rate
             time.sleep(max(0.01, sleep_time))
 ```

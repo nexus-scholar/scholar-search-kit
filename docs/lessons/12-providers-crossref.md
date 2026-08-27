@@ -21,6 +21,7 @@ Run with `pytest tests/test_providers.py -k "test_crossref"`:
 from scholar_search.providers.crossref import CrossrefProvider
 from scholar_search.models import Query
 
+
 def test_crossref_search():
     provider = CrossrefProvider()
     q = Query(text="deep learning", max_results=5)

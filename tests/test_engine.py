@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+
 from scholar_search.engine import SearchEngine
 from scholar_search.models import Document, ExternalIds, Query
 
@@ -8,20 +9,20 @@ def test_search_engine_federation_and_dedup():
         title="Attention Is All You Need",
         year=2017,
         provider="openalex",
-        external_ids=ExternalIds(doi="10.5555/3295222.3295349")
+        external_ids=ExternalIds(doi="10.5555/3295222.3295349"),
     )
     doc2 = Document(
         title="Attention Is All You Need",
         year=2017,
         provider="arxiv",
         external_ids=ExternalIds(doi="10.5555/3295222.3295349", arxiv_id="1706.03762"),
-        abstract="The dominant sequence transduction models..."
+        abstract="The dominant sequence transduction models...",
     )
     doc3 = Document(
         title="BERT: Pre-training of Deep Bidirectional Transformers",
         year=2018,
         provider="arxiv",
-        external_ids=ExternalIds(arxiv_id="1810.04805")
+        external_ids=ExternalIds(arxiv_id="1810.04805"),
     )
 
     mock_p1 = MagicMock()
@@ -46,8 +47,12 @@ def test_search_engine_federation_and_dedup():
 def test_search_engine_snowball():
     mock_p1 = MagicMock()
     mock_p1.name = "openalex"
-    mock_p1.get_citations.return_value = [Document(title="Citing Paper", provider="openalex")]
-    mock_p1.get_references.return_value = [Document(title="Referenced Paper", provider="openalex")]
+    mock_p1.get_citations.return_value = [
+        Document(title="Citing Paper", provider="openalex")
+    ]
+    mock_p1.get_references.return_value = [
+        Document(title="Referenced Paper", provider="openalex")
+    ]
 
     engine = SearchEngine(providers=[mock_p1])
     citations = engine.snowball_forward("W123", "openalex")

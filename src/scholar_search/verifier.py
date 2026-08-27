@@ -2,28 +2,31 @@
 
 import logging
 from difflib import SequenceMatcher
-from typing import Tuple, List, Dict, Any, Optional
+from typing import Any
 
-from .models import Document, ExternalIds
-from .http_client import AcademicHttpClient
+from .dedup import _title_key
+from .models import Document
 from .providers.crossref import CrossrefProvider
 from .providers.openalex import OpenAlexProvider
-from .dedup import _title_key
 
 logger = logging.getLogger(__name__)
 
 
 class DocumentVerifier:
     """
-    Verifies the existence of documents against Crossref & OpenAlex 
+    Verifies the existence of documents against Crossref & OpenAlex
     to detect hallucinations and hydates missing metadata.
     """
 
-    def __init__(self, crossref_provider: Optional[CrossrefProvider] = None, openalex_provider: Optional[OpenAlexProvider] = None):
+    def __init__(
+        self,
+        crossref_provider: CrossrefProvider | None = None,
+        openalex_provider: OpenAlexProvider | None = None,
+    ):
         self.crossref = crossref_provider or CrossrefProvider()
         self.openalex = openalex_provider or OpenAlexProvider()
 
-    def verify_document(self, doc: Document) -> Tuple[bool, Document, str]:
+    async def verify_document(self, doc: Document) -> tuple[bool, Document, str]:
         """
         Verifies if a document is real.
         Returns (is_verified, hydrated_document, explanation).
@@ -34,7 +37,8 @@ class DocumentVerifier:
                 # Query Crossref by DOI
                 clean_doi = doc.external_ids.doi.strip()
                 url = f"{self.crossref.base_url}/{clean_doi}"
-                response = self.crossref.client.get(url).json()
+                resp = await self.crossref.client.get(url)
+                response = resp.json()
                 item = response.get("message", {})
                 if item:
                     verified_doc = self.crossref._normalize_document(item)
@@ -45,11 +49,17 @@ class DocumentVerifier:
         # 2. Verification by Title / Bibliographic query in Crossref
         if doc.title and doc.title != "Untitled":
             try:
-                matched_doc = self.crossref.validate_reference(doc.title)
+                matched_doc = await self.crossref.validate_reference(doc.title)
                 if matched_doc:
-                    ratio = SequenceMatcher(None, _title_key(doc.title), _title_key(matched_doc.title)).ratio()
+                    ratio = SequenceMatcher(
+                        None, _title_key(doc.title), _title_key(matched_doc.title)
+                    ).ratio()
                     if ratio >= 0.90:
-                        return True, matched_doc, f"Verified via Crossref matching ({ratio:.0%} title match)"
+                        return (
+                            True,
+                            matched_doc,
+                            f"Verified via Crossref matching ({ratio:.0%} title match)",
+                        )
             except Exception as e:
                 logger.debug(f"Crossref title search failed: {e}")
 
@@ -58,30 +68,38 @@ class DocumentVerifier:
             try:
                 url = f"{self.openalex.base_url}"
                 params = {"search": doc.title, "per-page": 1}
-                response = self.openalex.client.get(url, params=params).json()
+                resp = await self.openalex.client.get(url, params=params)
+                response = resp.json()
                 results = response.get("results", [])
                 if results:
                     candidate = self.openalex._normalize_document(results[0])
-                    ratio = SequenceMatcher(None, _title_key(doc.title), _title_key(candidate.title)).ratio()
+                    ratio = SequenceMatcher(
+                        None, _title_key(doc.title), _title_key(candidate.title)
+                    ).ratio()
                     if ratio >= 0.90:
-                        return True, candidate, f"Verified via OpenAlex matching ({ratio:.0%} title match)"
+                        return (
+                            True,
+                            candidate,
+                            f"Verified via OpenAlex matching ({ratio:.0%} title match)",
+                        )
             except Exception as e:
                 logger.debug(f"OpenAlex title search failed: {e}")
 
         return False, doc, "Unverified: Record not found in Crossref or OpenAlex"
 
-    def hydrate_metadata(self, doc: Document) -> Document:
+    async def hydrate_metadata(self, doc: Document) -> Document:
         """Hydrates missing fields (abstract, OA URL, venue, citations) from OpenAlex."""
         doi = doc.external_ids.doi
         if not doi:
             return doc
-            
+
         try:
             url = f"{self.openalex.base_url}/https://doi.org/{doi}"
-            response = self.openalex.client.get(url).json()
+            resp = await self.openalex.client.get(url)
+            response = resp.json()
             if response:
                 openalex_doc = self.openalex._normalize_document(response)
-                
+
                 # Enrich fields
                 if not doc.abstract and openalex_doc.abstract:
                     doc.abstract = openalex_doc.abstract
@@ -97,25 +115,25 @@ class DocumentVerifier:
                     doc.citations_count = openalex_doc.citations_count
                 if doc.references_count is None:
                     doc.references_count = openalex_doc.references_count
-                if not doc.external_ids.openalex_id and openalex_doc.external_ids.openalex_id:
+                if (
+                    not doc.external_ids.openalex_id
+                    and openalex_doc.external_ids.openalex_id
+                ):
                     doc.external_ids.openalex_id = openalex_doc.external_ids.openalex_id
         except Exception as e:
             logger.debug(f"Hydration failed for DOI {doi}: {e}")
 
         return doc
 
-    def process_batch(
-        self,
-        documents: List[Document],
-        verify: bool = True,
-        enrich: bool = True
-    ) -> Tuple[List[Document], List[Dict[str, Any]]]:
+    async def process_batch(
+        self, documents: list[Document], verify: bool = True, enrich: bool = True
+    ) -> tuple[list[Document], list[dict[str, Any]]]:
         """
         Processes a batch of documents with verification and hydration.
         Returns (processed_documents, audit_log).
         """
-        processed_docs: List[Document] = []
-        audit_log: List[Dict[str, Any]] = []
+        processed_docs: list[Document] = []
+        audit_log: list[dict[str, Any]] = []
 
         for doc in documents:
             is_verified = True
@@ -123,18 +141,20 @@ class DocumentVerifier:
             current_doc = doc
 
             if verify:
-                is_verified, current_doc, note = self.verify_document(doc)
+                is_verified, current_doc, note = await self.verify_document(doc)
 
             if is_verified and enrich:
-                current_doc = self.hydrate_metadata(current_doc)
+                current_doc = await self.hydrate_metadata(current_doc)
 
             processed_docs.append(current_doc)
-            audit_log.append({
-                "title": doc.title,
-                "input_doi": doc.external_ids.doi,
-                "verified": is_verified,
-                "resolved_doi": current_doc.external_ids.doi,
-                "status": note
-            })
+            audit_log.append(
+                {
+                    "title": doc.title,
+                    "input_doi": doc.external_ids.doi,
+                    "verified": is_verified,
+                    "resolved_doi": current_doc.external_ids.doi,
+                    "status": note,
+                }
+            )
 
         return processed_docs, audit_log

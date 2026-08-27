@@ -1,7 +1,8 @@
 from pathlib import Path
-from scholar_search.models import Document, ExternalIds, Author
+
 from scholar_search.export import Exporter
-from scholar_search.importers import RISImporter, JSONImporter, JSONLImporter
+from scholar_search.importers import JSONImporter, JSONLImporter, RISImporter
+from scholar_search.models import Author, Document, ExternalIds
 
 
 def test_json_and_jsonl_export_import_roundtrip(tmp_path: Path):
@@ -14,7 +15,7 @@ def test_json_and_jsonl_export_import_roundtrip(tmp_path: Path):
             abstract="A comprehensive study on neural networks.",
             authors=[Author(family_name="LeCun", given_name="Yann")],
             venue="ICLR",
-            citations_count=450
+            citations_count=450,
         )
     ]
     exporter = Exporter()

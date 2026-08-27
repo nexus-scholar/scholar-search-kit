@@ -22,6 +22,7 @@ Run with `pytest tests/test_providers.py -k "test_arxiv"`:
 from scholar_search.providers.arxiv import ArXivProvider
 from scholar_search.models import Query
 
+
 def test_arxiv_search():
     provider = ArXivProvider()
     q = Query(text="transformer attention", max_results=5)

@@ -37,6 +37,7 @@ Run with `pytest tests/test_providers.py -k "test_openalex"`:
 from scholar_search.providers.openalex import OpenAlexProvider
 from scholar_search.models import Query
 
+
 def test_openalex_search():
     provider = OpenAlexProvider()
     q = Query(text="quantum computing", max_results=5)

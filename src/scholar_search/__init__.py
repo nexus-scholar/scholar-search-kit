@@ -1,33 +1,39 @@
 """Scholarly search, deduplication, verification, and export toolkit."""
 
-from .models import Author, Document, DocumentCluster, ExternalIds, Query
 from .dedup import Deduplicator
 from .engine import SearchEngine
+from .exceptions import (
+    InvalidQueryError,
+    ProviderError,
+    RateLimitExceededError,
+    ScholarSearchError,
+    VerificationError,
+)
 from .export import Exporter
-from .importers import RISImporter, JSONImporter, JSONLImporter
 from .http_client import AcademicHttpClient
-from .verifier import DocumentVerifier
+from .importers import JSONImporter, JSONLImporter, RISImporter
+from .models import Author, Document, DocumentCluster, ExternalIds, Query
 from .providers import SearchProvider
-from .exceptions import ScholarSearchError, ProviderError, RateLimitExceededError, InvalidQueryError, VerificationError
+from .verifier import DocumentVerifier
 
 __all__ = [
+    "AcademicHttpClient",
     "Author",
+    "Deduplicator",
     "Document",
     "DocumentCluster",
-    "ExternalIds",
-    "Query",
-    "Deduplicator",
-    "SearchEngine",
+    "DocumentVerifier",
     "Exporter",
-    "RISImporter",
+    "ExternalIds",
+    "InvalidQueryError",
     "JSONImporter",
     "JSONLImporter",
-    "AcademicHttpClient",
-    "DocumentVerifier",
-    "SearchProvider",
-    "ScholarSearchError",
     "ProviderError",
+    "Query",
+    "RISImporter",
     "RateLimitExceededError",
-    "InvalidQueryError",
-    "VerificationError"
+    "ScholarSearchError",
+    "SearchEngine",
+    "SearchProvider",
+    "VerificationError",
 ]

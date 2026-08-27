@@ -32,13 +32,16 @@ from scholar_search.export import Exporter
 from scholar_search.importers import JSONImporter, RISImporter
 from scholar_search.models import Document, ExternalIds
 
+
 def test_json_roundtrip(tmp_path: Path):
-    docs = [Document("Study Alpha", year=2024, external_ids=ExternalIds(doi="10.1000/1"))]
+    docs = [
+        Document("Study Alpha", year=2024, external_ids=ExternalIds(doi="10.1000/1"))
+    ]
     out_file = tmp_path / "results.json"
-    
+
     Exporter().json(docs, out_file)
     imported = JSONImporter().import_file(out_file)
-    
+
     assert len(imported) == 1
     assert imported[0].title == "Study Alpha"
     assert imported[0].external_ids.doi == "10.1000/1"

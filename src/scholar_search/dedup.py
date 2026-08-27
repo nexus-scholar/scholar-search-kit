@@ -3,7 +3,7 @@
 import re
 from difflib import SequenceMatcher
 
-from .models import Document, DocumentCluster, ExternalIds
+from .models import Document, DocumentCluster
 
 
 def _title_key(title: str) -> str:
@@ -47,7 +47,7 @@ class Deduplicator:
             for member in cluster.members:
                 if self._same_identifier(document, member):
                     return cluster
-                
+
                 doc_title = _title_key(document.title)
                 member_title = _title_key(member.title)
                 if doc_title and member_title:
@@ -100,11 +100,17 @@ class Deduplicator:
 
         # Numerical fields (take maximum)
         if source.citations_count is not None:
-            if rep.citations_count is None or source.citations_count > rep.citations_count:
+            if (
+                rep.citations_count is None
+                or source.citations_count > rep.citations_count
+            ):
                 rep.citations_count = source.citations_count
-                
+
         if source.references_count is not None:
-            if rep.references_count is None or source.references_count > rep.references_count:
+            if (
+                rep.references_count is None
+                or source.references_count > rep.references_count
+            ):
                 rep.references_count = source.references_count
 
         # Lists (deduplicate union)

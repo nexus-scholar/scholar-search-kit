@@ -58,20 +58,20 @@ When writing custom Python scripts or subagent workflows, use `SearchEngine` and
 
 ```python
 from scholar_search import SearchEngine, Query, DocumentVerifier, Exporter
-from scholar_search.providers import OpenAlexProvider, SemanticScholarProvider, ArxivProvider
+from scholar_search.providers import (
+    OpenAlexProvider,
+    SemanticScholarProvider,
+    ArxivProvider,
+)
 
 # 1. Initialize Engine with desired providers
-engine = SearchEngine(providers=[
-    OpenAlexProvider(),
-    SemanticScholarProvider(),
-    ArxivProvider()
-])
+engine = SearchEngine(
+    providers=[OpenAlexProvider(), SemanticScholarProvider(), ArxivProvider()]
+)
 
 # 2. Formulate Query
 query = Query(
-    text='title:"deep learning" AND "medical imaging"',
-    year_min=2021,
-    max_results=50
+    text='title:"deep learning" AND "medical imaging"', year_min=2021, max_results=50
 )
 
 # 3. Search and Deduplicate

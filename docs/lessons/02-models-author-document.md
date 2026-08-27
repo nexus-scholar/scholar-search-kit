@@ -17,6 +17,7 @@ from typing import Any
 
 from .models import ExternalIds
 
+
 @dataclass
 class Author:
     family_name: str
@@ -25,7 +26,11 @@ class Author:
 
     @property
     def full_name(self) -> str:
-        return f"{self.given_name} {self.family_name}" if self.given_name else self.family_name
+        return (
+            f"{self.given_name} {self.family_name}"
+            if self.given_name
+            else self.family_name
+        )
 
 
 @dataclass
@@ -39,14 +44,18 @@ class Document:
     authors: list[Author] = field(default_factory=list)
     venue: str | None = None
     url: str | None = None
-    
+
     # Snowballing & Enhanced Metadata
     citations_count: int | None = None
     references_count: int | None = None
-    citation_intents: list[str] = field(default_factory=list)  # e.g. "methodology" from S2
-    mesh_terms: list[str] = field(default_factory=list)  # Medical Subject Headings from PubMed
+    citation_intents: list[str] = field(
+        default_factory=list
+    )  # e.g. "methodology" from S2
+    mesh_terms: list[str] = field(
+        default_factory=list
+    )  # Medical Subject Headings from PubMed
     tldr: str | None = None  # AI Summary from Semantic Scholar
-    
+
     query_id: str | None = None
     retrieved_at: datetime | None = None
     cluster_id: int | None = None
@@ -76,19 +85,21 @@ Run with `pytest tests/test_models.py -k "test_author or test_document"`:
 from datetime import timezone
 from scholar_search.models import Author, Document
 
+
 def test_author_properties():
     a1 = Author(family_name="Turing", given_name="Alan")
     assert a1.full_name == "Alan Turing"
-    
+
     a2 = Author(family_name="Euclid")
     assert a2.full_name == "Euclid"
+
 
 def test_document_defaults_and_retrieval():
     doc = Document(title="Computing Machinery and Intelligence", year=1950)
     assert doc.external_ids is not None
     assert doc.authors == []
     assert doc.retrieved_at is None
-    
+
     doc.mark_retrieved()
     assert doc.retrieved_at is not None
     assert doc.retrieved_at.tzinfo == timezone.utc

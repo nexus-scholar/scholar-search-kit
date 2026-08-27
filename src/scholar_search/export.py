@@ -11,7 +11,9 @@ from .models import Document
 class Exporter:
     """Export documents to JSON, JSONL, or CSV without provider-specific logic."""
 
-    def json(self, documents: list[Document], output_file: str | Path, indent: int = 2) -> Path:
+    def json(
+        self, documents: list[Document], output_file: str | Path, indent: int = 2
+    ) -> Path:
         """Export documents as a clean, standardized JSON array."""
         path = Path(output_file)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -36,18 +38,29 @@ class Exporter:
         with path.open("w", newline="", encoding="utf-8") as handle:
             writer = csv.DictWriter(
                 handle,
-                fieldnames=["title", "year", "provider", "doi", "arxiv_id", "pubmed_id", "venue", "citations_count"]
+                fieldnames=[
+                    "title",
+                    "year",
+                    "provider",
+                    "doi",
+                    "arxiv_id",
+                    "pubmed_id",
+                    "venue",
+                    "citations_count",
+                ],
             )
             writer.writeheader()
             for document in documents:
-                writer.writerow({
-                    "title": document.title,
-                    "year": document.year,
-                    "provider": document.provider,
-                    "doi": document.external_ids.doi or "",
-                    "arxiv_id": document.external_ids.arxiv_id or "",
-                    "pubmed_id": document.external_ids.pubmed_id or "",
-                    "venue": document.venue or "",
-                    "citations_count": document.citations_count or 0,
-                })
+                writer.writerow(
+                    {
+                        "title": document.title,
+                        "year": document.year,
+                        "provider": document.provider,
+                        "doi": document.external_ids.doi or "",
+                        "arxiv_id": document.external_ids.arxiv_id or "",
+                        "pubmed_id": document.external_ids.pubmed_id or "",
+                        "venue": document.venue or "",
+                        "citations_count": document.citations_count or 0,
+                    }
+                )
         return path
