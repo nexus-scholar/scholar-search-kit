@@ -33,6 +33,9 @@ class Exporter:
 
     def csv(self, documents: list[Document], output_file: str | Path) -> Path:
         """Export core metadata to CSV."""
+        import html
+        import re
+
         path = Path(output_file)
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("w", newline="", encoding="utf-8") as handle:
@@ -48,18 +51,21 @@ class Exporter:
                     "venue",
                     "citations_count",
                 ],
+                quoting=csv.QUOTE_MINIMAL,
             )
             writer.writeheader()
             for document in documents:
+                title = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", html.unescape(document.title or "Untitled"))).strip()
+                venue = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", html.unescape(document.venue or ""))).strip()
                 writer.writerow(
                     {
-                        "title": document.title,
+                        "title": title,
                         "year": document.year,
                         "provider": document.provider,
                         "doi": document.external_ids.doi or "",
                         "arxiv_id": document.external_ids.arxiv_id or "",
                         "pubmed_id": document.external_ids.pubmed_id or "",
-                        "venue": document.venue or "",
+                        "venue": venue,
                         "citations_count": document.citations_count or 0,
                     }
                 )

@@ -80,6 +80,21 @@ class Document:
     cluster_id: int | None = None
     raw_data: dict[str, Any] | None = None
 
+    def __post_init__(self) -> None:
+        import html
+        import re
+        if self.title:
+            t = html.unescape(self.title)
+            t = re.sub(r"<[^>]+>", "", t)
+            self.title = re.sub(r"\s+", " ", t).strip()
+        else:
+            self.title = "Untitled"
+
+        if self.venue:
+            v = html.unescape(self.venue)
+            v = re.sub(r"<[^>]+>", "", v)
+            self.venue = re.sub(r"\s+", " ", v).strip()
+
     def mark_retrieved(self) -> None:
         self.retrieved_at = datetime.now(UTC)
 

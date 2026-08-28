@@ -31,22 +31,49 @@ class DocumentVerifier:
         Verifies if a document is real.
         Returns (is_verified, hydrated_document, explanation).
         """
-        # 1. Verification by existing DOI
+        # 1. Verification by existing DOI (Crossref first, then OpenAlex fallback for arXiv/DataCite)
         if doc.external_ids.doi:
+            clean_doi = doc.external_ids.doi.strip()
+            # Try Crossref
             try:
-                # Query Crossref by DOI
-                clean_doi = doc.external_ids.doi.strip()
                 url = f"{self.crossref.base_url}/{clean_doi}"
                 resp = await self.crossref.client.get(url)
-                response = resp.json()
-                item = response.get("message", {})
-                if item:
-                    verified_doc = self.crossref._normalize_document(item)
-                    return True, verified_doc, f"Verified via DOI ({clean_doi})"
+                if resp.status_code == 200:
+                    response = resp.json()
+                    item = response.get("message", {})
+                    if item:
+                        verified_doc = self.crossref._normalize_document(item)
+                        return True, verified_doc, f"Verified via Crossref DOI ({clean_doi})"
             except Exception as e:
-                logger.debug(f"DOI verification failed for {doc.external_ids.doi}: {e}")
+                logger.debug(f"Crossref DOI verification failed for {clean_doi}: {e}")
 
-        # 2. Verification by Title / Bibliographic query in Crossref
+            # Try OpenAlex for non-Crossref / DataCite / arXiv DOIs
+            try:
+                url = f"{self.openalex.base_url}/https://doi.org/{clean_doi}"
+                resp = await self.openalex.client.get(url)
+                if resp.status_code == 200:
+                    item = resp.json()
+                    if item and item.get("id"):
+                        verified_doc = self.openalex._normalize_document(item)
+                        return True, verified_doc, f"Verified via OpenAlex DOI ({clean_doi})"
+            except Exception as e:
+                logger.debug(f"OpenAlex DOI verification failed for {clean_doi}: {e}")
+
+        # 2. Verification by arXiv ID
+        if doc.external_ids.arxiv_id:
+            clean_arxiv = doc.external_ids.arxiv_id.strip()
+            try:
+                url = f"{self.openalex.base_url}/https://arxiv.org/abs/{clean_arxiv}"
+                resp = await self.openalex.client.get(url)
+                if resp.status_code == 200:
+                    item = resp.json()
+                    if item and item.get("id"):
+                        verified_doc = self.openalex._normalize_document(item)
+                        return True, verified_doc, f"Verified via OpenAlex arXiv ({clean_arxiv})"
+            except Exception as e:
+                logger.debug(f"OpenAlex arXiv verification failed for {clean_arxiv}: {e}")
+
+        # 3. Verification by Title in Crossref
         if doc.title and doc.title != "Untitled":
             try:
                 matched_doc = await self.crossref.validate_reference(doc.title)
@@ -63,25 +90,26 @@ class DocumentVerifier:
             except Exception as e:
                 logger.debug(f"Crossref title search failed: {e}")
 
-        # 3. Fallback to OpenAlex Title Search
+        # 4. Fallback to OpenAlex Title Search
         if doc.title and doc.title != "Untitled":
             try:
                 url = f"{self.openalex.base_url}"
                 params = {"search": doc.title, "per-page": 1}
                 resp = await self.openalex.client.get(url, params=params)
-                response = resp.json()
-                results = response.get("results", [])
-                if results:
-                    candidate = self.openalex._normalize_document(results[0])
-                    ratio = SequenceMatcher(
-                        None, _title_key(doc.title), _title_key(candidate.title)
-                    ).ratio()
-                    if ratio >= 0.90:
-                        return (
-                            True,
-                            candidate,
-                            f"Verified via OpenAlex matching ({ratio:.0%} title match)",
-                        )
+                if resp.status_code == 200:
+                    response = resp.json()
+                    results = response.get("results", [])
+                    if results:
+                        candidate = self.openalex._normalize_document(results[0])
+                        ratio = SequenceMatcher(
+                            None, _title_key(doc.title), _title_key(candidate.title)
+                        ).ratio()
+                        if ratio >= 0.90:
+                            return (
+                                True,
+                                candidate,
+                                f"Verified via OpenAlex matching ({ratio:.0%} title match)",
+                            )
             except Exception as e:
                 logger.debug(f"OpenAlex title search failed: {e}")
 
