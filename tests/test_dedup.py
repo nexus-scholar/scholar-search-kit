@@ -51,3 +51,60 @@ def test_dedup_metadata_merging():
     assert rep.url == "https://openaccess.thecvf.com/paper.pdf"
     assert rep.citations_count == 60000
     assert "Neural Networks, Computer" in rep.mesh_terms
+    assert rep.workspace_id == "SCI-000001"
+    assert len(rep.sources) == 3
+
+
+def test_dedup_fuzzy_matching_with_author_and_year():
+    from scholar_search.models import Author
+
+    doc_preprint = Document(
+        title="Grounded Language Models for Scientific Discovery",
+        year=2023,
+        provider="arxiv",
+        authors=[Author(family_name="Chen", given_name="Alex")],
+        abstract="<jats:p>We introduce a novel grounded RAG architecture.</jats:p>",
+    )
+    doc_journal = Document(
+        title="Grounded Language Models for Scientific Discovery.",
+        year=2024,  # +1 year publication delay
+        provider="crossref",
+        authors=[Author(family_name="Chen", given_name="A.")],
+        external_ids=ExternalIds(doi="10.1038/s41586-024-0001"),
+    )
+
+    deduplicator = Deduplicator()
+    clusters = deduplicator.deduplicate([doc_preprint, doc_journal])
+
+    assert len(clusters) == 1
+    rep = clusters[0].representative
+    assert rep.workspace_id == "SCI-000001"
+    assert rep.external_ids.doi == "10.1038/s41586-024-0001"
+    # Abstract should have JATS tags stripped
+    assert rep.abstract == "We introduce a novel grounded RAG architecture."
+    assert len(rep.sources) == 2
+
+
+def test_dedup_distinct_papers_not_merged():
+    from scholar_search.models import Author
+
+    doc1 = Document(
+        title="Deep Learning for Code Generation",
+        year=2022,
+        provider="arxiv",
+        authors=[Author(family_name="Smith")],
+    )
+    doc2 = Document(
+        title="Reinforcement Learning for Code Generation",
+        year=2022,
+        provider="arxiv",
+        authors=[Author(family_name="Smith")],
+    )
+
+    deduplicator = Deduplicator()
+    clusters = deduplicator.deduplicate([doc1, doc2])
+
+    assert len(clusters) == 2
+    assert clusters[0].representative.workspace_id == "SCI-000001"
+    assert clusters[1].representative.workspace_id == "SCI-000002"
+

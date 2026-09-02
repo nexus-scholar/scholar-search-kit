@@ -1,19 +1,25 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
+import pytest
 
 from scholar_search.models import Document, ExternalIds
 from scholar_search.verifier import DocumentVerifier
 
 
-def test_verify_document_by_doi():
+@pytest.mark.asyncio
+async def test_verify_document_by_doi():
     mock_crossref = MagicMock()
     mock_crossref.base_url = "https://api.crossref.org/works"
-    mock_crossref.client.get.return_value.json.return_value = {
+    
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {
         "message": {
             "title": ["Attention Is All You Need"],
             "DOI": "10.5555/3295222.3295349",
             "published-print": {"date-parts": [[2017]]},
         }
     }
+    mock_crossref.client.get = AsyncMock(return_value=mock_resp)
     mock_crossref._normalize_document.return_value = Document(
         title="Attention Is All You Need",
         year=2017,
@@ -28,21 +34,25 @@ def test_verify_document_by_doi():
         external_ids=ExternalIds(doi="10.5555/3295222.3295349"),
     )
 
-    verified, res_doc, reason = verifier.verify_document(doc)
+    verified, res_doc, reason = await verifier.verify_document(doc)
     assert verified is True
     assert "DOI" in reason
     assert res_doc.year == 2017
 
 
-def test_verify_document_hallucination_detection():
+@pytest.mark.asyncio
+async def test_verify_document_hallucination_detection():
     mock_crossref = MagicMock()
     mock_crossref.base_url = "https://api.crossref.org/works"
-    mock_crossref.client.get.side_effect = Exception("Not found")
-    mock_crossref.validate_reference.return_value = None
+    mock_crossref.client.get = AsyncMock(side_effect=Exception("Not found"))
+    mock_crossref.validate_reference = AsyncMock(return_value=None)
 
     mock_openalex = MagicMock()
     mock_openalex.base_url = "https://api.openalex.org/works"
-    mock_openalex.client.get.return_value.json.return_value = {"results": []}
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {"results": []}
+    mock_openalex.client.get = AsyncMock(return_value=mock_resp)
 
     verifier = DocumentVerifier(
         crossref_provider=mock_crossref, openalex_provider=mock_openalex
@@ -52,18 +62,21 @@ def test_verify_document_hallucination_detection():
         external_ids=ExternalIds(doi="10.1234/fake.doi"),
     )
 
-    verified, res_doc, reason = verifier.verify_document(fake_doc)
+    verified, res_doc, reason = await verifier.verify_document(fake_doc)
     assert verified is False
     assert "Unverified" in reason
 
 
-def test_hydrate_metadata():
+@pytest.mark.asyncio
+async def test_hydrate_metadata():
     mock_openalex = MagicMock()
     mock_openalex.base_url = "https://api.openalex.org/works"
-    mock_openalex.client.get.return_value.json.return_value = {
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = {
         "id": "W123",
         "title": "Real Paper",
     }
+    mock_openalex.client.get = AsyncMock(return_value=mock_resp)
     mock_openalex._normalize_document.return_value = Document(
         title="Real Paper",
         abstract="This is the full abstract recovered from OpenAlex.",
@@ -77,7 +90,8 @@ def test_hydrate_metadata():
         title="Real Paper", external_ids=ExternalIds(doi="10.1038/real")
     )
 
-    hydrated = verifier.hydrate_metadata(incomplete_doc)
+    hydrated = await verifier.hydrate_metadata(incomplete_doc)
     assert hydrated.abstract == "This is the full abstract recovered from OpenAlex."
     assert hydrated.venue == "Nature"
     assert hydrated.citations_count == 120
+

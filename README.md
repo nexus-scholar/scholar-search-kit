@@ -41,7 +41,11 @@ uv pip install -e .
 
 ### 1. Multi-Provider Literature Search
 ```bash
+# Direct keyword search
 uv run scholar-search search "transformer attention mechanism" --limit 20 --output results.json
+
+# Protocol-driven federated search (Phase 0 -> Phase 1 integration)
+uv run scholar-search search --protocol protocol.json --output results.json
 ```
 
 **Example Output:**
@@ -72,10 +76,21 @@ uv run scholar-search snowball W2741809807 --provider openalex --direction backw
 uv run scholar-search import my_collection.ris --verify --enrich --output verified.json
 ```
 
-### 4. Deduplication
+### 4. Deduplication & Entity Resolution
 ```bash
 uv run scholar-search dedup raw_papers.json --output deduped.json
 ```
+
+### 5. PRISMA 2020 Title/Abstract Screening
+```bash
+# Evaluates candidate papers against protocol.json inclusion/exclusion rules
+uv run scholar-search screen --input deduped.json --protocol protocol.json --output-dir literature/
+```
+Generates:
+- `literature/included.json`: Included papers advancing to full-text retrieval
+- `literature/excluded.json`: Excluded papers with reason codes (`EXC-01`, `EXC-02`)
+- `literature/conflicts.json`: Borderline confidence cases flagged for human review
+- `literature/prisma_screening_report.md`: Formatted PRISMA 2020 flow report table
 
 ---
 

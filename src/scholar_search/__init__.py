@@ -10,10 +10,16 @@ from .exceptions import (
     VerificationError,
 )
 from .export import Exporter
-from .http_client import AcademicHttpClient
-from .importers import JSONImporter, JSONLImporter, RISImporter
-from .models import Author, Document, DocumentCluster, ExternalIds, Query
+from .protocol_adapter import compile_protocol_search
 from .providers import SearchProvider
+from .screening import (
+    PrismaFlowReport,
+    ScreeningDecision,
+    batch_partition,
+    evaluate_heuristic_screening,
+    generate_batch_screening_prompt,
+    partition_screening_results,
+)
 from .verifier import DocumentVerifier
 
 __all__ = [
@@ -28,12 +34,19 @@ __all__ = [
     "InvalidQueryError",
     "JSONImporter",
     "JSONLImporter",
+    "PrismaFlowReport",
     "ProviderError",
     "Query",
     "RISImporter",
     "RateLimitExceededError",
     "ScholarSearchError",
+    "ScreeningDecision",
     "SearchEngine",
     "SearchProvider",
     "VerificationError",
+    "batch_partition",
+    "compile_protocol_search",
+    "evaluate_heuristic_screening",
+    "generate_batch_screening_prompt",
+    "partition_screening_results",
 ]

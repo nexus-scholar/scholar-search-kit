@@ -64,6 +64,11 @@ class Document:
     venue: str | None = None
     url: str | None = None
 
+    # Workspace & Provenance Identification
+    workspace_id: str | None = None
+    sources: list[dict[str, Any]] = field(default_factory=list)
+    oa_locations: list[dict[str, Any]] = field(default_factory=list)
+
     # Snowballing & Enhanced Metadata
     citations_count: int | None = None
     references_count: int | None = None
@@ -83,6 +88,7 @@ class Document:
     def __post_init__(self) -> None:
         import html
         import re
+
         if self.title:
             t = html.unescape(self.title)
             t = re.sub(r"<[^>]+>", "", t)
@@ -94,6 +100,22 @@ class Document:
             v = html.unescape(self.venue)
             v = re.sub(r"<[^>]+>", "", v)
             self.venue = re.sub(r"\s+", " ", v).strip()
+
+        if self.abstract:
+            a = html.unescape(self.abstract)
+            # Strip JATS XML and general XML/HTML tags
+            a = re.sub(r"<jats:[^>]+>", "", a)
+            a = re.sub(r"</jats:[^>]+>", "", a)
+            a = re.sub(r"<[^>]+>", "", a)
+            self.abstract = re.sub(r"\s+", " ", a).strip()
+
+        if not self.sources and self.provider and self.provider != "unknown":
+            self.sources.append(
+                {
+                    "provider": self.provider,
+                    "id": self.provider_id,
+                }
+            )
 
     def mark_retrieved(self) -> None:
         self.retrieved_at = datetime.now(UTC)

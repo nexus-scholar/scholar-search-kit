@@ -1,4 +1,4 @@
-"""Deterministic document deduplication and metadata merging."""
+"""Deterministic document deduplication and non-destructive metadata fusion."""
 
 import re
 from difflib import SequenceMatcher
@@ -7,23 +7,38 @@ from .models import Document, DocumentCluster
 
 
 def _title_key(title: str) -> str:
+    """Normalizes a title by removing non-alphanumeric characters and extra whitespace."""
     return re.sub(r"[^a-z0-9]+", " ", title.lower()).strip()
 
 
+def _first_author_surname(doc: Document) -> str | None:
+    """Extracts normalized first author surname if present."""
+    if doc.authors:
+        return doc.authors[0].family_name.lower().strip()
+    return None
+
+
 class Deduplicator:
-    """Cluster documents by identifiers, then conservative title matching, merging metadata."""
+    """
+    Two-tier deterministic deduplication and non-destructive metadata fusion engine:
+      Tier 1: Canonical Persistent Identifiers (DOI, arXiv ID, PMID, OpenAlex ID, S2 ID)
+      Tier 2: Fuzzy lexical title normalization (>= 97%) + author surname match + year tolerance (+/- 1 year)
+    """
 
     def deduplicate(self, documents: list[Document]) -> list[DocumentCluster]:
         clusters: list[DocumentCluster] = []
         for document in documents:
             match = self._find_match(document, clusters)
             if match is None:
-                match = DocumentCluster(len(clusters) + 1, document, [document])
+                cluster_id = len(clusters) + 1
+                document.workspace_id = f"SCI-{cluster_id:06d}"
+                match = DocumentCluster(cluster_id, document, [document])
                 clusters.append(match)
             else:
                 match.members.append(document)
                 self._merge_metadata(match.representative, document)
             document.cluster_id = match.cluster_id
+            document.workspace_id = match.representative.workspace_id
         return clusters
 
     def get_unique_documents(self, documents: list[Document]) -> list[Document]:
@@ -45,14 +60,13 @@ class Deduplicator:
     ) -> DocumentCluster | None:
         for cluster in clusters:
             for member in cluster.members:
+                # Tier 1: Canonical Persistent Identifiers
                 if self._same_identifier(document, member):
                     return cluster
 
-                doc_title = _title_key(document.title)
-                member_title = _title_key(member.title)
-                if doc_title and member_title:
-                    if SequenceMatcher(None, doc_title, member_title).ratio() >= 0.97:
-                        return cluster
+                # Tier 2: Fuzzy Title Normalization + Author + Year Tolerance
+                if self._fuzzy_match(document, member):
+                    return cluster
         return None
 
     @staticmethod
@@ -68,9 +82,35 @@ class Deduplicator:
         )
 
     @staticmethod
+    def _fuzzy_match(left: Document, right: Document) -> bool:
+        left_title = _title_key(left.title)
+        right_title = _title_key(right.title)
+        if not left_title or not right_title:
+            return False
+
+        ratio = SequenceMatcher(None, left_title, right_title).ratio()
+        if ratio < 0.97:
+            return False
+
+        # Check year tolerance (+/- 1 year) if both have publication year
+        if left.year and right.year:
+            if abs(left.year - right.year) > 1:
+                return False
+
+        # Check author surname match if both have authors
+        left_author = _first_author_surname(left)
+        right_author = _first_author_surname(right)
+        if left_author and right_author:
+            # Surnames should match or one contain the other (to handle prefixes like de/van/von)
+            if left_author != right_author and left_author not in right_author and right_author not in left_author:
+                return False
+
+        return True
+
+    @staticmethod
     def _merge_metadata(rep: Document, source: Document) -> None:
-        """Enrich the representative document with missing metadata from a duplicate."""
-        # IDs
+        """Enrich the representative document with missing metadata and provenance from a duplicate."""
+        # Merge Persistent Identifiers
         if not rep.external_ids.doi and source.external_ids.doi:
             rep.external_ids.doi = source.external_ids.doi
         if not rep.external_ids.arxiv_id and source.external_ids.arxiv_id:
@@ -82,9 +122,21 @@ class Deduplicator:
         if not rep.external_ids.s2_id and source.external_ids.s2_id:
             rep.external_ids.s2_id = source.external_ids.s2_id
 
-        # Text fields
-        if not rep.abstract and source.abstract:
-            rep.abstract = source.abstract
+        # Merge Provenance Sources
+        for src in source.sources:
+            if src not in rep.sources:
+                rep.sources.append(src)
+
+        # Merge OA Locations
+        for oa in source.oa_locations:
+            if oa not in rep.oa_locations:
+                rep.oa_locations.append(oa)
+
+        # Text fields: Prefer longer / cleaner abstract
+        if source.abstract:
+            if not rep.abstract or len(source.abstract) > len(rep.abstract):
+                rep.abstract = source.abstract
+
         if not rep.venue and source.venue:
             rep.venue = source.venue
         if not rep.url and source.url:
@@ -94,8 +146,8 @@ class Deduplicator:
         if not rep.tldr and source.tldr:
             rep.tldr = source.tldr
 
-        # Authors
-        if not rep.authors and source.authors:
+        # Authors: Prefer richer author list
+        if len(source.authors) > len(rep.authors):
             rep.authors = list(source.authors)
 
         # Numerical fields (take maximum)

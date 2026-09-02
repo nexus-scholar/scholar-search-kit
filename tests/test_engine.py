@@ -1,10 +1,17 @@
 from unittest.mock import MagicMock
+import pytest
 
 from scholar_search.engine import SearchEngine
 from scholar_search.models import Document, ExternalIds, Query
 
 
-def test_search_engine_federation_and_dedup():
+async def _async_gen(items):
+    for item in items:
+        yield item
+
+
+@pytest.mark.asyncio
+async def test_search_engine_federation_and_dedup():
     doc1 = Document(
         title="Attention Is All You Need",
         year=2017,
@@ -27,14 +34,14 @@ def test_search_engine_federation_and_dedup():
 
     mock_p1 = MagicMock()
     mock_p1.name = "openalex"
-    mock_p1.search.return_value = [doc1]
+    mock_p1.search = MagicMock(side_effect=lambda q: _async_gen([doc1]))
 
     mock_p2 = MagicMock()
     mock_p2.name = "arxiv"
-    mock_p2.search.return_value = [doc2, doc3]
+    mock_p2.search = MagicMock(side_effect=lambda q: _async_gen([doc2, doc3]))
 
     engine = SearchEngine(providers=[mock_p1, mock_p2])
-    results = engine.search_all(Query(text="transformer"), dedup=True)
+    results = await engine.search_all(Query(text="transformer"), dedup=True)
 
     # 3 raw docs should be deduplicated to 2 unique docs
     assert len(results) == 2
@@ -44,21 +51,23 @@ def test_search_engine_federation_and_dedup():
     assert attention_paper.abstract == "The dominant sequence transduction models..."
 
 
-def test_search_engine_snowball():
+@pytest.mark.asyncio
+async def test_search_engine_snowball():
     mock_p1 = MagicMock()
     mock_p1.name = "openalex"
-    mock_p1.get_citations.return_value = [
-        Document(title="Citing Paper", provider="openalex")
-    ]
-    mock_p1.get_references.return_value = [
-        Document(title="Referenced Paper", provider="openalex")
-    ]
+    mock_p1.get_citations = MagicMock(
+        side_effect=lambda doc_id: _async_gen([Document(title="Citing Paper", provider="openalex")])
+    )
+    mock_p1.get_references = MagicMock(
+        side_effect=lambda doc_id: _async_gen([Document(title="Referenced Paper", provider="openalex")])
+    )
 
     engine = SearchEngine(providers=[mock_p1])
-    citations = engine.snowball_forward("W123", "openalex")
-    references = engine.snowball_backward("W123", "openalex")
+    citations = await engine.snowball_forward("W123", "openalex")
+    references = await engine.snowball_backward("W123", "openalex")
 
     assert len(citations) == 1
     assert citations[0].title == "Citing Paper"
     assert len(references) == 1
     assert references[0].title == "Referenced Paper"
+

@@ -42,12 +42,14 @@ class Exporter:
             writer = csv.DictWriter(
                 handle,
                 fieldnames=[
+                    "workspace_id",
                     "title",
                     "year",
                     "provider",
                     "doi",
                     "arxiv_id",
                     "pubmed_id",
+                    "openalex_id",
                     "venue",
                     "citations_count",
                 ],
@@ -59,12 +61,14 @@ class Exporter:
                 venue = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", html.unescape(document.venue or ""))).strip()
                 writer.writerow(
                     {
+                        "workspace_id": document.workspace_id or "",
                         "title": title,
                         "year": document.year,
                         "provider": document.provider,
                         "doi": document.external_ids.doi or "",
                         "arxiv_id": document.external_ids.arxiv_id or "",
                         "pubmed_id": document.external_ids.pubmed_id or "",
+                        "openalex_id": document.external_ids.openalex_id or "",
                         "venue": venue,
                         "citations_count": document.citations_count or 0,
                     }
