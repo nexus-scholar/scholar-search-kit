@@ -95,3 +95,58 @@ async def test_hydrate_metadata():
     assert hydrated.venue == "Nature"
     assert hydrated.citations_count == 120
 
+
+@pytest.mark.asyncio
+async def test_hydrate_metadata_skips_on_title_mismatch():
+    """A contaminated DOI (wrong paper title vs OpenAlex record) must NOT enrich."""
+    mock_openalex = MagicMock()
+    mock_openalex.base_url = "https://api.openalex.org/works"
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = {"id": "W456", "title": "Unrelated Paper on Turtles"}
+    mock_openalex.client.get = AsyncMock(return_value=mock_resp)
+    mock_openalex._normalize_document.return_value = Document(
+        title="Unrelated Paper on Turtles",
+        abstract="Wrong metadata that must not leak in.",
+        venue="Wrong Venue",
+        citations_count=999,
+        external_ids=ExternalIds(doi="10.1000/wrong", openalex_id="W456"),
+    )
+
+    verifier = DocumentVerifier(openalex_provider=mock_openalex)
+    record = Document(
+        title="Attention Is All You Need",
+        external_ids=ExternalIds(doi="10.1000/wrong"),  # contaminated DOI
+    )
+
+    hydrated = await verifier.hydrate_metadata(record)
+    assert hydrated.abstract is None
+    assert hydrated.venue is None
+    assert hydrated.citations_count is None
+
+
+@pytest.mark.asyncio
+async def test_hydrate_metadata_allows_positive_match():
+    """A genuine DOI whose OpenAlex title matches must still hydrate normally."""
+    mock_openalex = MagicMock()
+    mock_openalex.base_url = "https://api.openalex.org/works"
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = {"id": "W789", "title": "Deep Residual Learning for Image Recognition"}
+    mock_openalex.client.get = AsyncMock(return_value=mock_resp)
+    mock_openalex._normalize_document.return_value = Document(
+        title="Deep Residual Learning for Image Recognition",
+        abstract="Recovered abstract.",
+        venue="arXiv",
+        citations_count=100000,
+        external_ids=ExternalIds(doi="10.1000/resnet", openalex_id="W789"),
+    )
+
+    verifier = DocumentVerifier(openalex_provider=mock_openalex)
+    record = Document(
+        title="Deep Residual Learning for Image Recognition",
+        external_ids=ExternalIds(doi="10.1000/resnet"),
+    )
+
+    hydrated = await verifier.hydrate_metadata(record)
+    assert hydrated.abstract == "Recovered abstract."
+    assert hydrated.venue == "arXiv"
+

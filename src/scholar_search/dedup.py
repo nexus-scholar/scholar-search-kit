@@ -27,8 +27,67 @@ class Deduplicator:
 
     def deduplicate(self, documents: list[Document]) -> list[DocumentCluster]:
         clusters: list[DocumentCluster] = []
+        id_index: dict[tuple[str, str], DocumentCluster] = {}
+        exact_title_index: dict[str, DocumentCluster] = {}
+        fuzzy_pool: list[tuple[str, Document, DocumentCluster]] = []
+
+        def _register(doc: Document, cluster: DocumentCluster) -> None:
+            ext = doc.external_ids
+            if ext.doi:
+                id_index[("doi", ext.doi.strip().lower())] = cluster
+            if ext.arxiv_id:
+                id_index[("arxiv", ext.arxiv_id.strip().lower())] = cluster
+            if ext.pubmed_id:
+                id_index[("pubmed", str(ext.pubmed_id).strip())] = cluster
+            if ext.openalex_id:
+                id_index[("openalex", ext.openalex_id.strip())] = cluster
+            if ext.s2_id:
+                id_index[("s2", ext.s2_id.strip())] = cluster
+
+            tkey = _title_key(doc.title)
+            if tkey:
+                exact_title_index[tkey] = cluster
+                fuzzy_pool.append((tkey, doc, cluster))
+
         for document in documents:
-            match = self._find_match(document, clusters)
+            match = None
+            ext = document.external_ids
+
+            # Tier 1: Canonical Persistent Identifiers in O(1)
+            if ext.doi and ("doi", ext.doi.strip().lower()) in id_index:
+                match = id_index[("doi", ext.doi.strip().lower())]
+            elif ext.arxiv_id and ("arxiv", ext.arxiv_id.strip().lower()) in id_index:
+                match = id_index[("arxiv", ext.arxiv_id.strip().lower())]
+            elif ext.pubmed_id and ("pubmed", str(ext.pubmed_id).strip()) in id_index:
+                match = id_index[("pubmed", str(ext.pubmed_id).strip())]
+            elif ext.openalex_id and ("openalex", ext.openalex_id.strip()) in id_index:
+                match = id_index[("openalex", ext.openalex_id.strip())]
+            elif ext.s2_id and ("s2", ext.s2_id.strip()) in id_index:
+                match = id_index[("s2", ext.s2_id.strip())]
+
+            # Tier 1b: Exact normalized title match in O(1)
+            tkey = _title_key(document.title)
+            if match is None and tkey and tkey in exact_title_index:
+                match = exact_title_index[tkey]
+
+            # Tier 2: Fuzzy Lexical Title Match (pruned by length & author/year)
+            if match is None and tkey:
+                len_doc = len(tkey)
+                for cand_tkey, cand_doc, cand_cluster in fuzzy_pool:
+                    len_cand = len(cand_tkey)
+                    if abs(len_doc - len_cand) / max(len_doc, len_cand) > 0.05:
+                        continue
+                    if document.year and cand_doc.year and abs(document.year - cand_doc.year) > 1:
+                        continue
+                    left_author = _first_author_surname(document)
+                    right_author = _first_author_surname(cand_doc)
+                    if left_author and right_author:
+                        if left_author != right_author and left_author not in right_author and right_author not in left_author:
+                            continue
+                    if SequenceMatcher(None, tkey, cand_tkey).ratio() >= 0.97:
+                        match = cand_cluster
+                        break
+
             if match is None:
                 cluster_id = len(clusters) + 1
                 document.workspace_id = f"SCI-{cluster_id:06d}"
@@ -37,8 +96,11 @@ class Deduplicator:
             else:
                 match.members.append(document)
                 self._merge_metadata(match.representative, document)
+
+            _register(document, match)
             document.cluster_id = match.cluster_id
             document.workspace_id = match.representative.workspace_id
+
         return clusters
 
     def get_unique_documents(self, documents: list[Document]) -> list[Document]:
@@ -54,20 +116,6 @@ class Deduplicator:
             "duplicates": duplicates,
             "duplicate_rate": duplicates / total if total else 0.0,
         }
-
-    def _find_match(
-        self, document: Document, clusters: list[DocumentCluster]
-    ) -> DocumentCluster | None:
-        for cluster in clusters:
-            for member in cluster.members:
-                # Tier 1: Canonical Persistent Identifiers
-                if self._same_identifier(document, member):
-                    return cluster
-
-                # Tier 2: Fuzzy Title Normalization + Author + Year Tolerance
-                if self._fuzzy_match(document, member):
-                    return cluster
-        return None
 
     @staticmethod
     def _same_identifier(left: Document, right: Document) -> bool:

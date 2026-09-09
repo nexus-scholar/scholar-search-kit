@@ -16,6 +16,7 @@ def test_cli_help():
     assert "search" in result.stdout
     assert "import" in result.stdout
     assert "snowball" in result.stdout
+    assert "chain" in result.stdout
     assert "dedup" in result.stdout
 
 

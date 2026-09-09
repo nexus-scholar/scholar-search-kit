@@ -611,10 +611,135 @@ class LLMBatchScreener:
             if idx < total - 1:
                 await asyncio.sleep(1.0)
 
-        logger.info(
-            "LLM screening complete: %d INCLUDE, %d EXCLUDE out of %d total.",
-            sum(1 for d in all_decisions if d.decision == "INCLUDE"),
-            sum(1 for d in all_decisions if d.decision == "EXCLUDE"),
-            len(all_decisions),
-        )
         return all_decisions
+
+
+def calculate_fleiss_kappa(
+    rater_decisions: list[list[str]],
+    categories: list[str] | None = None,
+) -> float:
+    """Calculate Fleiss' multi-rater Kappa for N subjects rated by n raters.
+
+    Args:
+        rater_decisions: list of N subjects, where each subject is a list of n decision labels
+            (e.g. [['INCLUDE', 'INCLUDE', 'EXCLUDE'], ...]).
+        categories: list of possible categories (default: ['INCLUDE', 'EXCLUDE']).
+
+    Returns:
+        Fleiss' kappa score (-1.0 to 1.0).
+    """
+    if not rater_decisions:
+        return 1.0
+
+    if categories is None:
+        categories = ["INCLUDE", "EXCLUDE"]
+
+    N = len(rater_decisions)
+    n = len(rater_decisions[0])
+    if N == 0 or n <= 1:
+        return 1.0
+
+    k = len(categories)
+    cat_to_idx = {c: i for i, c in enumerate(categories)}
+
+    # Build table N x k of counts
+    n_ij = [[0] * k for _ in range(N)]
+    for i, ratings in enumerate(rater_decisions):
+        for r in ratings:
+            cat = str(r).upper()
+            if cat in cat_to_idx:
+                n_ij[i][cat_to_idx[cat]] += 1
+
+    # p_j: proportion of all assignments to category j
+    total_ratings = N * n
+    p_j = [sum(n_ij[i][j] for i in range(N)) / total_ratings for j in range(k)]
+
+    # P_i: extent of agreement for i-th subject
+    P_i = []
+    for i in range(N):
+        sum_squares = sum(n_ij[i][j] ** 2 for j in range(k))
+        P_i.append((sum_squares - n) / (n * (n - 1)))
+
+    P_bar = sum(P_i) / N
+    P_e_bar = sum(p ** 2 for p in p_j)
+
+    if abs(1.0 - P_e_bar) < 1e-9:
+        return 1.0
+
+    return (P_bar - P_e_bar) / (1.0 - P_e_bar)
+
+
+def reconcile_multi_screener_decisions(
+    screeners_map: dict[str, dict[str, str]],
+    adjudication_map: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Reconcile multi-screener decisions using majority voting and adjudication routing.
+
+    Args:
+        screeners_map: dict mapping screener_id -> {workspace_id: 'INCLUDE'|'EXCLUDE'}.
+        adjudication_map: optional dict mapping workspace_id -> adjudicated decision.
+
+    Returns:
+        dict containing:
+          - 'reconciled': dict mapping workspace_id -> final decision
+          - 'ties': list of deadlocked workspace_ids (e.g. 2 vs 2)
+          - 'majority_count': number of records resolved by strict majority
+          - 'adjudicated_count': number of records resolved via adjudication
+          - 'fleiss_kappa': computed Fleiss' Kappa across all raters
+    """
+    if not screeners_map:
+        return {
+            "reconciled": {},
+            "ties": [],
+            "majority_count": 0,
+            "adjudicated_count": 0,
+            "fleiss_kappa": 1.0,
+        }
+
+    all_ids = sorted(list(set.union(*(set(s.keys()) for s in screeners_map.values()))))
+    screener_keys = sorted(list(screeners_map.keys()))
+    n_raters = len(screener_keys)
+    adjudication_map = adjudication_map or {}
+
+    reconciled: dict[str, str] = {}
+    ties: list[str] = []
+    subject_ratings: list[list[str]] = []
+    majority_count = 0
+    adjudicated_count = 0
+
+    for wid in all_ids:
+        ratings = [screeners_map[sk].get(wid, "EXCLUDE").upper() for sk in screener_keys]
+        subject_ratings.append(ratings)
+
+        inc_votes = ratings.count("INCLUDE")
+        exc_votes = ratings.count("EXCLUDE")
+
+        if inc_votes > n_raters / 2:
+            reconciled[wid] = "INCLUDE"
+            majority_count += 1
+        elif exc_votes > n_raters / 2:
+            reconciled[wid] = "EXCLUDE"
+            majority_count += 1
+        else:
+            # Deadlock tie
+            ties.append(wid)
+            if wid in adjudication_map:
+                reconciled[wid] = adjudication_map[wid].upper()
+                adjudicated_count += 1
+            else:
+                # Fallback before adjudication
+                reconciled[wid] = "EXCLUDE"
+
+    kappa = calculate_fleiss_kappa(subject_ratings, categories=["INCLUDE", "EXCLUDE"])
+
+    return {
+        "reconciled": reconciled,
+        "ties": ties,
+        "majority_count": majority_count,
+        "adjudicated_count": adjudicated_count,
+        "fleiss_kappa": round(kappa, 4),
+        "total_records": len(all_ids),
+        "included_count": sum(1 for d in reconciled.values() if d == "INCLUDE"),
+        "excluded_count": sum(1 for d in reconciled.values() if d == "EXCLUDE"),
+    }
+

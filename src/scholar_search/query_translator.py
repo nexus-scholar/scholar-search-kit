@@ -85,11 +85,26 @@ class QueryParser:
             field_match = self.FIELD_PATTERN.match(remaining)
             if field_match:
                 field_name = field_match.group(1).lower()
-                try:
-                    current_field = QueryField(field_name)
-                except ValueError:
-                    logger.warning(f"Unknown field: {field_name}, using 'any'")
-                    current_field = QueryField.ANY
+                field_aliases = {
+                    "ti": QueryField.TITLE,
+                    "title": QueryField.TITLE,
+                    "abs": QueryField.ABSTRACT,
+                    "abstract": QueryField.ABSTRACT,
+                    "au": QueryField.AUTHOR,
+                    "author": QueryField.AUTHOR,
+                    "yr": QueryField.YEAR,
+                    "year": QueryField.YEAR,
+                    "all": QueryField.ANY,
+                    "any": QueryField.ANY,
+                }
+                if field_name in field_aliases:
+                    current_field = field_aliases[field_name]
+                else:
+                    try:
+                        current_field = QueryField(field_name)
+                    except ValueError:
+                        logger.warning(f"Unknown field: {field_name}, using 'any'")
+                        current_field = QueryField.ANY
                 remaining = remaining[field_match.end() :]
                 continue
 

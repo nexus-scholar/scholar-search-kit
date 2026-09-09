@@ -1,5 +1,6 @@
 """Semantic Scholar provider implementation."""
 
+import re
 from collections.abc import AsyncIterator
 from typing import Any
 
@@ -82,6 +83,9 @@ class SemanticScholarProvider(BaseAPIProvider):
         """Search Semantic Scholar using the bulk endpoint."""
         # Translate query to bulk syntax (e.g. "term1 + term2 | term3")
         translated_query = self.translator.translate(query)
+        # S2 bulk search does not support nested parentheses or & symbols
+        translated_query = translated_query.replace("(", "").replace(")", "").replace("&", " ")
+        translated_query = re.sub(r"\s+", " ", translated_query).strip()
 
         params = {
             "query": translated_query,

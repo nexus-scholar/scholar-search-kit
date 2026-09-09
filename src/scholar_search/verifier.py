@@ -11,6 +11,36 @@ from .providers.openalex import OpenAlexProvider
 
 logger = logging.getLogger(__name__)
 
+# Minimum normalized-title length (characters) for one-title-contained-in-other
+# to be treated as a match. Guards against short titles trivially matching.
+_BIDIRECTIONAL_CONTAINMENT_MIN = 12
+
+
+def bidirectional_title_similarity(a: str, b: str) -> tuple[float, bool]:
+    """
+    Strict bidirectional title comparison used to guard DOI hydration.
+
+    Returns (ratio, is_match). A match requires either:
+      * SequenceMatcher ratio >= 0.90 over normalized title keys, or
+      * one title fully contained in the other (subtitle/prefix forms), with the
+        contained title at least `_BIDIRECTIONAL_CONTAINMENT_MIN` chars long.
+
+    Bidirectional means we accept containment in *either* direction (order is
+    not significant) and never hydrate on a one-sided statistic alone.
+    """
+    ka = _title_key(a)
+    kb = _title_key(b)
+    if not ka or not kb:
+        return 0.0, False
+    ratio = SequenceMatcher(None, ka, kb).ratio()
+    if ratio >= 0.90:
+        return ratio, True
+    if len(ka) >= _BIDIRECTIONAL_CONTAINMENT_MIN and ka in kb:
+        return ratio, True
+    if len(kb) >= _BIDIRECTIONAL_CONTAINMENT_MIN and kb in ka:
+        return ratio, True
+    return ratio, False
+
 
 class DocumentVerifier:
     """
@@ -127,6 +157,27 @@ class DocumentVerifier:
             response = resp.json()
             if response:
                 openalex_doc = self.openalex._normalize_document(response)
+
+                # Period: strict bidirectional title guard. A contaminated DOI
+                # (e.g. PubMed carrying another paper's DOI) must not silently
+                # overwrite this record's metadata with a mismatched OpenAlex
+                # record. When the source record has a real title, we verify it
+                # against the OpenAlex title before enriching; on mismatch the
+                # record is returned untouched.
+                src_title = (doc.title or "").strip()
+                if src_title not in ("", "Untitled", "Unknown Title"):
+                    ratio, is_match = bidirectional_title_similarity(
+                        src_title, openalex_doc.title
+                    )
+                    if not is_match:
+                        logger.warning(
+                            "Hydration skipped for DOI %s: title mismatch (%.2f) %r vs %r",
+                            doi,
+                            ratio,
+                            src_title,
+                            openalex_doc.title,
+                        )
+                        return doc
 
                 # Enrich fields
                 if not doc.abstract and openalex_doc.abstract:

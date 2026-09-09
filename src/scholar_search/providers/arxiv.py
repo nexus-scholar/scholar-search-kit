@@ -14,7 +14,7 @@ class ArxivProvider(BaseAPIProvider):
     def __init__(self) -> None:
         # arXiv allows 1 req/sec without API key
         super().__init__(name="arxiv", rate_limit=1.0)
-        self.base_url = "http://export.arxiv.org/api/query"
+        self.base_url = "https://export.arxiv.org/api/query"
         self.ns = {"atom": "http://www.w3.org/2005/Atom"}
 
         # arXiv supports AND, OR, ANDNOT. Prefixes: all, ti, au, abs

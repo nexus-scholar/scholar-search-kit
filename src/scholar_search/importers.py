@@ -139,6 +139,8 @@ class JSONImporter:
                 mesh_terms=item.get("mesh_terms", []),
                 tldr=item.get("tldr"),
                 query_id=item.get("query_id"),
+                workspace_id=item.get("workspace_id"),
+                cluster_id=item.get("cluster_id"),
             )
             doc.mark_retrieved()
             yield doc
@@ -174,6 +176,8 @@ class JSONLImporter:
                     mesh_terms=data.get("mesh_terms", []),
                     tldr=data.get("tldr"),
                     query_id=data.get("query_id"),
+                    workspace_id=data.get("workspace_id"),
+                    cluster_id=data.get("cluster_id"),
                 )
                 doc.mark_retrieved()
                 yield doc

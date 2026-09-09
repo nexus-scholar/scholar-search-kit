@@ -40,6 +40,7 @@ app = typer.Typer(
 )
 console = Console(soft_wrap=True)
 logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
 
 
 def _get_provider_instance(name: str):
@@ -305,6 +306,126 @@ def snowball(
 
     if output:
         _save_output(limited_results, output, format)
+
+
+@app.command()
+def chain(
+    seeds: list[str] = typer.Argument(
+        ...,
+        help="One or more seed document IDs (e.g. 'W2741809807' for OpenAlex)",
+    ),
+    provider: str = typer.Option(
+        "openalex",
+        "--provider",
+        "-p",
+        help="Provider for citation lookups (openalex, semanticscholar, pubmed)",
+    ),
+    direction: list[str] = typer.Option(
+        ["backward"],
+        "--direction",
+        "-d",
+        help="Direction(s): forward, backward, or both",
+    ),
+    depth: int = typer.Option(
+        1, "--depth", help="Number of hops from each seed (max 5)"
+    ),
+    max_per_node: int = typer.Option(
+        200, "--max-per-node", help="Max citations/references fetched per node"
+    ),
+    max_total: int = typer.Option(
+        500, "--max-total", help="Global cap on total unique documents"
+    ),
+    year_min: int | None = typer.Option(
+        None, "--year-min", help="Minimum publication year"
+    ),
+    year_max: int | None = typer.Option(
+        None, "--year-max", help="Maximum publication year"
+    ),
+    output: Path | None = typer.Option(
+        None, "--output", "-o", help="Filepath to save discovered documents"
+    ),
+    edges_output: Path | None = typer.Option(
+        None, "--edges-output", help="Filepath to save the citation-edge manifest (JSON)"
+    ),
+    format: str = typer.Option(
+        "json", "--format", "-f", help="Output format: json, jsonl, csv"
+    ),
+):
+    """Multi-hop citation snowballing (BFS) from one or more seed IDs.
+
+    Traverses forward (citing papers) and/or backward (references) up to
+    --depth hops, deduplicating across the frontier.
+
+    \b
+    Examples:
+      scholar-search chain W2741809807
+      scholar-search chain W2741809807 --depth 2 -d backward forward
+      scholar-search chain W2741809807 W290382718 --max-total 1000 -o chain.json
+    """
+    from .snowball import CitationChainer
+
+    async def run_chain():
+        engine = SearchEngine(providers=[_get_provider_instance(provider)])
+        chainer = CitationChainer(engine=engine)
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            transient=True,
+        ) as progress:
+            task = progress.add_task(
+                description=f"Chaining from {len(seeds)} seed(s) on {provider}...",
+                total=None,
+            )
+
+            def update_progress(pname: str, count: int):
+                progress.update(task, description=f"  {provider}: {count} docs collected")
+
+            result = await chainer.chain(
+                seeds=seeds,
+                provider=provider,
+                directions=direction,  # type: ignore[arg-type]
+                max_depth=depth,
+                max_per_node=max_per_node,
+                max_total=max_total,
+                year_min=year_min,
+                year_max=year_max,
+                progress_callback=update_progress,
+            )
+
+        await engine.close()
+        return result
+
+    result = asyncio.run(run_chain())
+
+    _display_documents_table(
+        result.documents,
+        title=f"Chain ({'/'.join(result.stats['directions'])}, depth={result.stats['max_depth']}) — {len(result.documents)} unique docs",
+    )
+
+    if output:
+        _save_output(result.documents, output, format)
+
+    if edges_output:
+        import json as _json
+
+        edges_payload = [
+            {
+                "source_id": e.source_id,
+                "target_id": e.target_id,
+                "direction": e.direction,
+                "hop": e.hop,
+                "provider": e.provider,
+            }
+            for e in result.edges
+        ]
+        edges_output.write_text(
+            _json.dumps(edges_payload, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        console.print(
+            f"[green]Saved {len(result.edges)} citation edges to {edges_output}[/green]"
+        )
 
 
 @app.command(name="import")

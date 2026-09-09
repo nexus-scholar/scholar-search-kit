@@ -1,5 +1,6 @@
 """OpenAlex provider implementation."""
 
+import re
 from collections.abc import AsyncIterator
 from typing import Any
 
@@ -103,20 +104,60 @@ class OpenAlexProvider(BaseAPIProvider):
         word_index.sort(key=lambda x: x[0])
         return " ".join(word for _, word in word_index)
 
-    async def search(self, query: Query) -> AsyncIterator[Document]:
-        """Search OpenAlex works."""
-
-        translated_query = self.translator.translate(query)
-
-        params = {
-            "search": translated_query,
+    def _build_params(self, query: Query) -> dict[str, Any]:
+        params: dict[str, Any] = {
             "per-page": min(query.max_results or 100, 200),
             "cursor": "*",
             "mailto": settings.mailto,
         }
-
         if settings.openalex_key:
             params["api_key"] = settings.openalex_key
+
+        filters: list[str] = []
+        if query.year_min:
+            filters.append(f"from_publication_date:{query.year_min}-01-01")
+        if query.year_max:
+            filters.append(f"to_publication_date:{query.year_max}-12-31")
+
+        query_text = (query.text or "").strip()
+        if " AND " in query_text:
+            clauses = re.split(r"\s+AND\s+", query_text, flags=re.IGNORECASE)
+            selected_terms = []
+            for c in clauses:
+                phrases = re.findall(r'"([^"]+)"', c)
+                if phrases:
+                    selected_terms.append(f'"{phrases[0]}"')
+                else:
+                    words = [
+                        w
+                        for w in re.findall(r"\b[a-zA-Z0-9_-]{3,}\b", c)
+                        if w.upper() not in ("OR", "NOT", "AND")
+                    ]
+                    if words:
+                        selected_terms.append(words[0])
+            params["search"] = " ".join(selected_terms) if selected_terms else query_text
+        elif " OR " in query_text:
+            phrases = re.findall(r'"([^"]+)"', query_text)
+            if phrases:
+                params["search"] = f'"{phrases[0]}"'
+            else:
+                words = [
+                    w
+                    for w in re.findall(r"\b[a-zA-Z0-9_-]{3,}\b", query_text)
+                    if w.upper() not in ("OR", "NOT", "AND")
+                ]
+                params["search"] = words[0] if words else query_text
+        elif query_text:
+            params["search"] = query_text
+
+        if filters:
+            params["filter"] = ",".join(filters)
+
+        return params
+
+    async def search(self, query: Query) -> AsyncIterator[Document]:
+        """Search OpenAlex works."""
+        params = self._build_params(query)
 
         count = 0
         while True:
