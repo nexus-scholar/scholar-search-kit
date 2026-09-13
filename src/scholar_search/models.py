@@ -79,6 +79,9 @@ class Document:
         default_factory=list
     )  # Medical Subject Headings from PubMed
     tldr: str | None = None  # AI Summary from Semantic Scholar
+    topics: list[dict] | None = (
+        None  # classifier-grounded taxonomy ({source,id,display_name,score}, M0.6)
+    )
 
     query_id: str | None = None
     retrieved_at: datetime | None = None
@@ -129,6 +132,7 @@ class Query:
     year_max: int | None = None
     language: str = "en"
     max_results: int | None = None
+    semantic: bool = False
 
 
 @dataclass

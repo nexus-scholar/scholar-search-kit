@@ -84,10 +84,43 @@ class OpenAlexProvider(BaseAPIProvider):
             url=oa_url or raw.get("id"),
             citations_count=raw.get("cited_by_count", 0),
             references_count=len(raw.get("referenced_works", [])),
+            topics=self._extract_topics(raw),
             query_id=query_id,
         )
         doc.mark_retrieved()
         return doc
+
+    def _extract_topics(self, raw: dict[str, Any]) -> list[dict[str, Any]] | None:
+        """Classifier-grounded taxonomy from OpenAlex ``topics`` (else deprecated ``concepts``).
+
+        Each entry is normalized to ``{"source", "id", "display_name", "score"}``
+        (``score`` is ``None`` when the record carries no score).  Returns
+        ``None`` when neither list is populated (e.g. non-OpenAlex inputs).
+        """
+        topics = raw.get("topics")
+        if isinstance(topics, list) and topics:
+            return self._topic_entries(topics, "openalex_topics")
+        concepts = raw.get("concepts")
+        if isinstance(concepts, list) and concepts:
+            return self._topic_entries(concepts, "openalex_concepts")
+        return None
+
+    def _topic_entries(
+        self, entries: list[Any], source: str
+    ) -> list[dict[str, Any]]:
+        normalized: list[dict[str, Any]] = []
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            normalized.append(
+                {
+                    "source": source,
+                    "id": entry.get("id"),
+                    "display_name": entry.get("display_name"),
+                    "score": entry.get("score"),
+                }
+            )
+        return normalized
 
     def _parse_abstract_inverted_index(
         self, inverted_index: dict[str, list[int]] | None
@@ -106,10 +139,16 @@ class OpenAlexProvider(BaseAPIProvider):
 
     def _build_params(self, query: Query) -> dict[str, Any]:
         params: dict[str, Any] = {
-            "per-page": min(query.max_results or 100, 200),
-            "cursor": "*",
             "mailto": settings.mailto,
         }
+        if query.semantic:
+            # Semantic mode (M0.6): OpenAlex rejects cursor pagination for
+            # `search.semantic` (page/per_page only, max 50 results per
+            # request), so cap per-page and never set a cursor key.
+            params["per-page"] = min(query.max_results or 50, 50)
+        else:
+            params["per-page"] = min(query.max_results or 100, 200)
+            params["cursor"] = "*"
         if settings.openalex_key:
             params["api_key"] = settings.openalex_key
 
@@ -120,7 +159,11 @@ class OpenAlexProvider(BaseAPIProvider):
             filters.append(f"to_publication_date:{query.year_max}-12-31")
 
         query_text = (query.text or "").strip()
-        if " AND " in query_text:
+        if query.semantic:
+            # Semantic mode (M0.6): raw meaning-matched text, no boolean
+            # rewriting, and never combined with the keyword `search=` param.
+            params["search.semantic"] = query_text
+        elif " AND " in query_text:
             clauses = re.split(r"\s+AND\s+", query_text, flags=re.IGNORECASE)
             selected_terms = []
             for c in clauses:
@@ -150,7 +193,10 @@ class OpenAlexProvider(BaseAPIProvider):
         elif query_text:
             params["search"] = query_text
 
-        if filters:
+        if filters and not query.semantic:
+            # Semantic mode: OpenAlex `search.semantic` rejects a `filter`
+            # param (HTTP 400, verified live 2026-09-13). The ``search`` loop
+            # performs manual year filtering for semantic mode instead.
             params["filter"] = ",".join(filters)
 
         return params
@@ -160,6 +206,7 @@ class OpenAlexProvider(BaseAPIProvider):
         params = self._build_params(query)
 
         count = 0
+        page = 1
         while True:
             resp = await self.client.get(self.base_url, params=params)
             response = resp.json()
@@ -178,10 +225,24 @@ class OpenAlexProvider(BaseAPIProvider):
                 if query.max_results and count >= query.max_results:
                     return
 
-            cursor = response.get("meta", {}).get("next_cursor")
-            if not cursor:
-                break
-            params["cursor"] = cursor
+            if query.semantic:
+                # Semantic mode (M0.6): page-based pagination only.  OpenAlex
+                # caps `search.semantic` at 50 results / request and rejects
+                # cursor pagination, so walk pages via ``page`` counter.
+                total = response.get("meta", {}).get("count")
+                if not response.get("results"):
+                    break
+                if query.max_results and count >= query.max_results:
+                    break
+                if total is not None and count >= total:
+                    break
+                page += 1
+                params["page"] = page
+            else:
+                cursor = response.get("meta", {}).get("next_cursor")
+                if not cursor:
+                    break
+                params["cursor"] = cursor
 
     async def get_citations(self, document_id: str) -> AsyncIterator[Document]:
         """Forward Snowballing: Get papers that cite this specific OpenAlex ID."""
