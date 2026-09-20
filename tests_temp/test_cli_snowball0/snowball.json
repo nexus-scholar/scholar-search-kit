@@ -1,0 +1,37 @@
+[
+  {
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers",
+    "year": 2018,
+    "provider": "openalex",
+    "provider_id": "",
+    "external_ids": {
+      "doi": "10.18653/v1/n19-1423",
+      "arxiv_id": null,
+      "pubmed_id": null,
+      "openalex_id": null,
+      "s2_id": null
+    },
+    "abstract": null,
+    "authors": [],
+    "venue": null,
+    "url": null,
+    "workspace_id": null,
+    "sources": [
+      {
+        "provider": "openalex",
+        "id": ""
+      }
+    ],
+    "oa_locations": [],
+    "citations_count": null,
+    "references_count": null,
+    "citation_intents": [],
+    "mesh_terms": [],
+    "tldr": null,
+    "topics": null,
+    "query_id": null,
+    "retrieved_at": null,
+    "cluster_id": null,
+    "raw_data": null
+  }
+]

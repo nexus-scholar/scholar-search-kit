@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Paper A",
+    "year": null,
+    "provider": "local_json",
+    "provider_id": "",
+    "external_ids": {
+      "doi": "10.1000/1",
+      "arxiv_id": null,
+      "pubmed_id": null,
+      "openalex_id": null,
+      "s2_id": null
+    },
+    "abstract": null,
+    "authors": [],
+    "venue": null,
+    "url": null,
+    "workspace_id": "SCI-000001",
+    "sources": [
+      {
+        "provider": "local_json",
+        "id": ""
+      }
+    ],
+    "oa_locations": [],
+    "citations_count": null,
+    "references_count": null,
+    "citation_intents": [],
+    "mesh_terms": [],
+    "tldr": null,
+    "topics": null,
+    "query_id": null,
+    "retrieved_at": "2026-09-17 16:35:40.994698+00:00",
+    "cluster_id": 1,
+    "raw_data": null
+  }
+]

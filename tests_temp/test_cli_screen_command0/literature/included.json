@@ -1,0 +1,52 @@
+[
+  {
+    "title": "Code Generation Benchmark",
+    "year": 2023,
+    "provider": "openalex",
+    "provider_id": "",
+    "external_ids": {
+      "doi": "10.1000/1",
+      "arxiv_id": null,
+      "pubmed_id": null,
+      "openalex_id": null,
+      "s2_id": null
+    },
+    "abstract": "Empirical artifact evaluation of code synthesis.",
+    "authors": [],
+    "venue": null,
+    "url": null,
+    "workspace_id": "SCI-000001",
+    "sources": [
+      {
+        "provider": "openalex",
+        "id": ""
+      }
+    ],
+    "oa_locations": [],
+    "citations_count": null,
+    "references_count": null,
+    "citation_intents": [],
+    "mesh_terms": [],
+    "tldr": null,
+    "topics": null,
+    "query_id": null,
+    "retrieved_at": "2026-09-17 16:35:41.107575+00:00",
+    "cluster_id": null,
+    "raw_data": null,
+    "screening": {
+      "workspace_id": "SCI-000001",
+      "decision": "INCLUDE",
+      "confidence": 0.8,
+      "screening_reasoning": "Matched inclusion criteria ['INC-01'] via title+abstract: evidence=['code', 'generation', 'artifact'].",
+      "matched_inclusion_criteria": [
+        "INC-01"
+      ],
+      "violated_exclusion_criteria": [],
+      "relevant_rqs": [
+        "RQ1"
+      ],
+      "document_title": "Code Generation Benchmark",
+      "doi": "10.1000/1"
+    }
+  }
+]

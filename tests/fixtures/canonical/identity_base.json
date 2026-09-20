@@ -1,0 +1,48 @@
+[
+  {
+    "title": "A Review of RAG Architectures",
+    "year": 2024,
+    "provider": "openalex",
+    "provider_id": "W12345678",
+    "external_ids": {
+      "doi": "10.1234/test.123",
+      "arxiv_id": null,
+      "pubmed_id": null,
+      "openalex_id": "W12345678",
+      "s2_id": null
+    },
+    "abstract": "This is a test abstract about RAG.",
+    "authors": [
+      {
+        "family_name": "Smith",
+        "given_name": "John",
+        "orcid": "0000-0002-1825-0097"
+      },
+      {
+        "family_name": "Doe",
+        "given_name": "Jane",
+        "orcid": null
+      }
+    ],
+    "venue": "Journal of Testing",
+    "url": "https://example.com/test",
+    "workspace_id": "test-workspace-01",
+    "sources": [
+      {
+        "provider": "openalex",
+        "id": "W12345678"
+      }
+    ],
+    "oa_locations": [],
+    "citations_count": 42,
+    "references_count": 10,
+    "citation_intents": [],
+    "mesh_terms": [],
+    "tldr": "RAG test TLDR.",
+    "topics": null,
+    "query_id": "Q001",
+    "retrieved_at": "2026-09-20T12:00:00Z",
+    "cluster_id": 1,
+    "raw_data": null
+  }
+]

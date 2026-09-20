@@ -72,9 +72,11 @@ def _save_output(documents: list[Document], output_path: Path, format_str: str) 
         exporter.jsonl(documents, output_path)
     elif format_clean == "csv":
         exporter.csv(documents, output_path)
+    elif format_clean == "ris":
+        exporter.ris(documents, output_path)
     else:
         raise typer.BadParameter(
-            f"Unsupported format '{format_str}'. Options: json, jsonl, csv"
+            f"Unsupported format '{format_str}'. Options: json, jsonl, csv, ris"
         )
     console.print(
         f"[green]Saved {len(documents)} documents to {output_path} ({format_clean.upper()})[/green]"
@@ -147,7 +149,7 @@ def search(
         None, "--output", "-o", help="Filepath to save results"
     ),
     format: str = typer.Option(
-        "json", "--format", "-f", help="Output format: json, jsonl, csv"
+        "json", "--format", "-f", help="Output format: json, jsonl, csv, ris"
     ),
 ):
     """Search scholarly literature across multiple academic APIs."""
@@ -183,7 +185,12 @@ def search(
                 except Exception as e:
                     logger.warning(f"Could not instantiate provider '{p_name}': {e}")
             if not providers:
-                providers = [OpenAlexProvider(), SemanticScholarProvider(), CrossrefProvider(), ArxivProvider()]
+                providers = [
+                    OpenAlexProvider(),
+                    SemanticScholarProvider(),
+                    CrossrefProvider(),
+                    ArxivProvider(),
+                ]
         else:
             providers = [
                 OpenAlexProvider(),
@@ -202,7 +209,8 @@ def search(
         ) as progress:
             # Create a task for the overall orchestration
             main_task = progress.add_task(
-                description=f"Querying academic providers for '{search_str}'...", total=None
+                description=f"Querying academic providers for '{search_str}'...",
+                total=None,
             )
 
             task_map = {}
@@ -212,9 +220,14 @@ def search(
                     task_map[provider_name] = progress.add_task(
                         description=f"  {provider_name}: fetching...", total=None
                     )
-                progress.update(task_map[provider_name], description=f"  {provider_name}: {count} docs")
+                progress.update(
+                    task_map[provider_name],
+                    description=f"  {provider_name}: {count} docs",
+                )
 
-            res = await engine.search_all(q, dedup=dedup, progress_callback=update_progress)
+            res = await engine.search_all(
+                q, dedup=dedup, progress_callback=update_progress
+            )
             await engine.close()
             return res
 
@@ -224,7 +237,6 @@ def search(
 
     if output:
         _save_output(results, output, format)
-
 
 
 @app.command()
@@ -252,10 +264,11 @@ def snowball(
         None, "--output", "-o", help="Filepath to save results"
     ),
     format: str = typer.Option(
-        "json", "--format", "-f", help="Output format: json, jsonl, csv"
+        "json", "--format", "-f", help="Output format: json, jsonl, csv, ris"
     ),
 ):
     """Perform citation snowballing (forward citations or backward references)."""
+
     async def run_snowball():
         if provider:
             providers = [_get_provider_instance(provider)]
@@ -276,26 +289,33 @@ def snowball(
                     task_map[provider_name] = progress.add_task(
                         description=f"  {provider_name}: fetching...", total=None
                     )
-                progress.update(task_map[provider_name], description=f"  {provider_name}: {count} docs")
+                progress.update(
+                    task_map[provider_name],
+                    description=f"  {provider_name}: {count} docs",
+                )
 
             if direction.lower() == "forward":
                 progress.add_task(
                     description=f"Finding papers citing {doc_id} on {provider}...",
                     total=None,
                 )
-                res = await engine.snowball_forward(doc_id, provider, progress_callback=update_progress)
+                res = await engine.snowball_forward(
+                    doc_id, provider, progress_callback=update_progress
+                )
             elif direction.lower() == "backward":
                 progress.add_task(
                     description=f"Finding references cited by {doc_id} on {provider}...",
                     total=None,
                 )
-                res = await engine.snowball_backward(doc_id, provider, progress_callback=update_progress)
+                res = await engine.snowball_backward(
+                    doc_id, provider, progress_callback=update_progress
+                )
             else:
                 raise typer.BadParameter("Direction must be 'forward' or 'backward'")
 
             await engine.close()
             return res
-            
+
     results = asyncio.run(run_snowball())
 
     limited_results = results[:limit]
@@ -345,10 +365,12 @@ def chain(
         None, "--output", "-o", help="Filepath to save discovered documents"
     ),
     edges_output: Path | None = typer.Option(
-        None, "--edges-output", help="Filepath to save the citation-edge manifest (JSON)"
+        None,
+        "--edges-output",
+        help="Filepath to save the citation-edge manifest (JSON)",
     ),
     format: str = typer.Option(
-        "json", "--format", "-f", help="Output format: json, jsonl, csv"
+        "json", "--format", "-f", help="Output format: json, jsonl, csv, ris"
     ),
 ):
     """Multi-hop citation snowballing (BFS) from one or more seed IDs.
@@ -379,7 +401,9 @@ def chain(
             )
 
             def update_progress(pname: str, count: int):
-                progress.update(task, description=f"  {provider}: {count} docs collected")
+                progress.update(
+                    task, description=f"  {provider}: {count} docs collected"
+                )
 
             result = await chainer.chain(
                 seeds=seeds,
@@ -449,7 +473,7 @@ def import_citations(
         None, "--output", "-o", help="Filepath to save normalized results"
     ),
     format: str = typer.Option(
-        "json", "--format", "-f", help="Output format: json, jsonl, csv"
+        "json", "--format", "-f", help="Output format: json, jsonl, csv, ris"
     ),
 ):
     """Import citations from RIS or JSON files with optional verification and enrichment."""
@@ -486,7 +510,7 @@ def import_citations(
             await verifier.crossref.client.close()
             await verifier.openalex.client.close()
             return docs, aud
-            
+
     documents, audit = asyncio.run(run_import())
 
     verified_count = sum(1 for a in audit if a["verified"])
@@ -513,7 +537,7 @@ def dedup(
         None, "--output", "-o", help="Filepath to save deduplicated documents"
     ),
     format: str = typer.Option(
-        "json", "--format", "-f", help="Output format: json, jsonl, csv"
+        "json", "--format", "-f", help="Output format: json, jsonl, csv, ris"
     ),
 ):
     """Cluster and deduplicate an existing document collection, merging metadata."""
@@ -550,7 +574,7 @@ def verify(
         None, "--output", "-o", help="Filepath to save verified documents"
     ),
     format: str = typer.Option(
-        "json", "--format", "-f", help="Output format: json, jsonl, csv"
+        "json", "--format", "-f", help="Output format: json, jsonl, csv, ris"
     ),
     enrich: bool = typer.Option(
         False,
@@ -614,7 +638,7 @@ def export(
     ),
     output_file: Path = typer.Argument(..., help="Output destination file path"),
     format: str = typer.Option(
-        "json", "--format", "-f", help="Target format: json, jsonl, csv"
+        "json", "--format", "-f", help="Target format: json, jsonl, csv, ris"
     ),
 ):
     """Convert and export citation collections between formats."""
@@ -632,13 +656,24 @@ def export(
 @app.command()
 def screen(
     input_file: Path = typer.Option(
-        ..., "--input", "-i", help="Path to input candidate records (JSON, JSONL, RIS)", exists=True
+        ...,
+        "--input",
+        "-i",
+        help="Path to input candidate records (JSON, JSONL, RIS)",
+        exists=True,
     ),
     protocol: Path = typer.Option(
-        ..., "--protocol", "-P", help="Path to protocol.json containing screening criteria", exists=True
+        ...,
+        "--protocol",
+        "-P",
+        help="Path to protocol.json containing screening criteria",
+        exists=True,
     ),
     output_dir: Path = typer.Option(
-        Path("literature"), "--output-dir", "-o", help="Directory to save screening results and PRISMA reports"
+        Path("literature"),
+        "--output-dir",
+        "-o",
+        help="Directory to save screening results and PRISMA reports",
     ),
 ):
     """Screen candidate literature against protocol inclusion/exclusion criteria."""
@@ -659,7 +694,9 @@ def screen(
     with open(protocol, encoding="utf-8") as f:
         proto_data = json.load(f)
 
-    console.print(f"[bold]Screening {len(documents)} papers against protocol: {protocol.name}...[/bold]")
+    console.print(
+        f"[bold]Screening {len(documents)} papers against protocol: {protocol.name}...[/bold]"
+    )
 
     # 3. Evaluate documents
     decisions = [evaluate_heuristic_screening(doc, proto_data) for doc in documents]
@@ -688,17 +725,219 @@ def screen(
         f.write(report.to_markdown())
 
     console.print(f"[green]Screening Complete![/green]")
-    console.print(f"  [bold]Included[/bold]: {len(included)} papers -> {output_dir / 'included.json'}")
-    console.print(f"  [bold]Excluded[/bold]: {len(excluded)} papers -> {output_dir / 'excluded.json'}")
+    console.print(
+        f"  [bold]Included[/bold]: {len(included)} papers -> {output_dir / 'included.json'}"
+    )
+    console.print(
+        f"  [bold]Excluded[/bold]: {len(excluded)} papers -> {output_dir / 'excluded.json'}"
+    )
     if conflicts:
-        console.print(f"  [yellow]Conflicts / Borderline[/yellow]: {len(conflicts)} papers -> {output_dir / 'conflicts.json'}")
-    console.print(f"  [bold]PRISMA Report[/bold]: {output_dir / 'prisma_screening_report.md'}")
+        console.print(
+            f"  [yellow]Conflicts / Borderline[/yellow]: {len(conflicts)} papers -> {output_dir / 'conflicts.json'}"
+        )
+    console.print(
+        f"  [bold]PRISMA Report[/bold]: {output_dir / 'prisma_screening_report.md'}"
+    )
+
+
+@app.command("screen-compare")
+def screen_compare(
+    run_a_file: Path = typer.Argument(..., help="Path to first screening run JSON"),
+    run_b_file: Path = typer.Argument(..., help="Path to second screening run JSON"),
+    output: Path | None = typer.Option(
+        None, "--output", "-o", help="Output report file"
+    ),
+):
+    """Compare two screening runs for inter-rater reliability."""
+    import json
+    from .screen_comparator import compare_screening_runs
+
+    # Load decisions
+    with open(run_a_file, encoding="utf-8") as f:
+        run_a_data = json.load(f)
+    with open(run_b_file, encoding="utf-8") as f:
+        run_b_data = json.load(f)
+
+    # Handle wrapper format
+    run_a = (
+        run_a_data.get("decisions", run_a_data)
+        if isinstance(run_a_data, dict)
+        else run_a_data
+    )
+    run_b = (
+        run_b_data.get("decisions", run_b_data)
+        if isinstance(run_b_data, dict)
+        else run_b_data
+    )
+
+    # Compare
+    report = compare_screening_runs(run_a, run_b)
+
+    # Format as Markdown
+    md_lines = [
+        "# Screening Comparison Report",
+        "",
+        "## Summary",
+        f"- Total Compared: {report.total_compared}",
+        f"- Agreement Rate: {report.agreement_rate:.1%}",
+        f"- Discrepancies: {len(report.discrepancies)}",
+        f"- Regressions (INCLUDE→EXCLUDE): {report.regression_count}",
+        f"- Progressions (EXCLUDE→INCLUDE): {report.progression_count}",
+        "",
+        "## Transition Matrix",
+    ]
+
+    for from_dec, to_counts in report.transition_matrix.items():
+        for to_dec, count in to_counts.items():
+            md_lines.append(f"- {from_dec} → {to_dec}: {count}")
+
+    if report.discrepancies:
+        md_lines.extend(["", "## Discrepancies", ""])
+        for d in report.discrepancies[:10]:  # Limit to first 10
+            md_lines.append(f"- {d['key']}: {d['run_a']} vs {d['run_b']}")
+
+    report_str = "\n".join(md_lines)
+
+    if output:
+        output.write_text(report_str, encoding="utf-8")
+        console.print(f"[green]Report written to {output}[/green]")
+    else:
+        console.print(report_str)
+
+
+@app.command("validate-query")
+def validate_query(
+    query_text: str = typer.Argument(..., help="Search query to validate"),
+    seed: list[str] = typer.Option(
+        ..., "--seed", "-s", help="Golden seed DOI (repeatable)"
+    ),
+    output: Path | None = typer.Option(
+        None, "--output", "-o", help="Output JSON file path"
+    ),
+):
+    """Validate query recall against golden seed DOIs."""
+    import json
+
+    from .query_validator import QueryDiagnosticValidator
+
+    async def _run():
+        engine = SearchEngine()
+        validator = QueryDiagnosticValidator(engine)
+        return await validator.validate_and_heal(query_text, seed)
+
+    result = asyncio.run(_run())
+
+    # Print summary
+    console.print("\n[bold]Query Validation Summary[/bold]")
+    console.print(f"Original: {result['original_query']}")
+    console.print(f"Final: {result['final_query']}")
+    console.print(f"Golden Seeds: {len(result['golden_seeds'])}")
+    console.print(f"Iterations: {len(result['iterations'])}")
+    console.print(f"Recall: {result['recall']:.1%}")
+    if result["validated"]:
+        console.print("Validated: [green]Yes[/green]")
+    else:
+        console.print("Validated: [red]No[/red]")
+
+    # Print iteration details
+    for it in result["iterations"]:
+        console.print(
+            f"\n  Iteration {it['iteration']}: {it['results_count']} results, "
+            f"recall={it['recall']:.1%}"
+        )
+        if it["missed_seeds"]:
+            console.print(f"    Missed: {', '.join(it['missed_seeds'][:3])}")
+
+    if output:
+        output.write_text(json.dumps(result, indent=2), encoding="utf-8")
+        console.print(f"\n[green]Results written to {output}[/green]")
+
+
+@app.command("prisma-diagram")
+def prisma_diagram(
+    prisma_report: Path = typer.Argument(..., help="Path to prisma_report.json"),
+    format: str = typer.Option(
+        "mermaid",
+        "--format",
+        "-f",
+        help="Output format: mermaid or plantuml",
+    ),
+    output: Path | None = typer.Option(
+        None,
+        "--output",
+        "-o",
+        help="Output file path (default: stdout)",
+    ),
+):
+    """Generate a PRISMA 2020 flow diagram from a screening report JSON."""
+    import json
+
+    from .screening import PrismaFlowReport
+
+    if not prisma_report.exists():
+        console.print(f"[bold red]Error:[/bold red] File {prisma_report} not found.")
+        raise typer.Exit(1)
+
+    data = json.loads(prisma_report.read_text(encoding="utf-8"))
+    report = PrismaFlowReport(
+        total_identified=data.get("total_identified", 0),
+        duplicates_removed=data.get("duplicates_removed", 0),
+        records_screened=data.get("records_screened", 0),
+        records_excluded=data.get("records_excluded", 0),
+        records_included=data.get("records_included", 0),
+        conflicts_flagged=data.get("conflicts_flagged", 0),
+        exclusion_reasons_breakdown=data.get("exclusion_reasons_breakdown", {}),
+    )
+
+    if format == "mermaid":
+        diagram = report.to_mermaid()
+    elif format == "plantuml":
+        diagram = report.to_plantuml()
+    else:
+        raise typer.BadParameter(
+            f"Unknown format '{format}'. Use 'mermaid' or 'plantuml'."
+        )
+
+    if output:
+        output.write_text(diagram, encoding="utf-8")
+        console.print(f"[bold green]Diagram written to {output}[/bold green]")
+    else:
+        typer.echo(diagram)
+
+
+@app.command("identity")
+def identity(
+    corpus_file: Path = typer.Argument(
+        ..., help="Path to input corpus JSON/JSONL file", exists=True
+    ),
+    json_output: bool = typer.Option(
+        False, "--json", help="Output raw JSON identity metadata"
+    ),
+):
+    """Emit the deterministic corpus identity and canonical fingerprint."""
+    import json
+    from .identity import get_corpus_identity
+
+    try:
+        ident = get_corpus_identity(corpus_file)
+    except Exception as e:
+        console.print(f"[bold red]Error:[/bold red] {e}")
+        raise typer.Exit(1)
+
+    if json_output:
+        console.print(json.dumps(ident.to_dict(), indent=2, ensure_ascii=False))
+    else:
+        console.print(f"[bold]Corpus ID:[/bold] {ident.corpus_id}")
+        console.print(f"[bold]Fingerprint:[/bold] {ident.corpus_fingerprint}")
+        console.print(
+            f"[bold]Producer:[/bold] {ident.producer.package} @ {ident.producer.commit[:8]}"
+        )
+        if ident.workspace_id:
+            console.print(f"[bold]Workspace:[/bold] {ident.workspace_id}")
 
 
 def main():
     app()
 
-
 if __name__ == "__main__":
     main()
-

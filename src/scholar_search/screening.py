@@ -37,6 +37,53 @@ class PrismaFlowReport:
     conflicts_flagged: int
     exclusion_reasons_breakdown: dict[str, int] = field(default_factory=dict)
 
+    def to_mermaid(self) -> str:
+        """Generate a PRISMA 2020 flow diagram in Mermaid syntax."""
+        lines = [
+            "```mermaid",
+            "graph TD",
+            f"    A[Records identified<br/>n={self.total_identified}] --> B[Records screened<br/>n={self.records_screened}]",
+            f"    B --> C[Records excluded<br/>n={self.records_excluded}]",
+            f"    B --> D[Full-text assessed<br/>n={self.records_screened - self.records_excluded}]",
+            f"    D --> E[Studies included<br/>n={self.records_included}]",
+        ]
+        if self.exclusion_reasons_breakdown:
+            for idx, (reason, count) in enumerate(
+                sorted(self.exclusion_reasons_breakdown.items()), start=1
+            ):
+                lines.append(f'    EX{idx}["{reason}<br/>n={count}"]')
+                lines.append(f"    C --> EX{idx}")
+        lines.append("```")
+        return "\n".join(lines)
+
+    def to_plantuml(self) -> str:
+        """Generate a PRISMA 2020 flow diagram in PlantUML activity-diagram syntax."""
+        lines = [
+            "@startuml",
+            "start",
+            f":Records identified (n={self.total_identified});",
+            f":Records screened (n={self.records_screened});",
+        ]
+        if self.records_excluded > 0:
+            lines.append("if (Records excluded?) then (yes)")
+            lines.append(f"  :Records excluded (n={self.records_excluded});")
+            if self.exclusion_reasons_breakdown:
+                note_lines = ["  Exclusion reasons:"]
+                for reason, count in sorted(self.exclusion_reasons_breakdown.items()):
+                    note_lines.append(f"  - {reason}: {count}")
+                lines.append("  note right")
+                for nl in note_lines:
+                    lines.append(f"    {nl}")
+                lines.append("  end note")
+            lines.append("else (no)")
+            lines.append("endif")
+        assessed = self.records_screened - self.records_excluded
+        lines.append(f":Full-text assessed (n={assessed});")
+        lines.append(f":Studies included (n={self.records_included});")
+        lines.append("stop")
+        lines.append("@enduml")
+        return "\n".join(lines)
+
     def to_markdown(self) -> str:
         """Renders PRISMA 2020 Title/Abstract screening flow as Markdown."""
         lines = [
@@ -64,16 +111,20 @@ class PrismaFlowReport:
             for code, count in sorted(self.exclusion_reasons_breakdown.items()):
                 lines.append(f"| `{code}` | Systematic Exclusion Rule | {count} |")
 
-        lines.extend([
-            "",
-            "---",
-            f"**Conversion Rate**: {(self.records_included / max(1, self.records_screened)):.1%} of screened records advanced to PDF harvesting.",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "---",
+                f"**Conversion Rate**: {(self.records_included / max(1, self.records_screened)):.1%} of screened records advanced to PDF harvesting.",
+                "",
+            ]
+        )
         return "\n".join(lines)
 
 
-def batch_partition(documents: list[Document], batch_size: int = 50) -> list[list[Document]]:
+def batch_partition(
+    documents: list[Document], batch_size: int = 50
+) -> list[list[Document]]:
     """Partitions documents into discrete batches for LLM evaluation."""
     if batch_size <= 0:
         raise ValueError("batch_size must be greater than 0")
@@ -107,20 +158,22 @@ def generate_batch_screening_prompt(
 
     lines.extend(["", "### Exclusion Criteria (ANY satisfied triggers EXCLUDE)"])
     for exc in exclusions:
-        code = exc.get('id', 'EXC')
-        reason_cat = exc.get('reason_category', '')
+        code = exc.get("id", "EXC")
+        reason_cat = exc.get("reason_category", "")
         desc = f" ({reason_cat})" if reason_cat else ""
         lines.append(f"- **{code}**{desc}: {exc.get('criterion', '')}")
 
-    lines.extend([
-        "",
-        "### Candidate Papers to Screen",
-        "```json",
-    ])
+    lines.extend(
+        [
+            "",
+            "### Candidate Papers to Screen",
+            "```json",
+        ]
+    )
 
     batch_payload = [
         {
-            "workspace_id": doc.workspace_id or f"DOC-{idx+1:04d}",
+            "workspace_id": doc.workspace_id or f"DOC-{idx + 1:04d}",
             "title": doc.title,
             "year": doc.year,
             "abstract": doc.abstract or "No abstract available.",
@@ -129,19 +182,21 @@ def generate_batch_screening_prompt(
         for idx, doc in enumerate(batch)
     ]
     lines.append(json.dumps(batch_payload, indent=2))
-    lines.extend([
-        "```",
-        "",
-        "### Instructions",
-        "Evaluate each candidate paper. Return a strict JSON array of objects with schema:",
-        "- `workspace_id`: string",
-        "- `decision`: 'INCLUDE' or 'EXCLUDE'",
-        "- `confidence`: float between 0.0 and 1.0",
-        "- `matched_inclusion_criteria`: list of satisfied INC codes",
-        "- `violated_exclusion_criteria`: list of triggered EXC codes",
-        "- `relevant_rqs`: list of relevant RQ IDs",
-        "- `screening_reasoning`: 1-2 sentence rationale",
-    ])
+    lines.extend(
+        [
+            "```",
+            "",
+            "### Instructions",
+            "Evaluate each candidate paper. Return a strict JSON array of objects with schema:",
+            "- `workspace_id`: string",
+            "- `decision`: 'INCLUDE' or 'EXCLUDE'",
+            "- `confidence`: float between 0.0 and 1.0",
+            "- `matched_inclusion_criteria`: list of satisfied INC codes",
+            "- `violated_exclusion_criteria`: list of triggered EXC codes",
+            "- `relevant_rqs`: list of relevant RQ IDs",
+            "- `screening_reasoning`: 1-2 sentence rationale",
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -235,16 +290,39 @@ def evaluate_heuristic_screening(
 
     # --- INCLUSION matching: keywords from criterion text ---
     _INC_STOPWORDS = {
-        "that", "this", "with", "from", "have", "been", "such", "their", "will", "which",
-        "without", "used", "uses", "include", "including", "studies", "study",
-        "report", "reports", "using", "provide", "provides", "based",
+        "that",
+        "this",
+        "with",
+        "from",
+        "have",
+        "been",
+        "such",
+        "their",
+        "will",
+        "which",
+        "without",
+        "used",
+        "uses",
+        "include",
+        "including",
+        "studies",
+        "study",
+        "report",
+        "reports",
+        "using",
+        "provide",
+        "provides",
+        "based",
     }
     matched_inc: list[str] = []
     inc_evidence: list[str] = []
     for inc in inclusions:
         criterion_text = inc.get("criterion", "").lower()
-        words = [w.strip(".,;:()") for w in criterion_text.split()
-                 if len(w) >= 4 and w.strip(".,;:()") not in _INC_STOPWORDS]
+        words = [
+            w.strip(".,;:()")
+            for w in criterion_text.split()
+            if len(w) >= 4 and w.strip(".,;:()") not in _INC_STOPWORDS
+        ]
         matched_words = [w for w in words if w in full_corpus]
         if matched_words:
             matched_inc.append(inc.get("id", "INC-01"))
@@ -291,7 +369,10 @@ def evaluate_heuristic_screening(
             confidence=0.55,  # borderline — flagged as conflict for human audit
             matched_inclusion_criteria=matched_inc,
             violated_exclusion_criteria=triggered_exc,
-            relevant_rqs=[rq.get("id", "RQ1") for rq in protocol_data.get("research_questions", [])],
+            relevant_rqs=[
+                rq.get("id", "RQ1")
+                for rq in protocol_data.get("research_questions", [])
+            ],
             screening_reasoning=(
                 f"Conflicting signals: inclusion criteria {matched_inc} matched, "
                 f"but disqualifying phrase(s) {exc_evidence} also found. Human audit recommended."
@@ -314,7 +395,10 @@ def evaluate_heuristic_screening(
             confidence=confidence,
             matched_inclusion_criteria=matched_inc,
             violated_exclusion_criteria=[],
-            relevant_rqs=[rq.get("id", "RQ1") for rq in protocol_data.get("research_questions", [])],
+            relevant_rqs=[
+                rq.get("id", "RQ1")
+                for rq in protocol_data.get("research_questions", [])
+            ],
             screening_reasoning=reasoning,
             document_title=doc.title,
             doi=doc.external_ids.doi,
@@ -333,7 +417,9 @@ def evaluate_heuristic_screening(
         confidence=confidence,
         matched_inclusion_criteria=[],
         violated_exclusion_criteria=[],
-        relevant_rqs=[rq.get("id", "RQ1") for rq in protocol_data.get("research_questions", [])],
+        relevant_rqs=[
+            rq.get("id", "RQ1") for rq in protocol_data.get("research_questions", [])
+        ],
         screening_reasoning=reasoning,
         document_title=doc.title,
         doi=doc.external_ids.doi,
@@ -345,7 +431,9 @@ def partition_screening_results(
     decisions: list[ScreeningDecision],
     total_identified: int = 0,
     duplicates_removed: int = 0,
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], PrismaFlowReport]:
+) -> tuple[
+    list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], PrismaFlowReport
+]:
     """
     Partitions screened documents into included, excluded, and conflicts sets, and compiles the PRISMA report.
 
@@ -412,6 +500,7 @@ def partition_screening_results(
 # LLM-Powered Batch Screener
 # ---------------------------------------------------------------------------
 
+
 def _parse_llm_screening_response(
     raw_text: str,
     batch: list[Document],
@@ -439,10 +528,15 @@ def _parse_llm_screening_response(
         if not isinstance(parsed, list):
             raise ValueError("Expected a JSON array")
     except Exception as exc:
-        logger.warning("LLM response JSON parse failed (%s). Falling back to heuristic for entire batch.", exc)
+        logger.warning(
+            "LLM response JSON parse failed (%s). Falling back to heuristic for entire batch.",
+            exc,
+        )
         return [evaluate_heuristic_screening(doc, protocol_data) for doc in batch]
 
-    wsid_to_doc = {doc.workspace_id or f"DOC-{i+1:04d}": doc for i, doc in enumerate(batch)}
+    wsid_to_doc = {
+        doc.workspace_id or f"DOC-{i + 1:04d}": doc for i, doc in enumerate(batch)
+    }
 
     seen_wsids: set[str] = set()
     for entry in parsed:
@@ -454,7 +548,9 @@ def _parse_llm_screening_response(
         seen_wsids.add(wsid)
 
         raw_decision = str(entry.get("decision", "INCLUDE")).upper()
-        decision: Literal["INCLUDE", "EXCLUDE"] = "INCLUDE" if raw_decision == "INCLUDE" else "EXCLUDE"
+        decision: Literal["INCLUDE", "EXCLUDE"] = (
+            "INCLUDE" if raw_decision == "INCLUDE" else "EXCLUDE"
+        )
         try:
             confidence = float(entry.get("confidence", 0.75))
         except (TypeError, ValueError):
@@ -465,10 +561,16 @@ def _parse_llm_screening_response(
                 workspace_id=wsid,
                 decision=decision,
                 confidence=confidence,
-                matched_inclusion_criteria=list(entry.get("matched_inclusion_criteria") or []),
-                violated_exclusion_criteria=list(entry.get("violated_exclusion_criteria") or []),
+                matched_inclusion_criteria=list(
+                    entry.get("matched_inclusion_criteria") or []
+                ),
+                violated_exclusion_criteria=list(
+                    entry.get("violated_exclusion_criteria") or []
+                ),
                 relevant_rqs=list(entry.get("relevant_rqs") or []),
-                screening_reasoning=str(entry.get("screening_reasoning", "LLM screened.")),
+                screening_reasoning=str(
+                    entry.get("screening_reasoning", "LLM screened.")
+                ),
                 document_title=doc.title,
                 doi=doc.external_ids.doi,
             )
@@ -476,9 +578,11 @@ def _parse_llm_screening_response(
 
     # Heuristic fallback for any docs the LLM did not return an entry for
     for i, doc in enumerate(batch):
-        wsid = doc.workspace_id or f"DOC-{i+1:04d}"
+        wsid = doc.workspace_id or f"DOC-{i + 1:04d}"
         if wsid not in seen_wsids:
-            logger.debug("LLM did not return entry for %r — using heuristic fallback.", wsid)
+            logger.debug(
+                "LLM did not return entry for %r — using heuristic fallback.", wsid
+            )
             decisions.append(evaluate_heuristic_screening(doc, protocol_data))
 
     return decisions
@@ -565,7 +669,9 @@ class LLMBatchScreener:
         prompt = generate_batch_screening_prompt(batch, protocol_data)
         logger.info(
             "LLM screening batch %d (%d papers) via %s ...",
-            batch_index + 1, len(batch), self.model,
+            batch_index + 1,
+            len(batch),
+            self.model,
         )
         try:
             raw_text = await self._call_gemini(prompt)
@@ -580,7 +686,8 @@ class LLMBatchScreener:
         except Exception as exc:
             logger.warning(
                 "LLM call failed for batch %d (%s). Falling back to heuristic.",
-                batch_index + 1, exc,
+                batch_index + 1,
+                exc,
             )
             return [evaluate_heuristic_screening(doc, protocol_data) for doc in batch]
 
@@ -600,12 +707,16 @@ class LLMBatchScreener:
         total = len(batches)
         logger.info(
             "Starting LLM screening: %d documents in %d batches of %d.",
-            len(documents), total, self.batch_size,
+            len(documents),
+            total,
+            self.batch_size,
         )
 
         all_decisions: list[ScreeningDecision] = []
         for idx, batch in enumerate(batches):
-            batch_decisions = await self.screen_batch(batch, protocol_data, batch_index=idx)
+            batch_decisions = await self.screen_batch(
+                batch, protocol_data, batch_index=idx
+            )
             all_decisions.extend(batch_decisions)
             # Small courtesy delay between batches to respect rate limits
             if idx < total - 1:
@@ -661,7 +772,7 @@ def calculate_fleiss_kappa(
         P_i.append((sum_squares - n) / (n * (n - 1)))
 
     P_bar = sum(P_i) / N
-    P_e_bar = sum(p ** 2 for p in p_j)
+    P_e_bar = sum(p**2 for p in p_j)
 
     if abs(1.0 - P_e_bar) < 1e-9:
         return 1.0
@@ -708,7 +819,9 @@ def reconcile_multi_screener_decisions(
     adjudicated_count = 0
 
     for wid in all_ids:
-        ratings = [screeners_map[sk].get(wid, "EXCLUDE").upper() for sk in screener_keys]
+        ratings = [
+            screeners_map[sk].get(wid, "EXCLUDE").upper() for sk in screener_keys
+        ]
         subject_ratings.append(ratings)
 
         inc_votes = ratings.count("INCLUDE")
@@ -742,4 +855,3 @@ def reconcile_multi_screener_decisions(
         "included_count": sum(1 for d in reconciled.values() if d == "INCLUDE"),
         "excluded_count": sum(1 for d in reconciled.values() if d == "EXCLUDE"),
     }
-

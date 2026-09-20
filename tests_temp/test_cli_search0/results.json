@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Attention Is All You Need",
+    "year": 2017,
+    "provider": "openalex",
+    "provider_id": "",
+    "external_ids": {
+      "doi": "10.5555/3295222.3295349",
+      "arxiv_id": null,
+      "pubmed_id": null,
+      "openalex_id": null,
+      "s2_id": null
+    },
+    "abstract": null,
+    "authors": [],
+    "venue": null,
+    "url": null,
+    "workspace_id": null,
+    "sources": [
+      {
+        "provider": "openalex",
+        "id": ""
+      }
+    ],
+    "oa_locations": [],
+    "citations_count": 50000,
+    "references_count": null,
+    "citation_intents": [],
+    "mesh_terms": [],
+    "tldr": null,
+    "topics": null,
+    "query_id": null,
+    "retrieved_at": null,
+    "cluster_id": null,
+    "raw_data": null
+  }
+]

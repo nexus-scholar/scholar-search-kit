@@ -3,6 +3,7 @@
 import re
 from difflib import SequenceMatcher
 
+from .completeness import compute_total_score
 from .models import Document, DocumentCluster
 
 
@@ -77,12 +78,20 @@ class Deduplicator:
                     len_cand = len(cand_tkey)
                     if abs(len_doc - len_cand) / max(len_doc, len_cand) > 0.05:
                         continue
-                    if document.year and cand_doc.year and abs(document.year - cand_doc.year) > 1:
+                    if (
+                        document.year
+                        and cand_doc.year
+                        and abs(document.year - cand_doc.year) > 1
+                    ):
                         continue
                     left_author = _first_author_surname(document)
                     right_author = _first_author_surname(cand_doc)
                     if left_author and right_author:
-                        if left_author != right_author and left_author not in right_author and right_author not in left_author:
+                        if (
+                            left_author != right_author
+                            and left_author not in right_author
+                            and right_author not in left_author
+                        ):
                             continue
                     if SequenceMatcher(None, tkey, cand_tkey).ratio() >= 0.97:
                         match = cand_cluster
@@ -94,8 +103,26 @@ class Deduplicator:
                 match = DocumentCluster(cluster_id, document, [document])
                 clusters.append(match)
             else:
-                match.members.append(document)
-                self._merge_metadata(match.representative, document)
+                # Score-based representative election
+                candidate_score = compute_total_score(document)
+                current_score = compute_total_score(match.representative)
+
+                if candidate_score > current_score:
+                    # Swap: candidate becomes representative
+                    old_rep = match.representative
+                    document.workspace_id = old_rep.workspace_id
+                    document.cluster_id = old_rep.cluster_id
+                    # Merge old rep metadata into new representative
+                    self._merge_metadata(document, old_rep)
+                    match.representative = document
+                    match.members.append(old_rep)
+                else:
+                    # Keep current representative
+                    document.workspace_id = match.representative.workspace_id
+                    document.cluster_id = match.representative.cluster_id
+                    # Merge candidate metadata into representative
+                    self._merge_metadata(match.representative, document)
+                    match.members.append(document)
 
             _register(document, match)
             document.cluster_id = match.cluster_id
@@ -150,7 +177,11 @@ class Deduplicator:
         right_author = _first_author_surname(right)
         if left_author and right_author:
             # Surnames should match or one contain the other (to handle prefixes like de/van/von)
-            if left_author != right_author and left_author not in right_author and right_author not in left_author:
+            if (
+                left_author != right_author
+                and left_author not in right_author
+                and right_author not in left_author
+            ):
                 return False
 
         return True
