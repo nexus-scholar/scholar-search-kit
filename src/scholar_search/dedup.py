@@ -69,7 +69,9 @@ class Deduplicator:
             # Tier 1b: Exact normalized title match in O(1)
             tkey = _title_key(document.title)
             if match is None and tkey and tkey in exact_title_index:
-                match = exact_title_index[tkey]
+                exact_cluster = exact_title_index[tkey]
+                if self._fuzzy_match(document, exact_cluster.representative):
+                    match = exact_cluster
 
             # Tier 2: Fuzzy Lexical Title Match (pruned by length & author/year)
             if match is None and tkey:
@@ -115,7 +117,7 @@ class Deduplicator:
                     # Merge old rep metadata into new representative
                     self._merge_metadata(document, old_rep)
                     match.representative = document
-                    match.members.append(old_rep)
+                    match.members.append(document)
                 else:
                     # Keep current representative
                     document.workspace_id = match.representative.workspace_id
