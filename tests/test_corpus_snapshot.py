@@ -41,6 +41,31 @@ def test_same_title_distinct_studies_and_order_independence() -> None:
     assert first.outcome["status"] == "SUCCESS"
 
 
+def test_same_title_author_year_with_conflicting_dois_remain_distinct() -> None:
+    left = Document(
+        title="Shared exact title",
+        year=2024,
+        provider="openalex",
+        provider_id="left",
+        external_ids=ExternalIds(doi="10.1000/left"),
+        authors=[Author("Smith")],
+    )
+    right = Document(
+        title="Shared exact title",
+        year=2024,
+        provider="crossref",
+        provider_id="right",
+        external_ids=ExternalIds(doi="10.1000/right"),
+        authors=[Author("Smith")],
+    )
+
+    first = build_corpus_snapshot_artifact([left, right], **CONTEXT)
+    reversed_build = build_corpus_snapshot_artifact([right, left], **CONTEXT)
+
+    assert len(first.artifact["data"]["studies"]) == 2
+    assert first.artifact == reversed_build.artifact
+
+
 def test_transitive_doi_arxiv_bridge_and_partial_outcome() -> None:
     doi_record = Document(
         title="Bridge paper",

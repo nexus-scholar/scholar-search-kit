@@ -66,6 +66,11 @@ class Deduplicator:
             elif ext.s2_id and ("s2", ext.s2_id.strip()) in id_index:
                 match = id_index[("s2", ext.s2_id.strip())]
 
+            if match is not None and self._has_identifier_conflict(
+                document, match.representative
+            ):
+                match = None
+
             # Tier 1b: Exact normalized title match in O(1)
             tkey = _title_key(document.title)
             if match is None and tkey and tkey in exact_title_index:
@@ -85,6 +90,8 @@ class Deduplicator:
                         and cand_doc.year
                         and abs(document.year - cand_doc.year) > 1
                     ):
+                        continue
+                    if self._has_identifier_conflict(document, cand_doc):
                         continue
                     left_author = _first_author_surname(document)
                     right_author = _first_author_surname(cand_doc)
@@ -159,7 +166,33 @@ class Deduplicator:
         )
 
     @staticmethod
+    def _has_identifier_conflict(left: Document, right: Document) -> bool:
+        """Return true when the same persistent-ID namespace disagrees.
+
+        A lexical match must never override contradictory identifier evidence.
+        Missing identifiers remain compatible so DOI/arXiv bridge records can
+        still connect otherwise equivalent provider records.
+        """
+        left_ids = left.external_ids
+        right_ids = right.external_ids
+        pairs = (
+            (left_ids.doi, right_ids.doi),
+            (left_ids.arxiv_id, right_ids.arxiv_id),
+            (left_ids.pubmed_id, right_ids.pubmed_id),
+            (left_ids.openalex_id, right_ids.openalex_id),
+            (left_ids.s2_id, right_ids.s2_id),
+        )
+        return any(
+            str(left_value).strip().lower() != str(right_value).strip().lower()
+            for left_value, right_value in pairs
+            if left_value and right_value
+        )
+
+    @staticmethod
     def _fuzzy_match(left: Document, right: Document) -> bool:
+        if Deduplicator._has_identifier_conflict(left, right):
+            return False
+
         left_title = _title_key(left.title)
         right_title = _title_key(right.title)
         if not left_title or not right_title:
